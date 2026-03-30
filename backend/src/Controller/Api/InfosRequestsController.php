@@ -14,7 +14,8 @@ final class InfosRequestsController extends AbstractController
   #[Route('/', name: 'requests_get', methods: ['GET'])]
   public function requests_get(InfosRequestsService $infosRequestsService): JsonResponse
   {
-    $requests = $infosRequestsService->getRequests();
+    $currentUser = $this->getUser();
+    $requests = $infosRequestsService->getRequests($currentUser);
     if (!$requests) return $this->json(['error' => 'Rates not found'], 404);
     return $this->json($requests, 200);
   }
@@ -22,7 +23,8 @@ final class InfosRequestsController extends AbstractController
   #[Route('/{id}', name: 'request_get', requirements: ['id' => '\d+'], methods: ['GET'])]
   public function request_get(InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
-    $request = $infosRequestsService->getRequest($id);
+    $currentUser = $this->getUser();
+    $request = $infosRequestsService->getRequest($id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found'], 404);
     return $this->json($request, 200);
   }
@@ -30,16 +32,18 @@ final class InfosRequestsController extends AbstractController
   #[Route('/', name: 'request_create', methods: ['POST'])]
   public function request_create(Request $request, InfosRequestsService $infosRequestsService): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $request = $infosRequestsService->addRequest($data);
+    $request = $infosRequestsService->addRequest($data, $currentUser);
     return $this->json($request, 201);
   }
 
   #[Route('/{id}', name: 'request_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
   public function request_update(Request $request, InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $request = $infosRequestsService->setRequest($data, $id);
+    $request = $infosRequestsService->setRequest($data, $id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found']);
     return $this->json($request, 200);
   }
@@ -47,7 +51,8 @@ final class InfosRequestsController extends AbstractController
   #[Route('/{id}', name: 'request_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
   public function request_delete(InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
-    $deleted = $infosRequestsService->deleteRequest($id);
+    $currentUser = $this->getUser();
+    $deleted = $infosRequestsService->deleteRequest($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
 
     return $this->json(null, 204);

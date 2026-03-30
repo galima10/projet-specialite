@@ -38,8 +38,9 @@ final class KmMileageRatesController extends AbstractController
   #[Route('/{id}', name: 'rate_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
   public function rate_update(Request $request, KmMileageRatesService $kmMileageRatesService, $id): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $rate = $kmMileageRatesService->setRate($data, $id);
+    $rate = $kmMileageRatesService->setRate($data, $id, $currentUser);
     if (!$rate) return $this->json(['error' => 'Rate not found']);
     return $this->json($rate, 200);
   }
@@ -47,7 +48,8 @@ final class KmMileageRatesController extends AbstractController
   #[Route('/{id}', name: 'document_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
   public function document_delete(KmMileageRatesService $kmMileageRatesService, $id): JsonResponse
   {
-    $deleted = $kmMileageRatesService->deleteRate($id);
+    $currentUser = $this->getUser();
+    $deleted = $kmMileageRatesService->deleteRate($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
 
     return $this->json(null, 204);
