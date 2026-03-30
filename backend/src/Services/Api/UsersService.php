@@ -3,24 +3,53 @@
 namespace App\Services\Api;
 
 use App\Repository\UsersRepository;
+use App\Entity\Users;
+use App\Enum\Role;
+use Doctrine\ORM\EntityManagerInterface;
 
 class UsersService
 {
   private UsersRepository $usersRepository;
+  private EntityManagerInterface $entityManager;
 
-  public function __construct(UsersRepository $usersRepository)
+  public function __construct(UsersRepository $usersRepository, EntityManagerInterface $entityManager)
   {
     $this->usersRepository = $usersRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function getUsers()
   {
     $users = $this->usersRepository->findAll();
+    if (!$users) return;
     $usersData = array_map(fn($u) => [
       'id' => $u->getId(),
       'name' => $u->getName(),
       'email' => $u->getEmail(),
     ], $users);
     return $usersData;
+  }
+
+  public function getUser(int $id)
+  {
+    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    if (!$user) return;
+    $userData = [
+      'id' => $user->getId(),
+      'name' => $user->getName(),
+      'email' => $user->getEmail(),
+    ];
+    return $userData;
+  }
+
+  public function createUser($data)
+  {
+    $user = new Users();
+    $user->setName($data['name']);
+    $user->setEmail($data['email']);
+    $user->setRole(Role::from($data['role']));
+
+    $this->entityManager->persist($user);
+    $this->entityManager->flush();
   }
 }
