@@ -21,7 +21,7 @@ class KmMileageRates
     private ?string $label = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]
-    private ?string $amoutPerKm = null;
+    private ?string $amountPerKm = null;
 
     #[ORM\OneToMany(mappedBy: "kmMileageRate", targetEntity: InfosRequests::class)]
     private Collection $infosRequests;
@@ -43,14 +43,14 @@ class KmMileageRates
         return $this;
     }
 
-    public function getAmoutPerKm(): ?string
+    public function getAmountPerKm(): ?string
     {
-        return $this->amoutPerKm;
+        return $this->amountPerKm;
     }
 
-    public function setAmoutPerKm(string $amoutPerKm): static
+    public function setAmountPerKm(string $amountPerKm): static
     {
-        $this->amoutPerKm = $amoutPerKm;
+        $this->amountPerKm = $amountPerKm;
 
         return $this;
     }

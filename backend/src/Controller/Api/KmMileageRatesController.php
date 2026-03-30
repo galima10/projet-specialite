@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Controller\Api;
+
+use App\Services\Api\KmMileageRatesService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/api/km-mileage-rates', name: 'api_km_mileage_rates')]
+final class KmMileageRatesController extends AbstractController
+{
+  #[Route('/', name: 'rates_get', methods: ['GET'])]
+  public function rates_get(KmMileageRatesService $kmMileageRatesService): JsonResponse
+  {
+    $rates = $kmMileageRatesService->getRates();
+    if (!$rates) return $this->json(['error' => 'Rates not found'], 404);
+    return $this->json($rates, 200);
+  }
+
+  #[Route('/{id}', name: 'rate_get', requirements: ['id' => '\d+'], methods: ['GET'])]
+  public function rate_get(KmMileageRatesService $kmMileageRatesService, $id): JsonResponse
+  {
+    $rate = $kmMileageRatesService->getRate($id);
+    if (!$rate) return $this->json(['error' => 'Rate not found'], 404);
+    return $this->json($rate, 200);
+  }
+
+  #[Route('/', name: 'rate_create', methods: ['POST'])]
+  public function rate_create(Request $request, KmMileageRatesService $kmMileageRatesService): JsonResponse
+  {
+    $data = json_decode($request->getContent(), true);
+    $rate = $kmMileageRatesService->addRate($data);
+    return $this->json($rate, 201);
+  }
+
+  #[Route('/{id}', name: 'rate_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
+  public function rate_update(Request $request, KmMileageRatesService $kmMileageRatesService, $id): JsonResponse
+  {
+    $data = json_decode($request->getContent(), true);
+    $rate = $kmMileageRatesService->setRate($data, $id);
+    if (!$rate) return $this->json(['error' => 'Rate not found']);
+    return $this->json($rate, 200);
+  }
+
+  #[Route('/{id}', name: 'document_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+  public function document_delete(KmMileageRatesService $kmMileageRatesService, $id): JsonResponse
+  {
+    $deleted = $kmMileageRatesService->deleteRate($id);
+    if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
+
+    return $this->json(null, 204);
+  }
+}
