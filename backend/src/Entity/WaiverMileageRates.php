@@ -17,7 +17,7 @@ class WaiverMileageRates
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 191, unique: true)]
     private ?string $label = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]

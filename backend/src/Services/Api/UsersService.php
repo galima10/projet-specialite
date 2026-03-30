@@ -9,14 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class UsersService
 {
-  private UsersRepository $usersRepository;
-  private EntityManagerInterface $entityManager;
-
-  public function __construct(UsersRepository $usersRepository, EntityManagerInterface $entityManager)
-  {
-    $this->usersRepository = $usersRepository;
-    $this->entityManager = $entityManager;
-  }
+  public function __construct(
+    private EntityManagerInterface $entityManager,
+    private UsersRepository $usersRepository
+  ) {}
 
   public function getUsers()
   {
@@ -51,5 +47,7 @@ class UsersService
 
     $this->entityManager->persist($user);
     $this->entityManager->flush();
+
+    return $user;
   }
 }

@@ -29,8 +29,8 @@ final class UsersController extends AbstractController
   public function createUser(Request $request, UsersService $usersService): JsonResponse
   {
     $data = json_decode($request->getContent(), true);
-    $users = $usersService->createUser($data);
-    return $this->json($users);
+    $user = $usersService->createUser($data);
+    return $this->json($user);
   }
 
 }
