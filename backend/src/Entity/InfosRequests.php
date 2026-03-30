@@ -45,8 +45,10 @@ class InfosRequests
     #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?KmMileageRates $kmMileageRate = null;
 
-    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesLists::class)]
-    private Collection $expensesLists;
+    #[ORM\ManyToOne(targetEntity: ExpensesLists::class, inversedBy: "infosRequests")]
+    #[ORM\JoinColumn(name: "expenses_list_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
+    private ?ExpensesLists $expensesList = null;
+
 
     public function getId(): ?int
     {
@@ -122,6 +124,7 @@ class InfosRequests
         $this->waiverMileageRate = $waiverMileageRate;
         return $this;
     }
+    
     public function getKmMileageRate(): ?KmMileageRates
     {
         return $this->kmMileageRate;
@@ -133,13 +136,15 @@ class InfosRequests
         return $this;
     }
 
-    public function __construct()
+    public function getExpensesList(): ?ExpensesLists
     {
-        $this->expensesLists = new ArrayCollection();
+        return $this->expensesList;
     }
 
-    public function getExpensesLists(): Collection
+    public function setExpensesList(ExpensesLists $expensesList): static
     {
-        return $this->expensesLists;
+        $this->expensesList = $expensesList;
+        return $this;
     }
+
 }

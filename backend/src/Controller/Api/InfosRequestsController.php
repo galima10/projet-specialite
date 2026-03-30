@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Controller\Api;
+
+use App\Services\Api\InfosRequestsService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/api/waiver-mileage-rates', name: 'api_waiver_mileage_rates')]
+final class InfosRequestsController extends AbstractController
+{
+  #[Route('/', name: 'requests_get', methods: ['GET'])]
+  public function requests_get(InfosRequestsService $infosRequestsService): JsonResponse
+  {
+    $requests = $infosRequestsService->getRequests();
+    if (!$requests) return $this->json(['error' => 'Rates not found'], 404);
+    return $this->json($requests, 200);
+  }
+
+  #[Route('/{id}', name: 'request_get', requirements: ['id' => '\d+'], methods: ['GET'])]
+  public function request_get(InfosRequestsService $infosRequestsService, $id): JsonResponse
+  {
+    $request = $infosRequestsService->getRequest($id);
+    if (!$request) return $this->json(['error' => 'Rate not found'], 404);
+    return $this->json($request, 200);
+  }
+
+  #[Route('/', name: 'request_create', methods: ['POST'])]
+  public function request_create(Request $request, InfosRequestsService $infosRequestsService): JsonResponse
+  {
+    $data = json_decode($request->getContent(), true);
+    $request = $infosRequestsService->addRequest($data);
+    return $this->json($request, 201);
+  }
+
+  #[Route('/{id}', name: 'request_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
+  public function request_update(Request $request, InfosRequestsService $infosRequestsService, $id): JsonResponse
+  {
+    $data = json_decode($request->getContent(), true);
+    $request = $infosRequestsService->setRequest($data, $id);
+    if (!$request) return $this->json(['error' => 'Rate not found']);
+    return $this->json($request, 200);
+  }
+
+  #[Route('/{id}', name: 'request_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+  public function request_delete(InfosRequestsService $infosRequestsService, $id): JsonResponse
+  {
+    $deleted = $infosRequestsService->deleteRequest($id);
+    if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
+
+    return $this->json(null, 204);
+  }
+}

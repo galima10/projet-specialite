@@ -30,7 +30,7 @@ class ExpensesListsService
 
   public function getList(int $id)
   {
-    $list = $this->expenses_lists_repository->findOneBy(['id' => $id]);
+    $list = $this->expenses_lists_repository->find($id);
     if (!$list) return;
     $listData = [
       'id' => $list->getId(),
@@ -60,7 +60,7 @@ class ExpensesListsService
 
   public function setList($data, int $id)
   {
-    $list = $this->expenses_lists_repository->findOneBy(['id' => $id]);
+    $list = $this->expenses_lists_repository->find($id);
     if (!$list) return;
     $list->setExpenseDate($data['date']);
     $list->setExpenseObject($data['object']);
@@ -73,7 +73,7 @@ class ExpensesListsService
 
   public function deleteList(int $id)
   {
-    $list = $this->expenses_lists_repository->findOneBy(['id' => $id]);
+    $list = $this->expenses_lists_repository->find($id);
     if (!$list) return;
     $this->entityManager->remove($list);
     $this->entityManager->flush();

@@ -3,6 +3,7 @@
 namespace App\Services\Api;
 
 use App\Repository\ExpensesDocumentsRepository;
+use App\Repository\ExpensesListsRepository;
 use App\Entity\ExpensesDocuments;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -10,7 +11,8 @@ class ExpensesDocumentsService
 {
   public function __construct(
     private EntityManagerInterface $entityManager,
-    private ExpensesDocumentsRepository $expenses_documents_repository
+    private ExpensesDocumentsRepository $expenses_documents_repository,
+    private ExpensesListsRepository $expenses_lists_repository
   ) {}
 
   public function getDocuments()
@@ -21,20 +23,20 @@ class ExpensesDocumentsService
       'id' => $d->getId(),
       'name' => $d->getName(),
       'pathFile' => $d->getPathFile(),
-      'expensesList' => $d->getExpensesList()
+      'expensesListId' => $d->getExpensesList()->getId(),
     ], $documents);
     return $documentsData;
   }
 
   public function getDocument(int $id)
   {
-    $document = $this->expenses_documents_repository->findOneBy(['id' => $id]);
+    $document = $this->expenses_documents_repository->find($id);
     if (!$document) return;
     $documentData = [
       'id' => $document->getId(),
       'name' => $document->getName(),
       'pathFile' => $document->getPathFile(),
-      'expensesList' => $document->getExpensesList()
+      'expensesListId' => $document->getExpensesList()->getId(),
     ];
     return $documentData;
   }
@@ -44,8 +46,9 @@ class ExpensesDocumentsService
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
-    $document->setExpensesList($data['expensesList']);
-
+    $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
+    if (!$expensesList) return;
+    $document->setExpensesList($expensesList);
     $this->entityManager->persist($document);
     $this->entityManager->flush();
 
@@ -54,18 +57,20 @@ class ExpensesDocumentsService
 
   public function setDocument($data, int $id)
   {
-    $document = $this->expenses_documents_repository->findOneBy(['id' => $id]);
+    $document = $this->expenses_documents_repository->find($id);
     if (!$document) return;
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
-    $document->setExpensesList($data['expensesList']);
+    $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
+    if (!$expensesList) return;
+    $document->setExpensesList($expensesList);
     $this->entityManager->flush();
     return $document;
   }
 
   public function deleteDocument(int $id)
   {
-    $document = $this->expenses_documents_repository->findOneBy(['id' => $id]);
+    $document = $this->expenses_documents_repository->find($id);
     if (!$document) return;
     $this->entityManager->remove($document);
     $this->entityManager->flush();

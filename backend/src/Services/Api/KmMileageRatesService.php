@@ -27,7 +27,7 @@ class KmMileageRatesService
 
   public function getRate(int $id)
   {
-    $rate = $this->km_mileage_rates_repository->findOneBy(['id' => $id]);
+    $rate = $this->km_mileage_rates_repository->find($id);
     if (!$rate) return;
     $rateData = [
       'id' => $rate->getId(),
@@ -51,7 +51,7 @@ class KmMileageRatesService
 
   public function setRate($data, int $id)
   {
-    $rate = $this->km_mileage_rates_repository->findOneBy(['id' => $id]);
+    $rate = $this->km_mileage_rates_repository->find($id);
     if (!$rate) return;
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
@@ -61,7 +61,7 @@ class KmMileageRatesService
 
   public function deleteRate(int $id)
   {
-    $rate = $this->km_mileage_rates_repository->findOneBy(['id' => $id]);
+    $rate = $this->km_mileage_rates_repository->find($id);
     if (!$rate) return;
     $this->entityManager->remove($rate);
     $this->entityManager->flush();

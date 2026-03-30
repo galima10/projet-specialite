@@ -33,9 +33,8 @@ class ExpensesLists
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2, nullable: true)]
     private ?string $othersCost = null;
 
-    #[ORM\ManyToOne(targetEntity: InfosRequests::class, inversedBy: "expensesLists")]
-    #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
-    private ?InfosRequests $infosRequest = null;
+    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesDocuments::class)]
+    private Collection $infosRequests;
 
     #[ORM\OneToMany(mappedBy: "expensesDocument", targetEntity: ExpensesDocuments::class)]
     private Collection $expensesDocuments;
@@ -105,24 +104,18 @@ class ExpensesLists
         return $this;
     }
 
-    public function getInfosRequest(): ?InfosRequests
-    {
-        return $this->infosRequest;
-    }
-
-    public function setInfosRequest(InfosRequests $infosRequest): static
-    {
-        $this->infosRequest = $infosRequest;
-        return $this;
-    }
-
     public function __construct()
     {
         $this->expensesDocuments = new ArrayCollection();
+        $this->infosRequests = new ArrayCollection();
     }
 
     public function getExpensesDocuments(): Collection
     {
         return $this->expensesDocuments;
+    }
+    public function getInfosRequests(): Collection
+    {
+        return $this->infosRequests;
     }
 }

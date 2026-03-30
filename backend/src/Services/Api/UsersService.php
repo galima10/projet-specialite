@@ -28,7 +28,7 @@ class UsersService
 
   public function getUser(int $id)
   {
-    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    $user = $this->usersRepository->find($id);
     if (!$user) return;
     $userData = [
       'id' => $user->getId(),
@@ -53,7 +53,7 @@ class UsersService
 
   public function setUser($data, int $id)
   {
-    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    $user = $this->usersRepository->find($id);
     if (!$user) return;
     $user->setName($data['name']);
     $user->setEmail($data['email']);
@@ -64,7 +64,7 @@ class UsersService
 
   public function deleteUser(int $id)
   {
-    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    $user = $this->usersRepository->find($id);
     if (!$user) return;
     $this->entityManager->remove($user);
     $this->entityManager->flush();
