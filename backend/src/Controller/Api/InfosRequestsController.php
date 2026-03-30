@@ -15,6 +15,7 @@ final class InfosRequestsController extends AbstractController
   public function requests_get(InfosRequestsService $infosRequestsService): JsonResponse
   {
     $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
     $requests = $infosRequestsService->getRequests($currentUser);
     if (!$requests) return $this->json(['error' => 'Rates not found'], 404);
     if ($requests === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
@@ -25,6 +26,7 @@ final class InfosRequestsController extends AbstractController
   public function request_get(InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
     $request = $infosRequestsService->getRequest($id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found'], 404);
     if ($request === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
@@ -35,6 +37,7 @@ final class InfosRequestsController extends AbstractController
   public function request_create(Request $request, InfosRequestsService $infosRequestsService): JsonResponse
   {
     $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
     $data = json_decode($request->getContent(), true);
     $request = $infosRequestsService->addRequest($data, $currentUser);
     if ($request === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
@@ -46,6 +49,7 @@ final class InfosRequestsController extends AbstractController
   public function request_update(Request $request, InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
     $data = json_decode($request->getContent(), true);
     $request = $infosRequestsService->setRequest($data, $id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found']);
@@ -57,6 +61,7 @@ final class InfosRequestsController extends AbstractController
   public function request_delete(InfosRequestsService $infosRequestsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
     $deleted = $infosRequestsService->deleteRequest($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
     if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);

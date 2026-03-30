@@ -4,29 +4,31 @@ namespace App\Services\Api;
 
 use App\Repository\UsersRepository;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use App\Entity\Users;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Enum\Role;
 
 class LoginService
 {
   public function __construct(
     private UsersRepository $usersRepository,
-    private UserPasswordHasher $passwordHasher
+    private UserPasswordHasher $passwordHasher,
+    private EntityManagerInterface $entityManager,
   ) {}
 
-  public function login(string $email, string $plainPassword)
+  public function addUser($data)
   {
-    $user = $this->usersRepository->findOneBy(['email' => $email]);
-    if (!$user) return;
+    $user = $this->usersRepository->findOneBy(['email' => $data['email']]);
+    if ($user) return;
+    $user = new Users();
+    $user->setName($data['name']);
+    $user->setEmail($data['email']);
+    $user->setRole(Role::from($data['role']));
+    $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
+    $user->setPassword($hashedPassword);
+    $this->entityManager->persist($user);
+    $this->entityManager->flush();
 
-    $isValid = $this->passwordHasher->isPasswordValid($user, $plainPassword);
-
-    if (!$isValid) return;
-
-    $userData = [
-      'id' => $user->getId(),
-      'name' => $user->getName(),
-      'role' => $user->getRole()->value
-    ];
-
-    return $userData;
+    return $user;
   }
 }
