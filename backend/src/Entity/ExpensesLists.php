@@ -6,6 +6,9 @@ use App\Entity\InfosRequests;
 use App\Repository\ExpensesListsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\ExpensesDocuments;
 
 #[ORM\Entity(repositoryClass: ExpensesListsRepository::class)]
 class ExpensesLists
@@ -33,6 +36,9 @@ class ExpensesLists
     #[ORM\ManyToOne(targetEntity: InfosRequests::class, inversedBy: "expensesLists")]
     #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?InfosRequests $infosRequest = null;
+
+    #[ORM\OneToMany(mappedBy: "expensesDocument", targetEntity: ExpensesDocuments::class)]
+    private Collection $expensesDocuments;
 
     public function getId(): ?int
     {
@@ -99,14 +105,24 @@ class ExpensesLists
         return $this;
     }
 
-    public function getUser(): ?InfosRequests
+    public function getInfosRequest(): ?InfosRequests
     {
         return $this->infosRequest;
     }
 
-    public function setUser(InfosRequests $infosRequest): static
+    public function setInfosRequest(InfosRequests $infosRequest): static
     {
         $this->infosRequest = $infosRequest;
         return $this;
+    }
+
+    public function __construct()
+    {
+        $this->expensesDocuments = new ArrayCollection();
+    }
+
+    public function getExpensesDocuments(): Collection
+    {
+        return $this->expensesDocuments;
     }
 }

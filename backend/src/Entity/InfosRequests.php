@@ -9,6 +9,9 @@ use App\Enum\Budget;
 use App\Repository\InfosRequestsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\ExpensesLists;
 
 #[ORM\Entity(repositoryClass: InfosRequestsRepository::class)]
 class InfosRequests
@@ -41,6 +44,9 @@ class InfosRequests
     #[ORM\ManyToOne(targetEntity: KmMileageRates::class, inversedBy: "infosRequests")]
     #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?KmMileageRates $kmMileageRate = null;
+
+    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesLists::class)]
+    private Collection $expensesLists;
 
     public function getId(): ?int
     {
@@ -105,7 +111,7 @@ class InfosRequests
         $this->user = $user;
         return $this;
     }
-    
+
     public function getWaiverMileageRate(): ?WaiverMileageRates
     {
         return $this->waiverMileageRate;
@@ -125,5 +131,15 @@ class InfosRequests
     {
         $this->kmMileageRate = $kmMileageRate;
         return $this;
+    }
+
+    public function __construct()
+    {
+        $this->expensesLists = new ArrayCollection();
+    }
+
+    public function getExpensesLists(): Collection
+    {
+        return $this->expensesLists;
     }
 }
