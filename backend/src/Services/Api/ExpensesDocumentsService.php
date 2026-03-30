@@ -4,7 +4,6 @@ namespace App\Services\Api;
 
 use App\Repository\ExpensesDocumentsRepository;
 use App\Entity\ExpensesDocuments;
-use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ExpensesDocumentsService
@@ -22,6 +21,7 @@ class ExpensesDocumentsService
       'id' => $d->getId(),
       'name' => $d->getName(),
       'pathFile' => $d->getPathFile(),
+      'expensesList' => $d->getExpensesList()
     ], $documents);
     return $documentsData;
   }
@@ -34,6 +34,7 @@ class ExpensesDocumentsService
       'id' => $document->getId(),
       'name' => $document->getName(),
       'pathFile' => $document->getPathFile(),
+      'expensesList' => $document->getExpensesList()
     ];
     return $documentData;
   }
@@ -43,6 +44,7 @@ class ExpensesDocumentsService
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
+    $document->setExpensesList($data['expensesList']);
 
     $this->entityManager->persist($document);
     $this->entityManager->flush();
@@ -56,6 +58,7 @@ class ExpensesDocumentsService
     if (!$document) return;
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
+    $document->setExpensesList($data['expensesList']);
     $this->entityManager->flush();
     return $document;
   }
