@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Repository\KmMileageRatesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\InfosRequests;
 
 #[ORM\Entity(repositoryClass: KmMileageRatesRepository::class)]
 class KmMileageRates
@@ -19,6 +22,9 @@ class KmMileageRates
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]
     private ?string $amoutPerKm = null;
+
+    #[ORM\OneToMany(mappedBy: "kmMileageRate", targetEntity: InfosRequests::class)]
+    private Collection $infosRequests;
 
     public function getId(): ?int
     {
@@ -47,5 +53,15 @@ class KmMileageRates
         $this->amoutPerKm = $amoutPerKm;
 
         return $this;
+    }
+
+    public function __construct()
+    {
+        $this->infosRequests = new ArrayCollection();
+    }
+
+    public function getInfosRequests(): Collection
+    {
+        return $this->infosRequests;
     }
 }
