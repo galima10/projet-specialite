@@ -37,8 +37,11 @@ class KmMileageRatesService
     return $rateData;
   }
 
-  public function addRate($data)
+  public function addRate($data, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
+    $rate = $this->km_mileage_rates_repository->findOneBy(['label' => $data['label']]);
+    if ($rate) return;
     $rate = new KmMileageRates();
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
@@ -49,8 +52,9 @@ class KmMileageRatesService
     return $rate;
   }
 
-  public function setRate($data, int $id)
+  public function setRate($data, int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $rate = $this->km_mileage_rates_repository->find($id);
     if (!$rate) return;
     $rate->setLabel($data['label']);
@@ -59,8 +63,9 @@ class KmMileageRatesService
     return $rate;
   }
 
-  public function deleteRate(int $id)
+  public function deleteRate(int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $rate = $this->km_mileage_rates_repository->find($id);
     if (!$rate) return;
     $this->entityManager->remove($rate);

@@ -36,7 +36,7 @@ final class UsersController extends AbstractController
   {
     $data = json_decode($request->getContent(), true);
     $user = $usersService->addUser($data);
-    if (!$user) return $this->json(['error' => 'User already exist'], 409);
+    if (!$user) return $this->json(['error' => 'User already exists'], 409);
     return $this->json($user, 201);
   }
 
@@ -57,7 +57,7 @@ final class UsersController extends AbstractController
     $currentUser = $this->getUser();
     $deleted = $usersService->deleteUser($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'User not found'], 404);
-
+    if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);
     return $this->json(null, 204);
   }
 }

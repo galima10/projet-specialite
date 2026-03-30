@@ -35,6 +35,7 @@ final class ExpensesDocumentsController extends AbstractController
     $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
     $document = $expensesDocumentsService->addDocument($data, $currentUser);
+    if (!$document) return $this->json(['error' => 'Document already exists'], 409);
     return $this->json($document, 201);
   }
 

@@ -22,8 +22,9 @@ class InfosRequestsService
     private ExpensesListsRepository $expenses_lists_repository,
   ) {}
 
-  public function getRequests()
+  public function getRequests($currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
     $requests = $this->infos_requests_repository->findAll();
     if (!$requests) return;
     $requestsData = array_map(fn($r) => [
@@ -40,8 +41,9 @@ class InfosRequestsService
     return $requestsData;
   }
 
-  public function getRequest(int $id)
+  public function getRequest(int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
     $requestData = [
@@ -58,8 +60,11 @@ class InfosRequestsService
     return $requestData;
   }
 
-  public function addRequest($data)
+  public function addRequest($data, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
+    $request = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
+    if ($request) return;
     $request = new InfosRequests();
     $request->setCreatedAt($data['createdAt']);
     $request->setReason($data['reason']);
@@ -83,8 +88,9 @@ class InfosRequestsService
     return $request;
   }
 
-  public function setRequest($data, int $id)
+  public function setRequest($data, int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
     $request->setCreatedAt($data['createdAt']);
@@ -107,13 +113,13 @@ class InfosRequestsService
     return $request;
   }
 
-  public function deleteRequest(int $id)
+  public function deleteRequest(int $id, $currentUser)
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$request->getUser()->getId()) return 'Forbidden';
     $this->entityManager->remove($request);
     $this->entityManager->flush();
-
     return true;
   }
 }

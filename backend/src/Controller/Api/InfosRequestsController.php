@@ -17,6 +17,7 @@ final class InfosRequestsController extends AbstractController
     $currentUser = $this->getUser();
     $requests = $infosRequestsService->getRequests($currentUser);
     if (!$requests) return $this->json(['error' => 'Rates not found'], 404);
+    if ($requests === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
     return $this->json($requests, 200);
   }
 
@@ -26,6 +27,7 @@ final class InfosRequestsController extends AbstractController
     $currentUser = $this->getUser();
     $request = $infosRequestsService->getRequest($id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found'], 404);
+    if ($request === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
     return $this->json($request, 200);
   }
 
@@ -35,6 +37,8 @@ final class InfosRequestsController extends AbstractController
     $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
     $request = $infosRequestsService->addRequest($data, $currentUser);
+    if ($request === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if (!$request) return $this->json(['error' => 'Request already exists'], 404);
     return $this->json($request, 201);
   }
 
@@ -45,6 +49,7 @@ final class InfosRequestsController extends AbstractController
     $data = json_decode($request->getContent(), true);
     $request = $infosRequestsService->setRequest($data, $id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found']);
+    if ($request === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
     return $this->json($request, 200);
   }
 
@@ -54,7 +59,7 @@ final class InfosRequestsController extends AbstractController
     $currentUser = $this->getUser();
     $deleted = $infosRequestsService->deleteRequest($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
-
+    if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);
     return $this->json(null, 204);
   }
 }

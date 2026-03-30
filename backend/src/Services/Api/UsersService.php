@@ -18,7 +18,7 @@ class UsersService
 
   public function getUsers($currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
     $users = $this->usersRepository->findAll();
     if (!$users) return;
     $usersData = array_map(fn($u) => [
@@ -31,7 +31,7 @@ class UsersService
 
   public function getUser(int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
     $userData = [
@@ -45,14 +45,13 @@ class UsersService
   public function addUser($data)
   {
     $user = $this->usersRepository->findOneBy(['email' => $data['email']]);
-    if (!$user) return;
+    if ($user) return;
     $user = new Users();
     $user->setName($data['name']);
     $user->setEmail($data['email']);
     $user->setRole(Role::from($data['role']));
     $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
     $user->setPassword($hashedPassword);
-
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
@@ -62,11 +61,9 @@ class UsersService
 
   public function setUser($data, int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
-
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
-
     $user->setName($data['name']);
     $user->setEmail($data['email']);
     $user->setRole(Role::from($data['role']));
@@ -76,11 +73,9 @@ class UsersService
 
   public function deleteUser(int $id, $currentUser)
   {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
-
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
-
     $this->entityManager->remove($user);
     $this->entityManager->flush();
 
