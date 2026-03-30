@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/users', name: 'app_api_test_')]
-final class TestController extends AbstractController
+final class UsersController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(UsersService $usersService): JsonResponse
