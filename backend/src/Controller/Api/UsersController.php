@@ -33,15 +33,6 @@ final class UsersController extends AbstractController
     return $this->json($user, 200);
   }
 
-  #[Route('/', name: 'user_create', methods: ['POST'])]
-  public function user_create(Request $request, UsersService $usersService): JsonResponse
-  {
-    $data = json_decode($request->getContent(), true);
-    $user = $usersService->addUser($data);
-    if (!$user) return $this->json(['error' => 'User already exists'], 409);
-    return $this->json($user, 201);
-  }
-
   #[Route('/{id}', name: 'user_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
   public function user_update(Request $request, UsersService $usersService, $id): JsonResponse
   {
