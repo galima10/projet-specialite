@@ -50,7 +50,11 @@ Un projet full-stack React/TS Sass et Symfony/Doctrine configuré pour un déplo
 **Pour lancer le projet en local**
 - Bien configurer les .env.local du dossier frontend/ et backend/
 - Lancer WAMP pour obtenir la BDD MySQL à connecter à Symfony
-- Ouvrir un terminal pour le dossier backend/ et lancer avec symfony serve:start ou php bin/console cache:clear php bin/console cache:warmup symfony serve:start pour faire chauffer le cache et lancer plus vite le serveur backend de Symfony
+- Ouvrir un terminal pour le dossier backend/ et lancer avec symfony serve:start ou 
+php bin/console cache:clear 
+php bin/console cache:warmup 
+symfony serve:start 
+pour faire chauffer le cache et lancer plus vite le serveur backend de Symfony
 - Ouvrir un autre terminal pour le dossier frontend/ et lancer npm run dev pour lancer l'application React frontend avec Vite
 
 ### Développement
