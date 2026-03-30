@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TITRE_DU_SITE</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Meta description -->
+    <meta
+      name="description"
+      content="META_DESCRIPTION"
+    />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="URL_DU_SITE" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TITRE_DU_SITE" />
+    <meta
+      property="og:description"
+      content="META_DESCRIPTION"
+    />
+    <meta property="og:image" content="/opengraph/opengraph.jpg" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="NOM_DE_DOMAINE" />
+    <meta property="twitter:url" content="URL_DU_SITE" />
+    <meta name="twitter:title" content="TITRE_DU_SITE" />
+    <meta
+      name="twitter:description"
+      content="META_DESCRIPTION"
+    />
+    <meta name="twitter:image" content="/opengraph/opengraph.jpg" />
+
+    <!-- Favicon -->
+    <!-- Aller sur realFaviconGenerator et coller les balise <link> -->
+
+    <!-- Si on charge from scratch une route react, on redirige pour faire charger react avant d'afficher la page -->
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+
+      if (redirect) {
+        window.history.replaceState(null, "", decodeURIComponent(redirect));
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

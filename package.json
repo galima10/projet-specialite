@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "install:all": "node install.js"
+  }
+}

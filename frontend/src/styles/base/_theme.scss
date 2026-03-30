@@ -1,0 +1,67 @@
+@use "@styles/abstracts/variables" as *;
+@use "@styles/abstracts/mixins" as *;
+@use "@styles/abstracts/functions" as *;
+@use "@styles/abstracts/placeholders" as *;
+
+// Thème du site
+* {
+  font-family: $font-body;
+  color: $tertiary-color;
+}
+
+body {
+  background-color: $primary-color;
+}
+
+h1 {
+  @include font-base("h1");
+}
+
+h2 {
+  @include font-base("h2");
+}
+
+h3 {
+  @include font-base("h3");
+}
+
+h4 {
+  @include font-base("h4");
+}
+
+h5 {
+  @include font-base("h5");
+}
+
+h6 {
+  @include font-base("h6");
+}
+
+
+p,
+a,
+li,
+span,
+input,
+textarea,
+button {
+  @include font-base("body");
+}
+
+p {
+  font-weight: $regular;
+}
+
+button {
+  font-weight: $bold;
+  &:focus {
+    outline: 0.15rem solid $accent-color;
+  }
+  &:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+small {
+  @include font-base("small");
+}

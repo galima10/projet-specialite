@@ -1,0 +1,9 @@
+// Calcul d'une échelle typographique basée sur un ratio donné en rem
+@function type-scale($step, $ratio, $base: 1rem) {
+  @return $base * pow($ratio, $step);
+}
+
+// Calcul d'une valeur d'espacement fluide entre une valeur minimale, préférée et maximale
+@function spaceCalc($min, $preferred, $max) {
+  @return clamp($min, calc(100vw - calc(79rem - #{$preferred})), $max);
+}

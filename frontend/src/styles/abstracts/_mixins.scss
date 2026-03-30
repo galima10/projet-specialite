@@ -1,0 +1,58 @@
+@use "@styles/abstracts/variables" as *;
+@use "@styles/abstracts/functions" as *;
+@use "@styles/abstracts/placeholders" as *;
+
+// Mixin pour les styles responsives
+@mixin responsive($breakpoint: $bp-desktop) {
+  @media screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Mixin pour calculer les tailles de police en fonction de l'échelle typographique
+@mixin fluid-type($step) {
+  // Mobile par défaut
+  font-size: type-scale($step, $mobile-font-ratio);
+
+  // Desktop
+  @include responsive($bp-desktop) {
+    font-size: type-scale($step, $desktop-font-ratio);
+  }
+}
+
+// Mixin pour appliquer des styles de police en fonction du niveau (h1, h2, body, etc.)
+@mixin font-base($level) {
+  @if $level == "h1" {
+    @include fluid-type(6);
+    font-family: $font-heading;
+    font-weight: $extra-bold;
+  } @else if $level == "h2" {
+    @include fluid-type(5);
+    font-family: $font-heading;
+    font-weight: $bold;
+  } @else if $level == "h3" {
+    @include fluid-type(4);
+    font-family: $font-heading;
+    font-weight: $bold;
+  } @else if $level == "h4" {
+    @include fluid-type(3);
+    font-family: $font-heading;
+    font-weight: $semi-bold;
+  } @else if $level == "h5" {
+    @include fluid-type(2);
+    font-family: $font-body;
+    font-weight: $bold;
+  } @else if $level == "h6" {
+    @include fluid-type(1);
+    font-family: $font-body;
+    font-weight: $semi-bold;
+  } @else if $level == "body" {
+    @include fluid-type(0);
+    font-family: $font-body;
+    font-weight: $regular;
+  } @else if $level == "small" {
+    @include fluid-type(-1);
+    font-family: $font-body;
+    font-weight: $regular;
+  }
+}

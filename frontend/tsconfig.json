@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "noEmit": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "strict": false,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@App*": ["./App/*"],
+      "@images/*": ["./assets/images/*"],
+      "@fonts/*": ["./assets/fonts/*"],
+      "@stores/*": ["./stores/*"],
+      "@modules/*": ["./modules/*"],
+      "@styles/*": ["./styles/*"],
+      "@app-types/*": ["./types/*"],
+      "@utils/*": ["./utils/*"],
+      "@constants/*": ["./constants/*"]
+    }
+  },
+  "include": ["./src"],
+}
