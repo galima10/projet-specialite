@@ -31,15 +31,15 @@ class InfosRequests
     private ?string $amountWaiver = null;
 
     #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: "infosRequests")]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE", onUpdate: "CASCADE")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?Users $user = null;
 
     #[ORM\ManyToOne(targetEntity: WaiverMileageRates::class, inversedBy: "infosRequests")]
-    #[ORM\JoinColumn(name: "waiver_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL", onUpdate: "CASCADE")]
+    #[ORM\JoinColumn(name: "waiver_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?WaiverMileageRates $waiverMileageRate = null;
 
     #[ORM\ManyToOne(targetEntity: KmMileageRates::class, inversedBy: "infosRequests")]
-    #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL", onUpdate: "CASCADE")]
+    #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?KmMileageRates $kmMileageRate = null;
 
     public function getId(): ?int
@@ -105,6 +105,7 @@ class InfosRequests
         $this->user = $user;
         return $this;
     }
+    
     public function getWaiverMileageRate(): ?WaiverMileageRates
     {
         return $this->waiverMileageRate;
