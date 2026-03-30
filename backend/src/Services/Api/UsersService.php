@@ -38,7 +38,7 @@ class UsersService
     return $userData;
   }
 
-  public function createUser($data)
+  public function addUser($data)
   {
     $user = new Users();
     $user->setName($data['name']);
@@ -49,5 +49,26 @@ class UsersService
     $this->entityManager->flush();
 
     return $user;
+  }
+
+  public function setUser($data, int $id)
+  {
+    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    if (!$user) return;
+    $user->setName($data['name']);
+    $user->setEmail($data['email']);
+    $user->setRole(Role::from($data['role']));
+    $this->entityManager->flush();
+    return $user;
+  }
+
+  public function deleteUser(int $id)
+  {
+    $user = $this->usersRepository->findOneBy(['id' => $id]);
+    if (!$user) return;
+    $this->entityManager->remove($user);
+    $this->entityManager->flush();
+
+    return true;
   }
 }
