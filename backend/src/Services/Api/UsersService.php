@@ -31,7 +31,7 @@ class UsersService
 
   public function getUser(int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER' && $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if (($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
     $userData = [

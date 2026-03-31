@@ -18,7 +18,7 @@ class JsonLoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $session = $request->getSession();
         $session->start();
 
-        /** @var User $user */
+        /** @var Users $user */
         $user = $token->getUser();
 
         $session->set('user_id', $user->getId());

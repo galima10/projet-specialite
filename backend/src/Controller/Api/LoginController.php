@@ -35,6 +35,13 @@ final class LoginController extends AbstractController
     return $this->json(['message' => 'ok']);
   }
 
+  #[Route('/logout', name: 'api_logout', methods: ['POST'])]
+  public function logout(): JsonResponse
+  {
+    // jamais exécuté : intercepté par logout listener
+    return $this->json(['message' => 'ok']);
+  }
+
   #[Route('/register', name: 'api_register', methods: ['POST'])]
   public function register(Request $request, LoginService $loginService): JsonResponse
   {
