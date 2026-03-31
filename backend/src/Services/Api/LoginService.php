@@ -16,14 +16,16 @@ class LoginService
     private EntityManagerInterface $entityManager,
   ) {}
 
-  public function addUser($data)
+  public function registerUser($data)
   {
+    $userCount = $this->usersRepository->count([]);
     $user = $this->usersRepository->findOneBy(['email' => $data['email']]);
     if ($user) return;
     $user = new Users();
     $user->setName($data['name']);
     $user->setEmail($data['email']);
-    $user->setRole(Role::from('MEMBER'));
+    if ($userCount === 0) $user->setRole(Role::from($data['role']));
+    else $user->setRole(Role::from('MEMBER'));
     $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
     $user->setPassword($hashedPassword);
     $this->entityManager->persist($user);

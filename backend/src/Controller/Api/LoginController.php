@@ -42,7 +42,7 @@ final class LoginController extends AbstractController
     if (!$data || !isset($data['name'], $data['email'], $data['password'])) {
       return $this->json(['error' => 'Missing parameters'], 400);
     }
-    $user = $loginService->addUser($data);
+    $user = $loginService->registerUser($data);
     if (!$user) {
       return $this->json(['error' => 'User already exists'], 409);
     }

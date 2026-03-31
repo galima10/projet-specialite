@@ -66,7 +66,6 @@ class InfosRequestsService
     $request = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
     if ($request) return;
     $request = new InfosRequests();
-    $request->setCreatedAt($data['createdAt']);
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);
@@ -93,7 +92,6 @@ class InfosRequestsService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
-    $request->setCreatedAt($data['createdAt']);
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);

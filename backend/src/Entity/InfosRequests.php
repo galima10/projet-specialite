@@ -49,6 +49,13 @@ class InfosRequests
     #[ORM\JoinColumn(name: "expenses_list_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
     private ?ExpensesLists $expensesList = null;
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
 
     public function getId(): ?int
     {
@@ -58,13 +65,6 @@ class InfosRequests
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getReason(): ?string
@@ -124,7 +124,7 @@ class InfosRequests
         $this->waiverMileageRate = $waiverMileageRate;
         return $this;
     }
-    
+
     public function getKmMileageRate(): ?KmMileageRates
     {
         return $this->kmMileageRate;
@@ -146,5 +146,4 @@ class InfosRequests
         $this->expensesList = $expensesList;
         return $this;
     }
-
 }

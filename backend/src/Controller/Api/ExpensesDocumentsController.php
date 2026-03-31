@@ -15,7 +15,7 @@ final class ExpensesDocumentsController extends AbstractController
   public function documents_get(ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
     $currentUser = $this->getUser();
-    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    
     $documents = $expensesDocumentsService->getDocuments($currentUser);
     if (!$documents) return $this->json(['error' => 'Documents not found'], 404);
     return $this->json($documents, 200);
@@ -25,7 +25,7 @@ final class ExpensesDocumentsController extends AbstractController
   public function document_get(ExpensesDocumentsService $expensesDocumentsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    
     $document = $expensesDocumentsService->getDocument($id, $currentUser);
     if (!$document) return $this->json(['error' => 'Document not found'], 404);
     return $this->json($document, 200);
@@ -35,7 +35,7 @@ final class ExpensesDocumentsController extends AbstractController
   public function document_create(Request $request, ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
     $currentUser = $this->getUser();
-    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    
     $data = json_decode($request->getContent(), true);
     $document = $expensesDocumentsService->addDocument($data);
     if (!$document) return $this->json(['error' => 'Document already exists'], 409);
@@ -46,7 +46,7 @@ final class ExpensesDocumentsController extends AbstractController
   public function document_update(Request $request, ExpensesDocumentsService $expensesDocumentsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    
     $data = json_decode($request->getContent(), true);
     $document = $expensesDocumentsService->setDocument($data, $id, $currentUser);
     if (!$document) return $this->json(['error' => 'Document not found']);
@@ -57,7 +57,7 @@ final class ExpensesDocumentsController extends AbstractController
   public function document_delete(ExpensesDocumentsService $expensesDocumentsService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    
     $deleted = $expensesDocumentsService->deleteDocument($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Document not found'], 404);
 

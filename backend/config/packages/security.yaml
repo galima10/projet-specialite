@@ -30,11 +30,10 @@ security:
 
             pattern: ^/api
             provider: app_user_provider
-            form_login:
-                login_path: /api/login
+            json_login:
                 check_path: /api/login
-                username_parameter: email
-                password_parameter: password
+                username_path: email
+                password_path: password
             logout:
                 path: /api/logout
                 invalidate_session: true
