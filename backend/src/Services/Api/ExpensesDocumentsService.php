@@ -7,6 +7,7 @@ use App\Repository\ExpensesListsRepository;
 use App\Entity\ExpensesDocuments;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\InfosRequestsRepository;
+use App\Entity\Users;
 
 class ExpensesDocumentsService
 {
@@ -17,35 +18,41 @@ class ExpensesDocumentsService
     private InfosRequestsRepository $infos_requests_repository
   ) {}
 
-  private function getUserDocumentById(int $id, $user)
+  private function getUserDocumentById(int $id, Users $user): ?array
   {
     $infosRequests = $this->infos_requests_repository->findBy(['user' => $user]);
-    if (!$infosRequests) return;
-    $lists = array_map(fn($r) => $r->getExpensesList(), $infosRequests);
+    if (!$infosRequests) return null;
+    $lists = [];
+    foreach ($infosRequests as $request) {
+      $lists = array_merge($lists, $request->getExpensesLists()->toArray());
+    }
     $lists = array_unique($lists, SORT_REGULAR);
-    if (!$lists) return;
+    if (!$lists) return null;
     $document = $this->expenses_documents_repository->find($id);
-    if (!$document) return;
+    if (!$document) return null;
 
     return in_array($document->getExpensesList(), $lists, true) ? $document : null;
   }
 
-  public function getDocuments($currentUser)
+  public function getDocuments(Users $currentUser): ?array
   {
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
       $documents = $this->expenses_documents_repository->findAll();
     } else {
       $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-      if (!$infosRequests) return [];
-      $lists = array_map(fn($r) => $r->getExpensesList(), $infosRequests);
+      if (!$infosRequests) return null;
+      $lists = [];
+      foreach ($infosRequests as $request) {
+        $lists = array_merge($lists, $request->getExpensesLists()->toArray());
+      }
       $lists = array_unique($lists, SORT_REGULAR);
-      if (!$lists) return;
+      if (!$lists) return null;
       $documents = array_filter(
         $this->expenses_documents_repository->findAll(),
         fn($d) => in_array($d->getExpensesList(), $lists, true)
       );
     }
-    if (!$documents) return;
+    if (!$documents) return null;
     return array_map(fn($d) => [
       'id' => $d->getId(),
       'name' => $d->getName(),
@@ -54,12 +61,12 @@ class ExpensesDocumentsService
     ], $documents);
   }
 
-  public function getDocument(int $id, $currentUser)
+  public function getDocument(int $id, Users $currentUser): ?array
   {
     $document = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
-    if (!$document) return;
+    if (!$document) return null;
     return [
       'id' => $document->getId(),
       'name' => $document->getName(),
@@ -68,15 +75,15 @@ class ExpensesDocumentsService
     ];
   }
 
-  public function addDocument($data)
+  public function addDocument(array $data): ?array
   {
-    $existingDocument = $this->expenses_documents_repository->findOneBy(['pathFile' => $data['pathFile']]);
-    if ($existingDocument) return;
+    $existingDocument = $this->expenses_documents_repository->findOneBy(['name' => $data['name']]);
+    if ($existingDocument) return null;
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
     $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
-    if (!$expensesList) return;
+    if (!$expensesList) return null;
     $document->setExpensesList($expensesList);
     $this->entityManager->persist($document);
     $this->entityManager->flush();
@@ -88,16 +95,16 @@ class ExpensesDocumentsService
     ];
   }
 
-  public function setDocument($data, int $id, $currentUser)
+  public function setDocument(array $data, int $id, Users $currentUser): ?array
   {
     $document = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
-    if (!$document) return;
+    if (!$document) return null;
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
     $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
-    if (!$expensesList) return;
+    if (!$expensesList) return null;
     $document->setExpensesList($expensesList);
     $this->entityManager->flush();
     return [
@@ -108,12 +115,12 @@ class ExpensesDocumentsService
     ];
   }
 
-  public function deleteDocument(int $id, $currentUser)
+  public function deleteDocument(int $id, Users $currentUser): ?bool
   {
     $document = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
-    if (!$document) return;
+    if (!$document) return null;
     $this->entityManager->remove($document);
     $this->entityManager->flush();
     return true;

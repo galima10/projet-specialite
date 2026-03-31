@@ -16,11 +16,11 @@ class LoginService
     private EntityManagerInterface $entityManager,
   ) {}
 
-  public function registerUser($data)
+  public function registerUser(array $data): ?array
   {
     $userCount = $this->usersRepository->count([]);
     $user = $this->usersRepository->findOneBy(['email' => $data['email']]);
-    if ($user) return;
+    if ($user) return null;
     $user = new Users();
     $user->setName($data['name']);
     $user->setEmail($data['email']);

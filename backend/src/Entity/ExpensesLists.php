@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\ExpensesDocuments;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ExpensesListsRepository::class)]
 class ExpensesLists
@@ -33,8 +34,9 @@ class ExpensesLists
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2, nullable: true)]
     private ?string $othersCost = null;
 
-    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: InfosRequests::class)]
-    private Collection $infosRequests;
+    #[ORM\ManyToOne(targetEntity: InfosRequests::class, inversedBy: "expensesLists")]
+    #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
+    private ?InfosRequests $infosRequest = null;
 
     #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesDocuments::class)]
     private Collection $expensesDocuments;
@@ -107,15 +109,27 @@ class ExpensesLists
     public function __construct()
     {
         $this->expensesDocuments = new ArrayCollection();
-        $this->infosRequests = new ArrayCollection();
     }
 
     public function getExpensesDocuments(): Collection
     {
         return $this->expensesDocuments;
     }
-    public function getInfosRequests(): Collection
+
+    #[Groups(['documents:read'])]
+    public function getInfosRequestId(): ?int
     {
-        return $this->infosRequests;
+        return $this->infosRequest->getId();
+    }
+
+    public function getInfosRequest(): ?InfosRequests
+    {
+        return $this->infosRequest;
+    }
+
+    public function setInfosRequest(InfosRequests $infosRequest): static
+    {
+        $this->infosRequest = $infosRequest;
+        return $this;
     }
 }

@@ -15,7 +15,6 @@ final class UsersController extends AbstractController
   public function users_get(UsersService $usersService): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $users = $usersService->getUsers($currentUser);
     if ($users === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
     if (!$users) return $this->json(['error' => 'Users not found'], 404);
@@ -36,7 +35,6 @@ final class UsersController extends AbstractController
   public function user_create(Request $request, UsersService $usersService): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $data = json_decode($request->getContent(), true);
     $user = $usersService->addUser($data, $currentUser);
     if (!$user) return $this->json(['error' => 'User already exists'], 404);
@@ -48,7 +46,6 @@ final class UsersController extends AbstractController
   public function user_update(Request $request, UsersService $usersService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $data = json_decode($request->getContent(), true);
     $user = $usersService->setUser($data, $id, $currentUser);
     if (!$user) return $this->json(['error' => 'User not found'], 404);
@@ -60,7 +57,6 @@ final class UsersController extends AbstractController
   public function user_delete(UsersService $usersService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $deleted = $usersService->deleteUser($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'User not found'], 404);
     if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);

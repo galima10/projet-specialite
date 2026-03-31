@@ -14,8 +14,6 @@ final class WaiverMileageRatesController extends AbstractController
   #[Route('/', name: 'rates_get', methods: ['GET'])]
   public function rates_get(WaiverMileageRatesService $waiverMileageRatesService): JsonResponse
   {
-    $currentUser = $this->getUser();
-    
     $rates = $waiverMileageRatesService->getRates();
     if (!$rates) return $this->json(['error' => 'Rates not found'], 404);
     return $this->json($rates, 200);
@@ -24,8 +22,6 @@ final class WaiverMileageRatesController extends AbstractController
   #[Route('/{id}', name: 'rate_get', requirements: ['id' => '\d+'], methods: ['GET'])]
   public function rate_get(WaiverMileageRatesService $waiverMileageRatesService, $id): JsonResponse
   {
-    $currentUser = $this->getUser();
-    
     $rate = $waiverMileageRatesService->getRate($id);
     if (!$rate) return $this->json(['error' => 'Rate not found'], 404);
     return $this->json($rate, 200);
@@ -35,7 +31,6 @@ final class WaiverMileageRatesController extends AbstractController
   public function rate_create(Request $request, WaiverMileageRatesService $waiverMileageRatesService): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $data = json_decode($request->getContent(), true);
     $rate = $waiverMileageRatesService->addRate($data, $currentUser);
     if (!$rate) return $this->json(['error' => 'Rate already exists'], 409);
@@ -47,7 +42,6 @@ final class WaiverMileageRatesController extends AbstractController
   public function rate_update(Request $request, WaiverMileageRatesService $waiverMileageRatesService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $data = json_decode($request->getContent(), true);
     $rate = $waiverMileageRatesService->setRate($data, $id, $currentUser);
     if (!$rate) return $this->json(['error' => 'Rate not found']);
@@ -59,7 +53,6 @@ final class WaiverMileageRatesController extends AbstractController
   public function document_delete(WaiverMileageRatesService $waiverMileageRatesService, $id): JsonResponse
   {
     $currentUser = $this->getUser();
-    
     $deleted = $waiverMileageRatesService->deleteRate($id, $currentUser);
     if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
     if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);

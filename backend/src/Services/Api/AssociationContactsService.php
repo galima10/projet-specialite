@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Services\Api;
+
+use App\Repository\AssociationContactsRepository;
+use App\Entity\AssociationContacts;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Users;
+
+class AssociationContactsService
+{
+  public function __construct(
+    private EntityManagerInterface $entityManager,
+    private AssociationContactsRepository $association_contacts_repository
+  ) {}
+
+  public function getContacts(): ?array
+  {
+    $contacts = $this->association_contacts_repository->findAll();
+    if (!$contacts) return null;
+    return array_map(fn($c) => [
+      'id' => $c->getId(),
+      'label' => $c->getLabel(),
+      'email' => $c->getContactEmail(),
+    ], $contacts);
+  }
+
+  public function getContact(int $id): ?array
+  {
+    $contact = $this->association_contacts_repository->find($id);
+    if (!$contact) return null;
+    return [
+      'id' => $contact->getId(),
+      'label' => $contact->getLabel(),
+      'email' => $contact->getContactEmail(),
+    ];
+  }
+
+  public function addContact(array $data, Users $currentUser): array|string|null
+  {
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
+    $existingContacts = $this->association_contacts_repository->findOneBy(['name' => $data['name']]);
+    if ($existingContacts) return null;
+    $contact = new AssociationContacts();
+    $contact->setLabel($data['label']);
+    $contact->setContactEmail($data['email']);
+    $this->entityManager->persist($contact);
+    $this->entityManager->flush();
+    return [
+      'id' => $contact->getId(),
+      'label' => $contact->getLabel(),
+      'email' => $contact->getContactEmail(),
+    ];
+  }
+
+  public function setContact(array $data, int $id, Users $currentUser): array|string|null
+  {
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
+    $contact = $this->association_contacts_repository->find($$data['id']);
+    if (!$contact) return null;
+    $contact->setLabel($data['label']);
+    $contact->setContactEmail($data['email']);
+    $this->entityManager->flush();
+    return [
+      'id' => $contact->getId(),
+      'label' => $contact->getLabel(),
+      'email' => $contact->getContactEmail(),
+    ];
+  }
+
+  public function deleteContact(int $id, Users $currentUser): ?bool
+  {
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
+    $contact = $this->association_contacts_repository->find($id);
+    if (!$contact) return null;
+    $this->entityManager->remove($contact);
+    $this->entityManager->flush();
+    return true;
+  }
+}

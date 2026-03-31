@@ -6,10 +6,9 @@ use App\Repository\InfosRequestsRepository;
 use App\Repository\UsersRepository;
 use App\Repository\WaiverMileageRatesRepository;
 use App\Repository\KmMileageRatesRepository;
-use App\Repository\ExpensesListsRepository;
 use App\Entity\InfosRequests;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Enum\Budget;
+use App\Entity\Users;
 
 class InfosRequestsService
 {
@@ -19,14 +18,13 @@ class InfosRequestsService
     private UsersRepository $users_repository,
     private WaiverMileageRatesRepository $waiver_mileage_rates_repository,
     private KmMileageRatesRepository $km_mileage_rates_repository,
-    private ExpensesListsRepository $expenses_lists_repository,
   ) {}
 
-  public function getRequests($currentUser)
+  public function getRequests(Users $currentUser): array|string|null
   {
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
     $requests = $this->infos_requests_repository->findAll();
-    if (!$requests) return;
+    if (!$requests) return null;
     return array_map(fn($r) => [
       'id' => $r->getId(),
       'createdAt' => $r->getCreatedAt(),
@@ -36,14 +34,13 @@ class InfosRequestsService
       'userId' => $r->getUser()->getId(),
       'waiverMileageRateId' => $r->getWaiverMileageRate()->getId(),
       'kmMileageRateId' => $r->getKmMileageRate()->getId(),
-      'expensesListId' => $r->getExpensesList()->getId(),
     ], $requests);
   }
 
-  public function getRequest(int $id, $currentUser)
+  public function getRequest(int $id, Users $currentUser): array|string|null
   {
     $request = $this->infos_requests_repository->find($id);
-    if (!$request) return;
+    if (!$request) return null;
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     return [
       'id' => $request->getId(),
@@ -54,14 +51,13 @@ class InfosRequestsService
       'userId' => $request->getUserId(),
       'waiverMileageRateId' => $request->getWaiverMileageRateId(),
       'kmMileageRateId' => $request->getKmMileageRateId(),
-      'expensesListId' => $request->getExpensesListId(),
     ];
   }
 
-  public function addRequest($data, $currentUser)
+  public function addRequest(array $data, Users $currentUser): array|string|null
   {
     $existingRequest = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
-    if ($existingRequest) return;
+    if ($existingRequest) return null;
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = new InfosRequests();
     $request->setReason($data['reason']);
@@ -69,14 +65,11 @@ class InfosRequestsService
     $request->setAmountWaiver($data['amount_waiver']);
     $request->setUser($currentUser);
     $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
-    if (!$waiverMileageRate) return;
+    if (!$waiverMileageRate) return null;
     $request->setWaiverMileageRate($waiverMileageRate);
     $kmMileageRate = $this->km_mileage_rates_repository->find($data['kmMileageRateId']);
-    if (!$kmMileageRate) return;
+    if (!$kmMileageRate) return null;
     $request->setKmMileageRate($kmMileageRate);
-    $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
-    if (!$expensesList) return;
-    $request->setExpensesList($expensesList);
     $this->entityManager->persist($request);
     $this->entityManager->flush();
     return [
@@ -88,30 +81,26 @@ class InfosRequestsService
       'userId' => $request->getUserId(),
       'waiverMileageRateId' => $request->getWaiverMileageRateId(),
       'kmMileageRateId' => $request->getKmMileageRateId(),
-      'expensesListId' => $request->getExpensesListId(),
     ];
   }
 
-  public function setRequest($data, int $id, $currentUser)
+  public function setRequest(array $data, int $id, Users $currentUser): array|string|null
   {
     $request = $this->infos_requests_repository->find($id);
-    if (!$request) return;
+    if (!$request) return null;
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);
     $user = $this->users_repository->find($data['userId']);
-    if (!$user) return;
+    if (!$user) return null;
     $request->setUser($user);
     $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
-    if (!$waiverMileageRate) return;
+    if (!$waiverMileageRate) return null;
     $request->setWaiverMileageRate($waiverMileageRate);
     $kmMileageRate = $this->km_mileage_rates_repository->find($data['kmMileageRateId']);
-    if (!$kmMileageRate) return;
+    if (!$kmMileageRate) return null;
     $request->setKmMileageRate($kmMileageRate);
-    $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
-    if (!$expensesList) return;
-    $request->setExpensesList($expensesList);
     $this->entityManager->flush();
     return [
       'id' => $request->getId(),
@@ -122,14 +111,13 @@ class InfosRequestsService
       'userId' => $request->getUserId(),
       'waiverMileageRateId' => $request->getWaiverMileageRateId(),
       'kmMileageRateId' => $request->getKmMileageRateId(),
-      'expensesListId' => $request->getExpensesListId(),
     ];
   }
 
-  public function deleteRequest(int $id, $currentUser)
+  public function deleteRequest(int $id, Users $currentUser): ?bool
   {
     $request = $this->infos_requests_repository->find($id);
-    if (!$request) return;
+    if (!$request) return null;
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$request->getUser()->getId()) return 'Forbidden';
     $this->entityManager->remove($request);
     $this->entityManager->flush();

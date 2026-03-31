@@ -28,14 +28,12 @@ final class LoginController extends AbstractController
   #[Route('/login', name: 'api_login', methods: ['POST'])]
   public function login(): JsonResponse
   {
-    // jamais exécuté : intercepté par json_login
     return $this->json(['message' => 'ok']);
   }
 
   #[Route('/logout', name: 'api_logout', methods: ['POST'])]
   public function logout(): JsonResponse
   {
-    // jamais exécuté : intercepté par logout listener
     return $this->json(['message' => 'ok']);
   }
 
@@ -43,15 +41,14 @@ final class LoginController extends AbstractController
   public function register(Request $request, LoginService $loginService): JsonResponse
   {
     $data = json_decode($request->getContent(), true);
-
     if (!$data || !isset($data['name'], $data['email'], $data['password'])) {
       return $this->json(['error' => 'Missing parameters'], 400);
     }
+    /** @var Users|null $user */
     $user = $loginService->registerUser($data);
     if (!$user) {
       return $this->json(['error' => 'User already exists'], 409);
     }
-
     return $this->json([
       'id' => $user->getId(),
       'name' => $user->getName(),

@@ -2,28 +2,28 @@
 
 namespace App\Entity;
 
-use App\Entity\ExpensesLists;
-use App\Repository\ExpensesDocumentsRepository;
+use App\Repository\ExpensesReportsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\InfosRequests;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-#[ORM\Entity(repositoryClass: ExpensesDocumentsRepository::class)]
-class ExpensesDocuments
+#[ORM\Entity(repositoryClass: ExpensesReportsRepository::class)]
+class ExpensesReports
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $pathFile = null;
 
-    #[ORM\ManyToOne(targetEntity: ExpensesLists::class, inversedBy: "expensesDocuments")]
-    #[ORM\JoinColumn(name: "expenses_list_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
-    private ?ExpensesLists $expensesList = null;
+    #[ORM\ManyToOne(targetEntity: InfosRequests::class, inversedBy: "expensesReports")]
+    #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
+    private ?InfosRequests $infosRequest = null;
 
     public function getId(): ?int
     {
@@ -54,20 +54,20 @@ class ExpensesDocuments
         return $this;
     }
 
-    public function getExpensesList(): ?ExpensesLists
-    {
-        return $this->expensesList;
-    }
-
     #[Groups(['documents:read'])]
-    public function getExpensesListId(): ?int
+    public function getInfosRequestId(): ?int
     {
-        return $this->expensesList->getId();
+        return $this->infosRequest->getId();
     }
 
-    public function setExpensesList(ExpensesLists $expensesList): static
+    public function getInfosRequest(): ?InfosRequests
     {
-        $this->expensesList = $expensesList;
+        return $this->infosRequest;
+    }
+
+    public function setInfosRequest(InfosRequests $infosRequest): static
+    {
+        $this->infosRequest = $infosRequest;
         return $this;
     }
 }

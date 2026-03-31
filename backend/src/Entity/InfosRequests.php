@@ -11,6 +11,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\ExpensesLists;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\ExpensesReports;
 
 #[ORM\Entity(repositoryClass: InfosRequestsRepository::class)]
 class InfosRequests
@@ -44,9 +47,11 @@ class InfosRequests
     #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?KmMileageRates $kmMileageRate = null;
 
-    #[ORM\ManyToOne(targetEntity: ExpensesLists::class, inversedBy: "infosRequests")]
-    #[ORM\JoinColumn(name: "expenses_list_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
-    private ?ExpensesLists $expensesList = null;
+    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesLists::class)]
+    private Collection $expensesLists;
+
+    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesReports::class)]
+    private Collection $expensesReports;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -54,6 +59,12 @@ class InfosRequests
         if ($this->createdAt === null) {
             $this->createdAt = new \DateTimeImmutable();
         }
+    }
+
+    public function __construct()
+    {
+        $this->expensesLists = new ArrayCollection();
+        $this->expensesReports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -153,20 +164,13 @@ class InfosRequests
         return $this;
     }
 
-    #[Groups(['documents:read'])]
-    public function getExpensesListId(): ?int
+    public function getExpensesLists(): Collection
     {
-        return $this->expensesList->getId();
-    }
-
-    public function getExpensesList(): ?ExpensesLists
+        return $this->expensesLists;
+    
+        }
+    public function getExpensesReports(): Collection
     {
-        return $this->expensesList;
-    }
-
-    public function setExpensesList(ExpensesLists $expensesList): static
-    {
-        $this->expensesList = $expensesList;
-        return $this;
+        return $this->expensesReports;
     }
 }

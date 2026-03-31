@@ -5,6 +5,7 @@ namespace App\Services\Api;
 use App\Repository\WaiverMileageRatesRepository;
 use App\Entity\WaiverMileageRates;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Users;
 
 class WaiverMileageRatesService
 {
@@ -13,10 +14,10 @@ class WaiverMileageRatesService
     private WaiverMileageRatesRepository $waiver_mileage_rates_repository
   ) {}
 
-  public function getRates()
+  public function getRates(): ?array
   {
     $rates = $this->waiver_mileage_rates_repository->findAll();
-    if (!$rates) return;
+    if (!$rates) return null;
     return array_map(fn($r) => [
       'id' => $r->getId(),
       'label' => $r->getLabel(),
@@ -24,10 +25,10 @@ class WaiverMileageRatesService
     ], $rates);
   }
 
-  public function getRate(int $id)
+  public function getRate(int $id): ?array
   {
     $rate = $this->waiver_mileage_rates_repository->find($id);
-    if (!$rate) return;
+    if (!$rate) return null;
     return [
       'id' => $rate->getId(),
       'label' => $rate->getLabel(),
@@ -35,11 +36,11 @@ class WaiverMileageRatesService
     ];
   }
 
-  public function addRate($data, $currentUser)
+  public function addRate(array $data, Users $currentUser): array|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $existingRate = $this->waiver_mileage_rates_repository->findOneBy(['label' => $data['label']]);
-    if ($existingRate) return;
+    if ($existingRate) return null;
     $rate = new WaiverMileageRates();
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
@@ -52,11 +53,11 @@ class WaiverMileageRatesService
     ];
   }
 
-  public function setRate($data, int $id, $currentUser)
+  public function setRate($data, int $id, Users $currentUser): array|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $rate = $this->waiver_mileage_rates_repository->find($id);
-    if (!$rate) return;
+    if (!$rate) return null;
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
     $this->entityManager->flush();
@@ -67,11 +68,11 @@ class WaiverMileageRatesService
     ];
   }
 
-  public function deleteRate(int $id, $currentUser)
+  public function deleteRate(int $id, $currentUser): ?bool
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $rate = $this->waiver_mileage_rates_repository->find($id);
-    if (!$rate) return;
+    if (!$rate) return null;
     $this->entityManager->remove($rate);
     $this->entityManager->flush();
     return true;
