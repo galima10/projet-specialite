@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/waiver-mileage-rates', name: 'api_waiver_mileage_rates')]
+#[Route('/api/infos-requests', name: 'api_infos_requests')]
 final class InfosRequestsController extends AbstractController
 {
   #[Route('/', name: 'requests_get', methods: ['GET'])]
