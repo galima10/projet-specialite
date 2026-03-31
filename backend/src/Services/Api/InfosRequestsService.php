@@ -63,14 +63,12 @@ class InfosRequestsService
   public function addRequest($data, $currentUser)
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
-    $request = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
-    if ($request) return;
+    $existingRequest = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
+    if ($existingRequest) return;
     $request = new InfosRequests();
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);
-    // $user = $this->users_repository->find($data['userId']);
-    // if (!$user) return;
     $request->setUser($currentUser);
     $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
     if (!$waiverMileageRate) return;

@@ -40,7 +40,7 @@ class ExpensesListsService
     if (!$lists) return;
     $listsData = array_map(fn($l) => [
       'id' => $l->getId(),
-      'date' => $l->getExpenseDate(),
+      'date' => $l->getExpenseDateFormatted(),
       'object' => $l->getExpenseObject(),
       'km' => $l->getKilometers(),
       'transportCost' => $l->getTransportMiscCost(),
@@ -57,7 +57,7 @@ class ExpensesListsService
     if (!$list) return;
     $listData = [
       'id' => $list->getId(),
-      'date' => $list->getExpenseDate(),
+      'date' => $list->getExpenseDateFormatted(),
       'object' => $list->getExpenseObject(),
       'km' => $list->getKilometers(),
       'transportCost' => $list->getTransportMiscCost(),
@@ -68,10 +68,11 @@ class ExpensesListsService
 
   public function addList($data)
   {
-    $list = $this->expenses_lists_repository->findOneBy(['object' => $data['object']]);
-    if ($list) return;
+    $existingList = $this->expenses_lists_repository->findOneBy(['expenseObject' => $data['object']]);
+    if ($existingList) return;
     $list = new ExpensesLists();
-    $list->setExpenseDate($data['date']);
+    $expenseDate = new \DateTimeImmutable($data['date']);
+    $list->setExpenseDate($expenseDate);
     $list->setExpenseObject($data['object']);
     $list->setKilometers($data['km']);
     $list->setTransportMiscCost($data['transportCost']);
@@ -86,10 +87,11 @@ class ExpensesListsService
   public function setList($data, int $id, $currentUser)
   {
     $list = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-    ? $this->expenses_lists_repository->find($id)
-    : $this->getUserListById($id, $currentUser);
+      ? $this->expenses_lists_repository->find($id)
+      : $this->getUserListById($id, $currentUser);
     if (!$list) return;
-    $list->setExpenseDate($data['date']);
+    $expenseDate = new \DateTimeImmutable($data['date']);
+    $list->setExpenseDate($expenseDate);
     $list->setExpenseObject($data['object']);
     $list->setKilometers($data['km']);
     $list->setTransportMiscCost($data['transportCost']);
@@ -101,8 +103,8 @@ class ExpensesListsService
   public function deleteList(int $id, $currentUser)
   {
     $list = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-    ? $this->expenses_lists_repository->find($id)
-    : $this->getUserListById($id, $currentUser);
+      ? $this->expenses_lists_repository->find($id)
+      : $this->getUserListById($id, $currentUser);
     if (!$list) return;
     $this->entityManager->remove($list);
     $this->entityManager->flush();

@@ -72,8 +72,8 @@ class ExpensesDocumentsService
 
   public function addDocument($data)
   {
-    $document = $this->expenses_documents_repository->findOneBy(['pathFile' => $data['pathFile']]);
-    if ($document) return;
+    $existingDocument = $this->expenses_documents_repository->findOneBy(['pathFile' => $data['pathFile']]);
+    if ($existingDocument) return;
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);

@@ -40,8 +40,8 @@ class KmMileageRatesService
   public function addRate($data, $currentUser)
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
-    $rate = $this->km_mileage_rates_repository->findOneBy(['label' => $data['label']]);
-    if ($rate) return;
+    $existingRate = $this->km_mileage_rates_repository->findOneBy(['label' => $data['label']]);
+    if ($existingRate) return;
     $rate = new KmMileageRates();
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);

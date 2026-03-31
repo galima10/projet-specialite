@@ -8,16 +8,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Services\Api\LoginService;
 use App\Entity\Users;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api', name: 'api_login_logout')]
 final class LoginController extends AbstractController
 {
   #[Route('/me', name: 'api_me', methods: ['GET'])]
-  public function me(Request $request): JsonResponse
+  public function me(): JsonResponse
   {
-    $session = $request->getSession();   // <--- ceci démarre la session si elle n'existe pas
-    $session->start();
     /** @var Users|null $user */
     $user = $this->getUser();
     return $this->json([

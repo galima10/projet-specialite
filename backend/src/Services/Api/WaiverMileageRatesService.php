@@ -40,8 +40,8 @@ class WaiverMileageRatesService
   public function addRate($data, $currentUser)
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
-    $rate = $this->waiver_mileage_rates_repository->findOneBy(['label' => $data['label']]);
-    if ($rate) return;
+    $existingRate = $this->waiver_mileage_rates_repository->findOneBy(['label' => $data['label']]);
+    if ($existingRate) return;
     $rate = new WaiverMileageRates();
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
