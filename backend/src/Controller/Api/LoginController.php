@@ -8,30 +8,31 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Services\Api\LoginService;
 use App\Entity\Users;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api', name: 'api_login_logout')]
 final class LoginController extends AbstractController
 {
-  #[Route('/login', name: 'api_login', methods: ['POST'])]
-  public function login(): JsonResponse
+  #[Route('/me', name: 'api_me', methods: ['GET'])]
+  public function me(Request $request): JsonResponse
   {
+    $session = $request->getSession();   // <--- ceci démarre la session si elle n'existe pas
+    $session->start();
     /** @var Users|null $user */
     $user = $this->getUser();
-
-    if (!$user) return $this->json(['error' => 'Not connected'], 401);
-
     return $this->json([
-      'id' => $user->getId(),
-      'name' => $user->getName(),
-      'role' => $user->getRole()->value
+      'id' => $user?->getId(),
+      'email' => $user?->getEmail(),
+      'role' => $user?->getRole()?->value,
     ]);
   }
 
-  #[Route('/logout', name: 'api_logout', methods: ['POST'])]
-  public function logout(): void
+
+  #[Route('/login', name: 'api_login', methods: ['POST'])]
+  public function login(): JsonResponse
   {
-    // Symfony gère tout : invalide la session et déconnecte l'utilisateur
-    throw new \LogicException('This method can be blank - it will be intercepted by the logout key on the firewall.');
+    // jamais exécuté : intercepté par json_login
+    return $this->json(['message' => 'ok']);
   }
 
   #[Route('/register', name: 'api_register', methods: ['POST'])]

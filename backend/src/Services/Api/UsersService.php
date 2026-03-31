@@ -6,14 +6,14 @@ use App\Repository\UsersRepository;
 use App\Entity\Users;
 use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UsersService
 {
   public function __construct(
     private EntityManagerInterface $entityManager,
     private UsersRepository $usersRepository,
-    private UserPasswordHasher $passwordHasher
+    private UserPasswordHasherInterface $passwordHasher
   ) {}
 
   public function getUsers($currentUser)

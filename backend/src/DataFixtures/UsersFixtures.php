@@ -17,7 +17,7 @@ class UsersFixtures extends Fixture
         $user1 = new Users;
         $user1->setName('Utilisateur 1');
         $user1->setEmail('utilisateur1@gmail.com');
-        $user1->setRole(Role::MEMBER);
+        $user1->setRole(Role::from('ROLE_MEMBER'));
 
         $manager->persist($user1);
 

@@ -18,6 +18,10 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        # register:
+        #     pattern: ^/api/register
+        #     stateless: false
+        #     security: false
         main:
             lazy: true
             # provider: users_in_memory
@@ -34,6 +38,7 @@ security:
                 check_path: /api/login
                 username_path: email
                 password_path: password
+                success_handler: App\Security\JsonLoginSuccessHandler
             logout:
                 path: /api/logout
                 invalidate_session: true
@@ -41,8 +46,8 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS  }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS  }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
