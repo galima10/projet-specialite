@@ -10,6 +10,7 @@ use App\Repository\InfosRequestsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\ExpensesLists;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: InfosRequestsRepository::class)]
 class InfosRequests
@@ -101,6 +102,12 @@ class InfosRequests
         return $this;
     }
 
+    #[Groups(['documents:read'])]
+    public function getUserId(): ?int
+    {
+        return $this->user->getId();
+    }
+
     public function getUser(): ?Users
     {
         return $this->user;
@@ -110,6 +117,12 @@ class InfosRequests
     {
         $this->user = $user;
         return $this;
+    }
+
+    #[Groups(['documents:read'])]
+    public function getWaiverMileageRateId(): ?int
+    {
+        return $this->waiverMileageRate->getId();
     }
 
     public function getWaiverMileageRate(): ?WaiverMileageRates
@@ -123,6 +136,12 @@ class InfosRequests
         return $this;
     }
 
+    #[Groups(['documents:read'])]
+    public function getKmMileageRateId(): ?int
+    {
+        return $this->kmMileageRate->getId();
+    }
+
     public function getKmMileageRate(): ?KmMileageRates
     {
         return $this->kmMileageRate;
@@ -132,6 +151,12 @@ class InfosRequests
     {
         $this->kmMileageRate = $kmMileageRate;
         return $this;
+    }
+
+    #[Groups(['documents:read'])]
+    public function getExpensesListId(): ?int
+    {
+        return $this->expensesList->getId();
     }
 
     public function getExpensesList(): ?ExpensesLists

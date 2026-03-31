@@ -18,7 +18,7 @@ class UsersService
 
   public function getUsers($currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
     $users = $this->usersRepository->findAll();
     if (!$users) return;
     $usersData = array_map(fn($u) => [
@@ -31,15 +31,14 @@ class UsersService
 
   public function getUser(int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
-    $userData = [
+    return [
       'id' => $user->getId(),
       'name' => $user->getName(),
       'email' => $user->getEmail(),
     ];
-    return $userData;
   }
 
   public function addUser($data, $currentUser)
@@ -61,7 +60,7 @@ class UsersService
 
   public function setUser($data, int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
     $user->setName($data['name']);
@@ -73,12 +72,11 @@ class UsersService
 
   public function deleteUser(int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return;
     $this->entityManager->remove($user);
     $this->entityManager->flush();
-
     return true;
   }
 }

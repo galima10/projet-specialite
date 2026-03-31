@@ -40,7 +40,7 @@ class ExpensesListsService
     if (!$lists) return;
     $listsData = array_map(fn($l) => [
       'id' => $l->getId(),
-      'date' => $l->getExpenseDateFormatted(),
+      'date' => $l->getExpenseDate(),
       'object' => $l->getExpenseObject(),
       'km' => $l->getKilometers(),
       'transportCost' => $l->getTransportMiscCost(),
@@ -57,7 +57,7 @@ class ExpensesListsService
     if (!$list) return;
     $listData = [
       'id' => $list->getId(),
-      'date' => $list->getExpenseDateFormatted(),
+      'date' => $list->getExpenseDate(),
       'object' => $list->getExpenseObject(),
       'km' => $list->getKilometers(),
       'transportCost' => $list->getTransportMiscCost(),
@@ -71,17 +71,21 @@ class ExpensesListsService
     $existingList = $this->expenses_lists_repository->findOneBy(['expenseObject' => $data['object']]);
     if ($existingList) return;
     $list = new ExpensesLists();
-    $expenseDate = new \DateTimeImmutable($data['date']);
-    $list->setExpenseDate($expenseDate);
+    $list->setExpenseDate(new \DateTimeImmutable($data['date']));
     $list->setExpenseObject($data['object']);
     $list->setKilometers($data['km']);
     $list->setTransportMiscCost($data['transportCost']);
     $list->setOthersCost($data['othersCost']);
-
     $this->entityManager->persist($list);
     $this->entityManager->flush();
-
-    return $list;
+    return [
+      'id' => $list->getId(),
+      'date' => $list->getExpenseDate(),
+      'object' => $list->getExpenseObject(),
+      'km' => $list->getKilometers(),
+      'transportCost' => $list->getTransportMiscCost(),
+      'othersCost' => $list->getOthersCost(),
+    ];
   }
 
   public function setList($data, int $id, $currentUser)
@@ -90,14 +94,21 @@ class ExpensesListsService
       ? $this->expenses_lists_repository->find($id)
       : $this->getUserListById($id, $currentUser);
     if (!$list) return;
-    $expenseDate = new \DateTimeImmutable($data['date']);
-    $list->setExpenseDate($expenseDate);
+    $list->setExpenseDate(new \DateTimeImmutable($data['date']));
     $list->setExpenseObject($data['object']);
     $list->setKilometers($data['km']);
     $list->setTransportMiscCost($data['transportCost']);
     $list->setOthersCost($data['othersCost']);
     $this->entityManager->flush();
     return $list;
+    return [
+      'id' => $list->getId(),
+      'date' => $list->getExpenseDate(),
+      'object' => $list->getExpenseObject(),
+      'km' => $list->getKilometers(),
+      'transportCost' => $list->getTransportMiscCost(),
+      'othersCost' => $list->getOthersCost(),
+    ];
   }
 
   public function deleteList(int $id, $currentUser)
@@ -108,7 +119,6 @@ class ExpensesListsService
     if (!$list) return;
     $this->entityManager->remove($list);
     $this->entityManager->flush();
-
     return true;
   }
 }

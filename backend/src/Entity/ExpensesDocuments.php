@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\ExpensesLists;
 use App\Repository\ExpensesDocumentsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ExpensesDocumentsRepository::class)]
 class ExpensesDocuments
@@ -56,6 +57,12 @@ class ExpensesDocuments
     public function getExpensesList(): ?ExpensesLists
     {
         return $this->expensesList;
+    }
+
+    #[Groups(['documents:read'])]
+    public function getExpensesListId(): ?int
+    {
+        return $this->expensesList->getId();
     }
 
     public function setExpensesList(ExpensesLists $expensesList): static

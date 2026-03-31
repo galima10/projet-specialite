@@ -24,10 +24,10 @@ class InfosRequestsService
 
   public function getRequests($currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
     $requests = $this->infos_requests_repository->findAll();
     if (!$requests) return;
-    $requestsData = array_map(fn($r) => [
+    return array_map(fn($r) => [
       'id' => $r->getId(),
       'createdAt' => $r->getCreatedAt(),
       'reason' => $r->getReason(),
@@ -38,33 +38,31 @@ class InfosRequestsService
       'kmMileageRateId' => $r->getKmMileageRate()->getId(),
       'expensesListId' => $r->getExpensesList()->getId(),
     ], $requests);
-    return $requestsData;
   }
 
   public function getRequest(int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getRole()->value !== 'ROLE_TREASURER') return 'Forbidden';
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
-    $requestData = [
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
+    return [
       'id' => $request->getId(),
       'createdAt' => $request->getCreatedAt(),
       'reason' => $request->getReason(),
       'budget' => $request->getBudget(),
       'amount_waiver' => $request->getAmountWaiver(),
-      'userId' => $request->getUser()->getId(),
-      'waiverMileageRateId' => $request->getWaiverMileageRate()->getId(),
-      'kmMileageRateId' => $request->getKmMileageRate()->getId(),
-      'expensesListId' => $request->getExpensesList()->getId(),
+      'userId' => $request->getUserId(),
+      'waiverMileageRateId' => $request->getWaiverMileageRateId(),
+      'kmMileageRateId' => $request->getKmMileageRateId(),
+      'expensesListId' => $request->getExpensesListId(),
     ];
-    return $requestData;
   }
 
   public function addRequest($data, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $existingRequest = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
     if ($existingRequest) return;
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = new InfosRequests();
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
@@ -81,15 +79,24 @@ class InfosRequestsService
     $request->setExpensesList($expensesList);
     $this->entityManager->persist($request);
     $this->entityManager->flush();
-
-    return $request;
+    return [
+      'id' => $request->getId(),
+      'createdAt' => $request->getCreatedAt(),
+      'reason' => $request->getReason(),
+      'budget' => $request->getBudget(),
+      'amountWaiver' => $request->getAmountWaiver(),
+      'userId' => $request->getUserId(),
+      'waiverMileageRateId' => $request->getWaiverMileageRateId(),
+      'kmMileageRateId' => $request->getKmMileageRateId(),
+      'expensesListId' => $request->getExpensesListId(),
+    ];
   }
 
   public function setRequest($data, int $id, $currentUser)
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);
@@ -106,14 +113,24 @@ class InfosRequestsService
     if (!$expensesList) return;
     $request->setExpensesList($expensesList);
     $this->entityManager->flush();
-    return $request;
+    return [
+      'id' => $request->getId(),
+      'createdAt' => $request->getCreatedAt(),
+      'reason' => $request->getReason(),
+      'budget' => $request->getBudget(),
+      'amountWaiver' => $request->getAmountWaiver(),
+      'userId' => $request->getUserId(),
+      'waiverMileageRateId' => $request->getWaiverMileageRateId(),
+      'kmMileageRateId' => $request->getKmMileageRateId(),
+      'expensesListId' => $request->getExpensesListId(),
+    ];
   }
 
   public function deleteRequest(int $id, $currentUser)
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return;
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$request->getUser()->getId()) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$request->getUser()->getId()) return 'Forbidden';
     $this->entityManager->remove($request);
     $this->entityManager->flush();
     return true;

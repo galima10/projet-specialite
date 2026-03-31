@@ -46,13 +46,12 @@ class ExpensesDocumentsService
       );
     }
     if (!$documents) return;
-    $documentData = array_map(fn($d) => [
+    return array_map(fn($d) => [
       'id' => $d->getId(),
       'name' => $d->getName(),
       'pathFile' => $d->getPathFile(),
       'expensesListId' => $d->getExpensesList()->getId(),
     ], $documents);
-    return $documentData;
   }
 
   public function getDocument(int $id, $currentUser)
@@ -61,13 +60,12 @@ class ExpensesDocumentsService
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
     if (!$document) return;
-    $documentData = [
+    return [
       'id' => $document->getId(),
       'name' => $document->getName(),
       'pathFile' => $document->getPathFile(),
       'expensesListId' => $document->getExpensesList()->getId(),
     ];
-    return $documentData;
   }
 
   public function addDocument($data)
@@ -82,8 +80,12 @@ class ExpensesDocumentsService
     $document->setExpensesList($expensesList);
     $this->entityManager->persist($document);
     $this->entityManager->flush();
-
-    return $document;
+    return [
+      'id' => $document->getId(),
+      'name' => $document->getName(),
+      'pathFile' => $document->getPathFile(),
+      'expensesListId' => $document->getExpensesListId()
+    ];
   }
 
   public function setDocument($data, int $id, $currentUser)
@@ -98,7 +100,12 @@ class ExpensesDocumentsService
     if (!$expensesList) return;
     $document->setExpensesList($expensesList);
     $this->entityManager->flush();
-    return $document;
+    return [
+      'id' => $document->getId(),
+      'name' => $document->getName(),
+      'pathFile' => $document->getPathFile(),
+      'expensesListId' => $document->getExpensesListId()
+    ];
   }
 
   public function deleteDocument(int $id, $currentUser)
@@ -109,7 +116,6 @@ class ExpensesDocumentsService
     if (!$document) return;
     $this->entityManager->remove($document);
     $this->entityManager->flush();
-
     return true;
   }
 }

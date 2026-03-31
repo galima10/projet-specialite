@@ -30,7 +30,10 @@ class LoginService
     $user->setPassword($hashedPassword);
     $this->entityManager->persist($user);
     $this->entityManager->flush();
-
-    return $user;
+    return [
+      'id' => $user->getId(),
+      'name' => $user->getName(),
+      'email' => $user->getEmail(),
+    ];
   }
 }

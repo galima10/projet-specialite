@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\ExpensesDocuments;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ExpensesListsRepository::class)]
 class ExpensesLists
@@ -34,10 +33,10 @@ class ExpensesLists
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2, nullable: true)]
     private ?string $othersCost = null;
 
-    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: InfosRequests::class)]
+    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: InfosRequests::class)]
     private Collection $infosRequests;
 
-    #[ORM\OneToMany(mappedBy: "expensesDocument", targetEntity: ExpensesDocuments::class)]
+    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesDocuments::class)]
     private Collection $expensesDocuments;
 
     public function getId(): ?int
@@ -48,12 +47,6 @@ class ExpensesLists
     public function getExpenseDate(): ?\DateTimeImmutable
     {
         return $this->expenseDate;
-    }
-
-    #[Groups(['expenses:read'])]
-    public function getExpenseDateFormatted(): ?string
-    {
-        return $this->expenseDate?->format('Y-m-d');
     }
 
     public function setExpenseDate(\DateTimeImmutable $expenseDate): static
