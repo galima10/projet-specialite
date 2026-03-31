@@ -97,7 +97,7 @@ class ExpensesDocumentsService
 
   public function setDocument(array $data, int $id, Users $currentUser): ?array
   {
-    $document = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+    $document = $currentUser->getRole()->value !== 'ROLE_ADMIN'
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
     if (!$document) return null;
@@ -117,7 +117,7 @@ class ExpensesDocumentsService
 
   public function deleteDocument(int $id, Users $currentUser): ?bool
   {
-    $document = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+    $document = $currentUser->getRole()->value !== 'ROLE_ADMIN'
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
     if (!$document) return null;
