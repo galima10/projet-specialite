@@ -23,7 +23,7 @@ class LoginService
     $user = new Users();
     $user->setName($data['name']);
     $user->setEmail($data['email']);
-    $user->setRole(Role::from($data['role']));
+    $user->setRole(Role::from('MEMBER'));
     $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
     $user->setPassword($hashedPassword);
     $this->entityManager->persist($user);

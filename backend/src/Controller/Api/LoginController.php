@@ -39,7 +39,7 @@ final class LoginController extends AbstractController
   {
     $data = json_decode($request->getContent(), true);
 
-    if (!$data || !isset($data['name'], $data['email'], $data['password'], $data['role'])) {
+    if (!$data || !isset($data['name'], $data['email'], $data['password'])) {
       return $this->json(['error' => 'Missing parameters'], 400);
     }
     $user = $loginService->addUser($data);

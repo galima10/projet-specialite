@@ -42,6 +42,23 @@ class UsersService
     return $userData;
   }
 
+  public function addUser($data, $currentUser)
+  {
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
+    $user = $this->usersRepository->findOneBy(['email' => $data['email']]);
+    if ($user) return;
+    $user = new Users();
+    $user->setName($data['name']);
+    $user->setEmail($data['email']);
+    $user->setRole(Role::from($data['role']));
+    $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
+    $user->setPassword($hashedPassword);
+    $this->entityManager->persist($user);
+    $this->entityManager->flush();
+
+    return $user;
+  }
+
   public function setUser($data, int $id, $currentUser)
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';

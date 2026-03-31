@@ -33,6 +33,18 @@ final class UsersController extends AbstractController
     return $this->json($user, 200);
   }
 
+  #[Route('/', name: 'user_create', methods: ['POST'])]
+  public function user_create(Request $request, UsersService $usersService, $id): JsonResponse
+  {
+    $currentUser = $this->getUser();
+    if (!$currentUser) return $this->json(['error' => 'Not connected'], 401);
+    $data = json_decode($request->getContent(), true);
+    $user = $usersService->addUser($data, $currentUser);
+    if (!$user) return $this->json(['error' => 'User already exists'], 404);
+    if ($user === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    return $this->json($user, 200);
+  }
+
   #[Route('/{id}', name: 'user_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
   public function user_update(Request $request, UsersService $usersService, $id): JsonResponse
   {

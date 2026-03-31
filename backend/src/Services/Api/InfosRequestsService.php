@@ -70,9 +70,9 @@ class InfosRequestsService
     $request->setReason($data['reason']);
     $request->setBudget($data['budget']);
     $request->setAmountWaiver($data['amount_waiver']);
-    $user = $this->users_repository->find($data['userId']);
-    if (!$user) return;
-    $request->setUser($user);
+    // $user = $this->users_repository->find($data['userId']);
+    // if (!$user) return;
+    $request->setUser($currentUser);
     $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
     if (!$waiverMileageRate) return;
     $request->setWaiverMileageRate($waiverMileageRate);
