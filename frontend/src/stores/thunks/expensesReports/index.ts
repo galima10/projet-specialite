@@ -26,7 +26,7 @@ export const fetchExpensesReportsThunk = createAsyncThunk<UserReport[], void>(
 );
 
 export const createExpensesReportThunk = createAsyncThunk<
-  ExpensesReport,
+  { createdExpensesReport: ExpensesReport; userId: number },
   { data: ExpensesReport; userId: number }
 >(
   "expensesReports/createExpensesReport",
@@ -35,14 +35,35 @@ export const createExpensesReportThunk = createAsyncThunk<
       data,
       userId,
     );
-    return createdExpensesReport;
+    return {
+      createdExpensesReport,
+      userId,
+    };
   },
 );
 
-export const deleteExepensesReportThunk = createAsyncThunk<number, number>(
+export const deleteExepensesReportThunk = createAsyncThunk<
+  {
+    expensesReportId: number;
+    userId: number;
+  },
+  {
+    expensesReportId: number;
+    userId: number;
+  }
+>(
   "expensesReports/deleteExepensesReport",
-  async (expensesReportId: number) => {
+  async ({
+    expensesReportId,
+    userId,
+  }: {
+    expensesReportId: number;
+    userId: number;
+  }) => {
     await DeleteExpensesReportService(expensesReportId);
-    return expensesReportId;
+    return {
+      expensesReportId,
+      userId,
+    };
   },
 );
