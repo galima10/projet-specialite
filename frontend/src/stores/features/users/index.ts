@@ -6,6 +6,7 @@ import {
   updateUserThunk,
   fetchCurrentUserThunk,
   logoutThunk,
+  loginThunk,
 } from "@stores/thunks/users";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
@@ -18,7 +19,7 @@ export interface Users {
 
 const initialState = {
   users: [] as WithRequiredId<Users>[],
-  currentUser: {} as WithRequiredId<Users> | null,
+  currentUser: null as WithRequiredId<Users> | null,
   loading: false,
   error: null as string | null,
 };
@@ -67,6 +68,29 @@ export const userSlice = createSlice({
       .addCase(
         fetchCurrentUserThunk.rejected,
         (state, action: ReturnType<typeof fetchCurrentUserThunk.rejected>) => {
+          state.loading = false;
+          state.error = action.error.message ?? "Erreur inconnue";
+        },
+      );
+
+    // loginThunk
+    builder
+      .addCase(loginThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        loginThunk.fulfilled,
+        (state, action: PayloadAction<WithRequiredId<Users>>) => {
+          state.loading = false;
+          if (action.payload) {
+            state.currentUser = action.payload;
+          }
+        },
+      )
+      .addCase(
+        loginThunk.rejected,
+        (state, action: ReturnType<typeof loginThunk.rejected>) => {
           state.loading = false;
           state.error = action.error.message ?? "Erreur inconnue";
         },

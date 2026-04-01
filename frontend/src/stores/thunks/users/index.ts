@@ -111,7 +111,7 @@ export const fetchCurrentUserThunk = createAsyncThunk<
   return data;
 });
 
-export const loginThunk = createAsyncThunk<void, UserLogin>(
+export const loginThunk = createAsyncThunk<WithRequiredId<Users>, UserLogin>(
   "users/login",
   async (user: UserLogin) => {
     const res = await fetch(`${API_URL}${API_ROUTES.LOGIN}`, {
@@ -126,6 +126,8 @@ export const loginThunk = createAsyncThunk<void, UserLogin>(
       }),
     });
     if (!res.ok) throw new Error("Error login user");
+    const data: WithRequiredId<Users> = await res.json();
+    return data;
   },
 );
 
