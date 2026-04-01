@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/km-mileage-rates', name: 'api_km_mileage_rates')]
 final class KmMileageRatesController extends AbstractController
 {
-  #[Route('/', name: 'rates_get', methods: ['GET'])]
+  #[Route('', name: 'rates_get', methods: ['GET'])]
   public function rates_get(KmMileageRatesService $kmMileageRatesService): JsonResponse
   {
     $rates = $kmMileageRatesService->getRates();
@@ -27,7 +27,7 @@ final class KmMileageRatesController extends AbstractController
     return $this->json($rate, 200);
   }
 
-  #[Route('/', name: 'rate_create', methods: ['POST'])]
+  #[Route('', name: 'rate_create', methods: ['POST'])]
   public function rate_create(Request $request, KmMileageRatesService $kmMileageRatesService): JsonResponse
   {
     $currentUser = $this->getUser();

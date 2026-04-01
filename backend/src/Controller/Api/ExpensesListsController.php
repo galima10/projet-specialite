@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/expenses-lists', name: 'api_expenses_lists')]
 final class ExpensesListsController extends AbstractController
 {
-  #[Route('/', name: 'lists_get', methods: ['GET'])]
+  #[Route('', name: 'lists_get', methods: ['GET'])]
   public function lists_get(ExpensesListsService $expensesListsService): JsonResponse
   {
     $currentUser = $this->getUser();
@@ -29,7 +29,7 @@ final class ExpensesListsController extends AbstractController
     return $this->json($list, 200);
   }
 
-  #[Route('/', name: 'list_create', methods: ['POST'])]
+  #[Route('', name: 'list_create', methods: ['POST'])]
   public function list_create(Request $request, ExpensesListsService $expensesListsService): JsonResponse
   {
     $data = json_decode($request->getContent(), true);

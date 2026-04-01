@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/waiver-mileage-rates', name: 'api_waiver_mileage_rates')]
 final class WaiverMileageRatesController extends AbstractController
 {
-  #[Route('/', name: 'rates_get', methods: ['GET'])]
+  #[Route('', name: 'rates_get', methods: ['GET'])]
   public function rates_get(WaiverMileageRatesService $waiverMileageRatesService): JsonResponse
   {
     $rates = $waiverMileageRatesService->getRates();
@@ -27,7 +27,7 @@ final class WaiverMileageRatesController extends AbstractController
     return $this->json($rate, 200);
   }
 
-  #[Route('/', name: 'rate_create', methods: ['POST'])]
+  #[Route('', name: 'rate_create', methods: ['POST'])]
   public function rate_create(Request $request, WaiverMileageRatesService $waiverMileageRatesService): JsonResponse
   {
     $currentUser = $this->getUser();

@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/expenses-documents', name: 'api_expenses_documents')]
 final class ExpensesDocumentsController extends AbstractController
 {
-  #[Route('/', name: 'documents_get', methods: ['GET'])]
+  #[Route('', name: 'documents_get', methods: ['GET'])]
   public function documents_get(ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
     $currentUser = $this->getUser();
@@ -29,7 +29,7 @@ final class ExpensesDocumentsController extends AbstractController
     return $this->json($document, 200);
   }
 
-  #[Route('/', name: 'document_create', methods: ['POST'])]
+  #[Route('', name: 'document_create', methods: ['POST'])]
   public function document_create(Request $request, ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
     $data = json_decode($request->getContent(), true);

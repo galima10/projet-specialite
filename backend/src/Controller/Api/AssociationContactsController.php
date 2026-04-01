@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/association-contacts', name: 'api_association_contacts')]
 final class AssociationContactsController extends AbstractController
 {
-  #[Route('/', name: 'contacts_get', methods: ['GET'])]
+  #[Route('', name: 'contacts_get', methods: ['GET'])]
   public function contacts_get(AssociationContactsService $associationContactsService): JsonResponse
   {
     $contacts = $associationContactsService->getContacts();
@@ -27,7 +27,7 @@ final class AssociationContactsController extends AbstractController
     return $this->json($contact, 200);
   }
 
-  #[Route('/', name: 'contact_create', methods: ['POST'])]
+  #[Route('', name: 'contact_create', methods: ['POST'])]
   public function contact_create(Request $request, AssociationContactsService $associationContactsService): JsonResponse
   {
     $currentUser = $this->getUser();

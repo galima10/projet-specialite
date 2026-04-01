@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/users', name: 'api_users')]
 final class UsersController extends AbstractController
 {
-  #[Route('/', name: 'users_get', methods: ['GET'])]
+  #[Route('', name: 'users_get', methods: ['GET'])]
   public function users_get(UsersService $usersService): JsonResponse
   {
     $currentUser = $this->getUser();
@@ -31,7 +31,7 @@ final class UsersController extends AbstractController
     return $this->json($user, 200);
   }
 
-  #[Route('/', name: 'user_create', methods: ['POST'])]
+  #[Route('', name: 'user_create', methods: ['POST'])]
   public function user_create(Request $request, UsersService $usersService): JsonResponse
   {
     $currentUser = $this->getUser();

@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/infos-requests', name: 'api_infos_requests')]
 final class InfosRequestsController extends AbstractController
 {
-  #[Route('/', name: 'requests_get', methods: ['GET'])]
+  #[Route('', name: 'requests_get', methods: ['GET'])]
   public function requests_get(InfosRequestsService $infosRequestsService): JsonResponse
   {
     $currentUser = $this->getUser();
@@ -31,7 +31,7 @@ final class InfosRequestsController extends AbstractController
     return $this->json($request, 200);
   }
 
-  #[Route('/', name: 'request_create', methods: ['POST'])]
+  #[Route('', name: 'request_create', methods: ['POST'])]
   public function request_create(Request $request, InfosRequestsService $infosRequestsService): JsonResponse
   {
     $currentUser = $this->getUser();
