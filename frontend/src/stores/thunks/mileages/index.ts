@@ -14,6 +14,7 @@ export const fetchMileageRatesThunk = createAsyncThunk<
 >("mileage/fetchMileageRates", async () => {
   const resWaiverRates = await fetch(
     `${API_URL}${API_ROUTES.WAIVER_MILEAGE_RATES}`,
+    { credentials: "include" },
   );
   const resKmRates = await fetch(`${API_URL}${API_ROUTES.KM_MILEAGE_RATES}`);
 
@@ -52,6 +53,10 @@ export const createMileageRateThunk = createAsyncThunk<
     if (!ROUTE) throw new Error("Route not exists");
     const res = await fetch(`${API_URL}${ROUTE}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         label: newMileage.label,
         amountPerKm: newMileage.amountPerKm,
@@ -90,6 +95,10 @@ export const updateMileageRateThunk = createAsyncThunk<
     if (!ROUTE) throw new Error("Route not exists");
     const res = await fetch(`${API_URL}${ROUTE}/${newMileage.id}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         label: newMileage.label,
         amountPerKm: newMileage.amountPerKm,
@@ -119,6 +128,7 @@ export const deleteMileageRateThunk = createAsyncThunk<
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(`Erreur lors de la suppression : ${res.status}`);

@@ -45,11 +45,19 @@ export interface ReportFileRaw {
 export async function FetchExpensesReportsService() {
   const resDocuments = await fetch(
     `${API_URL}${API_ROUTES.EXPENSES_DOCUMENTS}`,
+    {
+      credentials: "include",
+    },
   );
-  const resListItems = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`);
-  const resRequests = await fetch(`${API_URL}${API_ROUTES.INFOS_REQUESTS}`);
+  const resListItems = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`, {
+    credentials: "include",
+  });
+  const resRequests = await fetch(`${API_URL}${API_ROUTES.INFOS_REQUESTS}`, {
+    credentials: "include",
+  });
   const resReportsFiles = await fetch(
     `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
+    { credentials: "include" },
   );
   if (
     !resDocuments.ok ||
@@ -77,6 +85,10 @@ export async function CreateExpensesReportService(
     `${API_URL}${API_ROUTES.INFOS_REQUESTS}`,
     {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         reason: data.reason,
         budget: data.budget,
@@ -93,6 +105,10 @@ export async function CreateExpensesReportService(
     `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
     {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         name: data.reportDocumentPath?.name,
         pathFile: data.reportDocumentPath?.pathFile,
@@ -105,6 +121,10 @@ export async function CreateExpensesReportService(
   const listPromises = data.expensesList.map(async (list) => {
     const resList = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         date: String(list.date),
         object: list.object,
@@ -120,6 +140,10 @@ export async function CreateExpensesReportService(
     const documentsPromises = list.documents.map(async (document) => {
       const resDoc = await fetch(`${API_URL}${API_ROUTES.EXPENSES_DOCUMENTS}`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({
           name: document.name,
           pathFile: document.pathFile,
@@ -175,6 +199,7 @@ export async function DeleteExpensesReportService(expensesReportId: number) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     },
   );
   if (!res.ok) {

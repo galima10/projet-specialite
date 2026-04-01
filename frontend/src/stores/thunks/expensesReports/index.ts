@@ -1,7 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-const API_URL = import.meta.env.VITE_API_URL;
-import { API_ROUTES } from "@constants/apiroute";
-import type { WithRequiredId } from "@app-types/WithRequiredId";
 import { formatExpensesReports } from "@utils/formatExpensesReports";
 import {
   CreateExpensesReportService,
@@ -11,8 +8,6 @@ import {
 
 import type {
   ExpensesReport,
-  ExpensesListItem,
-  ExpensesDocument,
   UserReport,
 } from "@stores/features/expensesReports";
 

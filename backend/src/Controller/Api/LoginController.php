@@ -19,6 +19,7 @@ final class LoginController extends AbstractController
     $user = $this->getUser();
     return $this->json([
       'id' => $user?->getId(),
+      'name' => $user?->getName(),
       'email' => $user?->getEmail(),
       'role' => $user?->getRole()?->value,
     ]);

@@ -8,7 +8,9 @@ import type { Contact } from "@stores/features/association";
 export const fetchAssociationContactsThunk = createAsyncThunk<
   WithRequiredId<Contact>[]
 >("association/fetchAssociationContacts", async () => {
-  const res = await fetch(`${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}`);
+  const res = await fetch(`${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}`, {
+    credentials: "include",
+  });
   if (!res.ok) throw new Error("Error fetch association contacts");
   const data: WithRequiredId<Contact>[] = await res.json();
   return data;
@@ -20,6 +22,10 @@ export const createAssociationContactThunk = createAsyncThunk<
 >("association/createAssociationContact", async (newContact: Contact) => {
   const res = await fetch(`${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
     body: JSON.stringify({
       label: newContact.label,
       email: newContact.email,
@@ -40,6 +46,10 @@ export const updateAssociationContactThunk = createAsyncThunk<
       `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/${newContact.id}`,
       {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({
           label: newContact.label,
           email: newContact.email,
@@ -62,6 +72,7 @@ export const deleteMileageRateThunk = createAsyncThunk<number, number>(
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       },
     );
     if (!res.ok) {

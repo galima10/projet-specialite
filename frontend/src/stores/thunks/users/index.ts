@@ -5,12 +5,12 @@ import type { WithRequiredId } from "@app-types/WithRequiredId";
 
 import type { Users } from "@stores/features/users";
 
-interface UserLogin {
+export interface UserLogin {
   email: string;
   password: string;
 }
 
-interface UserRegister {
+export interface UserRegister {
   name: string;
   email: string;
   password: string;
@@ -19,7 +19,9 @@ interface UserRegister {
 export const fetchUsersThunk = createAsyncThunk<WithRequiredId<Users>[], void>(
   "users/fetchUsers",
   async () => {
-    const res = await fetch(`${API_URL}${API_ROUTES.USERS}`);
+    const res = await fetch(`${API_URL}${API_ROUTES.USERS}`, {
+      credentials: "include",
+    });
 
     if (!res.ok) throw new Error("Error fetch users");
 
@@ -36,6 +38,10 @@ export const createUserThunk = createAsyncThunk<
   async ({ newUser, newPassword }: { newUser: Users; newPassword: string }) => {
     const res = await fetch(`${API_URL}${API_ROUTES.USERS}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         name: newUser.name,
         email: newUser.email,
@@ -57,6 +63,10 @@ export const updateUserThunk = createAsyncThunk<
   async ({ newUser, newPassword }: { newUser: Users; newPassword: string }) => {
     const res = await fetch(`${API_URL}${API_ROUTES.USERS}/${newUser.id}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         name: newUser.name,
         email: newUser.email,
@@ -78,6 +88,7 @@ export const deleteUserThunk = createAsyncThunk<number, number>(
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(`Erreur lors de la suppression : ${res.status}`);
@@ -90,7 +101,9 @@ export const fetchCurrentUserThunk = createAsyncThunk<
   WithRequiredId<Users>,
   void
 >("users/fetchCurrentUser", async () => {
-  const res = await fetch(`${API_URL}${API_ROUTES.CURRENTUSER}`);
+  const res = await fetch(`${API_URL}${API_ROUTES.CURRENTUSER}`, {
+    credentials: "include",
+  });
 
   if (!res.ok) throw new Error("Error fetch current user");
 
@@ -103,6 +116,10 @@ export const loginThunk = createAsyncThunk<void, UserLogin>(
   async (user: UserLogin) => {
     const res = await fetch(`${API_URL}${API_ROUTES.LOGIN}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         email: user.email,
         password: user.password,
@@ -120,6 +137,7 @@ export const logoutThunk = createAsyncThunk<boolean | null, void>(
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error(`Erreur lors de la suppression : ${res.status}`);
@@ -133,6 +151,10 @@ export const registerThunk = createAsyncThunk<void, UserRegister>(
   async (user: UserRegister) => {
     const res = await fetch(`${API_URL}${API_ROUTES.REGISTER}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         name: user.name,
         email: user.email,
