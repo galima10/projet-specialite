@@ -76,7 +76,6 @@ class ExpensesListsService
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
       $lists = $this->expenses_lists_repository->findAll();
     } else {
-
       $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
       if (!$infosRequests) return null;
       $lists = [];
@@ -91,7 +90,7 @@ class ExpensesListsService
     );
     $existingList = $existingList ? array_values($existingList)[0] : null;
     if ($existingList) return null;
-    if (empty($data['date']) || empty($data['object']) || empty($data['infosRequestId']) || empty($data['infosRequestId'])) {
+    if (empty($data['date']) || empty($data['object']) || empty($data['infosRequestId'])) {
       return 'Missing';
     }
     $list = new ExpensesLists();
@@ -104,7 +103,7 @@ class ExpensesListsService
     if (!$infosRequest) return null;
     if (
       !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      && $infosRequest->getUser()->getId() !== $currentUser->getId()
+      && $infosRequest->getUserId() !== $currentUser->getId()
     ) {
       return 'Forbidden';
     }
