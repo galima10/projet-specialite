@@ -19,7 +19,7 @@ const initialState = {
   error: null as string | null,
 };
 
-export const userSlice = createSlice({
+export const associationSlice = createSlice({
   name: "users",
   initialState,
   reducers: {},
@@ -138,4 +138,4 @@ export const userSlice = createSlice({
   },
 });
 
-export default userSlice.reducer;
+export default associationSlice.reducer;
