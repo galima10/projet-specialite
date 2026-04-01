@@ -7,8 +7,8 @@ import type { Users } from "@stores/features/users";
 export const fetchUsersThunk = createAsyncThunk<Users[], void>(
   "users/fetchUsers",
   async () => {
-    const res = await fetch(`${API_URL}${API_ROUTES.GET_USERS}`);
-    console.log(`${API_URL}${API_ROUTES.GET_USERS}`);
+    const res = await fetch(`${API_URL}${API_ROUTES.USERS}`);
+    console.log(`${API_URL}${API_ROUTES.USERS}`);
 
     if (!res.ok) {
       throw new Error("Error fetch users");

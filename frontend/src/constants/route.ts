@@ -7,4 +7,8 @@ export const ROUTES = {
     route: (userId: string) => `/profile/${userId}`,
     label: "Profil",
   },
+  DASHBOARD: {
+    route: "/dashboard",
+    label: "Tableau de bord",
+  }
 };

@@ -45,11 +45,8 @@ class ExpensesReportsService
     if (!$reports) return null;
     return array_map(fn($r) => [
       'id' => $r->getId(),
-      'date' => $r->getExpenseDate(),
-      'object' => $r->getExpenseObject(),
-      'km' => $r->getKilometers(),
-      'transportCost' => $r->getTransportMiscCost(),
-      'othersCost' => $r->getOthersCost(),
+      'name' => $r->getName(),
+      'pathFile' => $r->getPathFile(),
       'infosRequestId' => $r->getInfosRequestId(),
     ], $reports);
   }
@@ -62,11 +59,8 @@ class ExpensesReportsService
     if (!$report) return null;
     return [
       'id' => $report->getId(),
-      'date' => $report->getExpenseDate(),
-      'object' => $report->getExpenseObject(),
-      'km' => $report->getKilometers(),
-      'transportCost' => $report->getTransportMiscCost(),
-      'othersCost' => $report->getOthersCost(),
+      'name' => $report->getName(),
+      'pathFile' => $report->getPathFile(),
       'infosRequestId' => $report->getInfosRequestId(),
     ];
   }
@@ -78,12 +72,16 @@ class ExpensesReportsService
     $report = new ExpensesReports();
     $report->setName($data['name']);
     $report->setPathFile($data['pathFile']);
+    $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
+    if (!$infosRequest) return null;
+    $report->setInfosRequest($infosRequest);
     $this->entityManager->persist($report);
     $this->entityManager->flush();
     return [
       'id' => $report->getId(),
       'name' => $report->getName(),
       'pathFile' => $report->getPathFile(),
+      'infosRequestId' => $report->getInfosRequestId(),
     ];
   }
 
@@ -95,11 +93,15 @@ class ExpensesReportsService
     if (!$report) return null;
     $report->setName($data['name']);
     $report->setPathFile($data['pathFile']);
+    $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
+    if (!$infosRequest) return null;
+    $report->setInfosRequest($infosRequest);
     $this->entityManager->flush();
     return [
       'id' => $report->getId(),
       'name' => $report->getName(),
       'pathFile' => $report->getPathFile(),
+      'infosRequestId' => $report->getInfosRequestId(),
     ];
   }
 

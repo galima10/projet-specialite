@@ -34,7 +34,7 @@ class InfosRequestsService
       'createdAt' => $r->getCreatedAt(),
       'reason' => $r->getReason(),
       'budget' => $r->getBudget(),
-      'amount_waiver' => $r->getAmountWaiver(),
+      'amountWaiver' => $r->getAmountWaiver(),
       'userId' => $r->getUser()->getId(),
       'waiverMileageRateId' => $r->getWaiverMileageRateId(),
       'kmMileageRateId' => $r->getKmMileageRateId(),

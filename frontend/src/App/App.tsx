@@ -9,7 +9,7 @@ import { ROUTES } from "@constants/route";
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <a href="#main-content" className="skip-link" tabIndex={0}>
         Aller au contenu principal
       </a>
@@ -20,7 +20,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

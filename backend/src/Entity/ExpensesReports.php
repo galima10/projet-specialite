@@ -57,7 +57,7 @@ class ExpensesReports
     #[Groups(['documents:read'])]
     public function getInfosRequestId(): ?int
     {
-        return $this->infosRequest->getId();
+        return $this->infosRequest?->getId();
     }
 
     public function getInfosRequest(): ?InfosRequests
