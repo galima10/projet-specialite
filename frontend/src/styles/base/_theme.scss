@@ -37,14 +37,15 @@ h6 {
   @include font-base("h6");
 }
 
-
 p,
 a,
 li,
 span,
 input,
 textarea,
-button {
+button,
+label,
+select {
   @include font-base("body");
 }
 
@@ -64,4 +65,20 @@ button {
 
 small {
   @include font-base("small");
+}
+
+input,
+textarea,
+select {
+  border: 0.05rem solid;
+  padding: 0.5rem;
+  width: 100%;
+  &::placeholder {
+    font-style: italic;
+    opacity: 0.5;
+  }
+}
+
+label {
+  font-weight: $bold;
 }

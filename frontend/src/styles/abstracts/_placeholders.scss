@@ -1,0 +1,18 @@
+@use "@styles/abstracts/variables" as *;
+
+%input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+%checkbox {
+  @extend %input;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  input {
+    width: fit-content;
+  }
+}

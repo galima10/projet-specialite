@@ -30,7 +30,14 @@ img {
   object-fit: cover;
 }
 
-input, textarea, button, image, a, label {
+input,
+textarea,
+button,
+image,
+a,
+label,
+select {
+  background-color: transparent;
   display: block;
   width: fit-content;
   height: fit-content;
@@ -39,7 +46,8 @@ input, textarea, button, image, a, label {
   }
 }
 
-textarea, input{
+textarea,
+input {
   resize: none;
   border: none;
 }

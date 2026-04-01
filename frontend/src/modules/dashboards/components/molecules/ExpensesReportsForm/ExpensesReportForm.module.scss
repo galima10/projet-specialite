@@ -1,0 +1,12 @@
+@use "@styles/abstracts/variables" as *;
+@use "@styles/abstracts/mixins" as *;
+@use "@styles/abstracts/functions" as *;
+@use "@styles/abstracts/placeholders" as *;
+
+.input {
+  @extend %input;
+}
+
+.checkbox {
+  @extend %checkbox;
+}

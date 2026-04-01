@@ -11,8 +11,8 @@ export interface ExpensesReport {
   reason: string;
   budget: string;
   amountWaiver: number;
-  waiverMileageRateId: number;
-  kmMileageRateId: number;
+  waiverMileageRateId: number | null;
+  kmMileageRateId: number | null;
   reportDocumentPath: ReportFile | null;
   expensesList: ExpensesListItem[];
 }

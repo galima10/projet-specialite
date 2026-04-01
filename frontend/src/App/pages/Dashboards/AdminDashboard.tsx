@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@constants/route";
+import ContentMemberDashboard from "@modules/dashboards/components/organisms/ContentMemberDashboard";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function AdminDashboard() {
   return (
     <>
       <h1>Dashboard admin</h1>
-      <button onClick={handleProfile}>Profil</button>
+      <ContentMemberDashboard />
     </>
   );
 }
