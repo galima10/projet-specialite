@@ -133,7 +133,7 @@ class InfosRequests
     #[Groups(['documents:read'])]
     public function getWaiverMileageRateId(): ?int
     {
-        return $this->waiverMileageRate->getId();
+        return $this->waiverMileageRate?->getId();
     }
 
     public function getWaiverMileageRate(): ?WaiverMileageRates
@@ -150,7 +150,7 @@ class InfosRequests
     #[Groups(['documents:read'])]
     public function getKmMileageRateId(): ?int
     {
-        return $this->kmMileageRate->getId();
+        return $this->kmMileageRate?->getId();
     }
 
     public function getKmMileageRate(): ?KmMileageRates

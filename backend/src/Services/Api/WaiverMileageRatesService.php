@@ -68,7 +68,7 @@ class WaiverMileageRatesService
     ];
   }
 
-  public function deleteRate(int $id, $currentUser): ?bool
+  public function deleteRate(int $id, $currentUser):  bool|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $rate = $this->waiver_mileage_rates_repository->find($id);

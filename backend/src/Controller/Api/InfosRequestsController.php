@@ -58,8 +58,8 @@ final class InfosRequestsController extends AbstractController
   {
     $currentUser = $this->getUser();
     $deleted = $infosRequestsService->deleteRequest($id, $currentUser);
-    if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
     if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);
+    if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
     return $this->json(null, 204);
   }
 }

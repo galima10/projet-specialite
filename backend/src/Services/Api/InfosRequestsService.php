@@ -36,8 +36,8 @@ class InfosRequestsService
       'budget' => $r->getBudget(),
       'amount_waiver' => $r->getAmountWaiver(),
       'userId' => $r->getUser()->getId(),
-      'waiverMileageRateId' => $r->getWaiverMileageRate()->getId(),
-      'kmMileageRateId' => $r->getKmMileageRate()->getId(),
+      'waiverMileageRateId' => $r->getWaiverMileageRateId(),
+      'kmMileageRateId' => $r->getKmMileageRateId(),
     ], $requests);
   }
 
@@ -51,7 +51,7 @@ class InfosRequestsService
       'createdAt' => $request->getCreatedAt(),
       'reason' => $request->getReason(),
       'budget' => $request->getBudget(),
-      'amount_waiver' => $request->getAmountWaiver(),
+      'amountWaiver' => $request->getAmountWaiver(),
       'userId' => $request->getUserId(),
       'waiverMileageRateId' => $request->getWaiverMileageRateId(),
       'kmMileageRateId' => $request->getKmMileageRateId(),
@@ -64,15 +64,24 @@ class InfosRequestsService
     if ($existingRequest) return null;
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = new InfosRequests();
+    $request->setCreatedAtValue();
     $request->setReason($data['reason']);
     $request->setBudget(Budget::from($data['budget']));
-    $request->setAmountWaiver($data['amount_waiver']);
-    $request->setUser($currentUser);
-    $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
-    if (!$waiverMileageRate) return null;
+    $request->setAmountWaiver($data['amountWaiver']);
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $user = $this->users_repository->find($data['userId']);
+      if (!$user) return null;
+      $request->setUser($user);
+    } else {
+      $request->setUser($currentUser);
+    }
+    $waiverMileageRate = $data['waiverMileageRateId']
+      ? $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId'])
+      : null;
     $request->setWaiverMileageRate($waiverMileageRate);
-    $kmMileageRate = $this->km_mileage_rates_repository->find($data['kmMileageRateId']);
-    if (!$kmMileageRate) return null;
+    $kmMileageRate = $data['waiverMileageRateId']
+      ? $this->km_mileage_rates_repository->find($data['waiverMileageRateId'])
+      : null;
     $request->setKmMileageRate($kmMileageRate);
     $this->entityManager->persist($request);
     $this->entityManager->flush();
@@ -95,15 +104,21 @@ class InfosRequestsService
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $request->setReason($data['reason']);
     $request->setBudget(Budget::from($data['budget']));
-    $request->setAmountWaiver($data['amount_waiver']);
-    $user = $this->users_repository->find($data['userId']);
-    if (!$user) return null;
-    $request->setUser($user);
-    $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
-    if (!$waiverMileageRate) return null;
+    $request->setAmountWaiver($data['amountWaiver']);
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $user = $this->users_repository->find($data['userId']);
+      if (!$user) return null;
+      $request->setUser($user);
+    } else {
+      $request->setUser($currentUser);
+    }
+    $waiverMileageRate = $data['waiverMileageRateId']
+      ? $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId'])
+      : null;
     $request->setWaiverMileageRate($waiverMileageRate);
-    $kmMileageRate = $this->km_mileage_rates_repository->find($data['kmMileageRateId']);
-    if (!$kmMileageRate) return null;
+    $kmMileageRate = $data['waiverMileageRateId']
+      ? $this->km_mileage_rates_repository->find($data['waiverMileageRateId'])
+      : null;
     $request->setKmMileageRate($kmMileageRate);
     $this->entityManager->flush();
     return [
@@ -118,7 +133,7 @@ class InfosRequestsService
     ];
   }
 
-  public function deleteRequest(int $id, Users $currentUser): ?bool
+  public function deleteRequest(int $id, Users $currentUser): bool|string|null
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return null;

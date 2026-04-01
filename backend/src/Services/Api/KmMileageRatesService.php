@@ -68,7 +68,7 @@ class KmMileageRatesService
     ];
   }
 
-  public function deleteRate(int $id, Users $currentUser): ?bool
+  public function deleteRate(int $id, Users $currentUser):  bool|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $rate = $this->km_mileage_rates_repository->find($id);

@@ -80,7 +80,7 @@ class UsersService
     ];
   }
 
-  public function deleteUser(int $id, Users $currentUser): ?bool
+  public function deleteUser(int $id, Users $currentUser):  bool|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
