@@ -3,6 +3,7 @@ import type {
   ExpensesDocument,
   ExpensesListItem,
   ReportFile,
+  UserReport,
 } from "@stores/features/expensesReports";
 import type {
   InfosRequestsRaw,
@@ -12,24 +13,28 @@ import type {
 } from "@stores/thunks/expensesReports";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
+interface ReportWithUserId extends ExpensesReport {
+  userId: number;
+}
+
 export function formatExpensesReports(
   rawRequests: InfosRequestsRaw[],
   rawDocuments: DocumentRaw[],
   rawListItems: ListItemRaw[],
   rawReportFiles: ReportFileRaw[],
-): WithRequiredId<ExpensesReport>[] {
-  const treated: WithRequiredId<ExpensesReport>[] = rawRequests.map(
+): UserReport[] {
+  const reports: WithRequiredId<ReportWithUserId>[] = rawRequests.map(
     (request) => {
       const reportFile: ReportFile | null =
         rawReportFiles.find((rf) => rf.infosRequestId === request.id) || null;
 
-      const report: WithRequiredId<ExpensesReport> = {
+      const report: WithRequiredId<ReportWithUserId> = {
         id: request.id,
         userId: request.userId,
         createdAt: request.createdAt,
         reason: request.reason,
-        waiverMileageRateId: request.waiverMileageRateId ?? 0, // si tu veux un default
-        kmMileageRateId: request.kmMileageRateId ?? 0,
+        waiverMileageRateId: request.waiverMileageRateId ?? null,
+        kmMileageRateId: request.kmMileageRateId ?? null,
         reportDocumentPath: reportFile,
         expensesList: [],
       };
@@ -59,5 +64,31 @@ export function formatExpensesReports(
       return report;
     },
   );
+
+  const userReports = reports.reduce(
+    (acc, item) => {
+      const key = item.userId;
+      if (!acc[key]) {
+        acc[key] = {
+          id: item.id,
+          createdAt: item.createdAt,
+          reason: item.reason,
+          waiverMileageRateId: item.waiverMileageRateId,
+          kmMileageRateId: item.kmMileageRateId,
+          reportDocumentPath: item.reportDocumentPath,
+          expensesList: item.expensesList,
+        };
+      }
+      return acc;
+    },
+    {} as Record<number, any>,
+  );
+  const treated: UserReport[] = Object.entries(userReports).map(
+    ([userId, ur]) => ({
+      userId: Number(userId),
+      reports: Array.isArray(ur) ? ur : [ur],
+    }),
+  );
+
   return treated;
 }

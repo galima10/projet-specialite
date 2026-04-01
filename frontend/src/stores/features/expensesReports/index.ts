@@ -2,13 +2,17 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ExpensesReport {
   id?: number;
-  userId: number;
   createdAt: string;
   reason: string;
   waiverMileageRateId: number;
   kmMileageRateId: number;
   reportDocumentPath: ReportFile | null;
   expensesList: ExpensesListItem[];
+}
+
+export interface UserReport {
+  userId: number;
+  reports: ExpensesReport[];
 }
 
 export interface ReportFile {
@@ -34,7 +38,7 @@ export interface ExpensesDocument {
 }
 
 const initialState = {
-  expensesReports: [] as ExpensesReport[],
+  expensesReports: [] as UserReport[],
   loading: false,
   error: null as string | null,
 };

@@ -8,6 +8,7 @@ import type {
   ExpensesReport,
   ExpensesListItem,
   ExpensesDocument,
+  UserReport,
 } from "@stores/features/expensesReports";
 
 export interface InfosRequestsRaw {
@@ -50,32 +51,32 @@ export interface ReportFileRaw {
   infosRequestId: number;
 }
 
-export const fetchUsersThunk = createAsyncThunk<
-  WithRequiredId<ExpensesReport>[],
-  void
->("users/fetchUsers", async () => {
-  const resDocuments = await fetch(
-    `${API_URL}${API_ROUTES.EXPENSES_DOCUMENTS}`,
-  );
-  const resListItems = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`);
-  const resRequests = await fetch(`${API_URL}${API_ROUTES.INFOS_REQUESTS}`);
-  const resReportsFiles = await fetch(
-    `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
-  );
-  if (
-    !resDocuments.ok ||
-    !resListItems.ok ||
-    !resRequests.ok ||
-    !resReportsFiles.ok
-  )
-    throw new Error(
-      "Error fetch expenses documents, lists, files and requests",
+export const fetchUsersThunk = createAsyncThunk<UserReport[], void>(
+  "users/fetchUsers",
+  async () => {
+    const resDocuments = await fetch(
+      `${API_URL}${API_ROUTES.EXPENSES_DOCUMENTS}`,
     );
+    const resListItems = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`);
+    const resRequests = await fetch(`${API_URL}${API_ROUTES.INFOS_REQUESTS}`);
+    const resReportsFiles = await fetch(
+      `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
+    );
+    if (
+      !resDocuments.ok ||
+      !resListItems.ok ||
+      !resRequests.ok ||
+      !resReportsFiles.ok
+    )
+      throw new Error(
+        "Error fetch expenses documents, lists, files and requests",
+      );
 
-  const documents: DocumentRaw[] = await resDocuments.json();
-  const listsItems: ListItemRaw[] = await resListItems.json();
-  const requests: InfosRequestsRaw[] = await resRequests.json();
-  const reportsFiles: ReportFileRaw[] = await resReportsFiles.json();
+    const documents: DocumentRaw[] = await resDocuments.json();
+    const listsItems: ListItemRaw[] = await resListItems.json();
+    const requests: InfosRequestsRaw[] = await resRequests.json();
+    const reportsFiles: ReportFileRaw[] = await resReportsFiles.json();
 
-  return formatExpensesReports(requests, documents, listsItems, reportsFiles);
-});
+    return formatExpensesReports(requests, documents, listsItems, reportsFiles);
+  },
+);
