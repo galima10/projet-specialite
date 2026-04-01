@@ -24,8 +24,10 @@ class JsonLoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $session->set('user_id', $user->getId());
 
         return new JsonResponse([
-            'status' => 'ok',
-            'user' => $user->getUserIdentifier()
+            'id' => $user->getId(),
+            'name' => $user->getName(),
+            'email' => $user->getUserIdentifier(),
+            'role' => $user->getRole()
         ]);
     }
 }

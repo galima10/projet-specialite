@@ -77,6 +77,8 @@ class UsersService
     $user->setName($data['name']);
     $user->setEmail($data['email']);
     $user->setRole(Role::from($data['role']));
+    $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
+    $user->setPassword($hashedPassword);
     $this->entityManager->flush();
     return [
       'id' => $user->getId(),
