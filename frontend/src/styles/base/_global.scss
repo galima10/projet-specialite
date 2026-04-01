@@ -13,3 +13,7 @@
 .skip-link:focus {
   top: 0;
 }
+
+.buttonDisabled {
+  pointer-events: none;
+}

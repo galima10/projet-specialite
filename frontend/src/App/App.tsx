@@ -1,7 +1,7 @@
 import "@styles/main.scss";
 import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 
-import Navbar from "@modules/shared/components/Navbar";
+import Header from "@modules/shared/components/Header";
 import Footer from "@modules/shared/components/Footer";
 
 import HomePage from "@App/pages/Home";
@@ -83,7 +83,7 @@ export default function App() {
       <a href="#main-content" className="skip-link" tabIndex={0}>
         Aller au contenu principal
       </a>
-      <Navbar />
+      <Header />
       <main id="main-content">
         {currentUser ? <AuthenticatedRoutes /> : <PublicRoutes />}
       </main>

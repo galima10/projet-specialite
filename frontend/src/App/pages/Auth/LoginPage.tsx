@@ -10,12 +10,22 @@ const admin1: UserLogin = {
   password: "admin1",
 };
 
+const treasurer1: UserLogin = {
+  email: "treasurer1@gmail.com",
+  password: "treasurer1",
+};
+
+const member1: UserLogin = {
+  email: "member1@gmail.com",
+  password: "member1",
+};
+
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { currentUser } = useAppSelector((state) => state.user);
-  function handleLogin() {
-    dispatch(loginThunk(admin1))
+  function handleLogin(user: UserLogin) {
+    dispatch(loginThunk(user))
       .unwrap()
       .then(() => {
         if (!currentUser) return;
@@ -40,7 +50,9 @@ export default function LoginPage() {
   return (
     <>
       <h1>Login page</h1>
-      <button onClick={handleLogin}>Connexion</button>
+      <button onClick={() => handleLogin(admin1)}>Connexion Admin 1</button>
+      <button onClick={() => handleLogin(treasurer1)}>Connexion Trésorier 1</button>
+      <button onClick={() => handleLogin(member1)}>Connexion Membre 1</button>
     </>
   );
 }

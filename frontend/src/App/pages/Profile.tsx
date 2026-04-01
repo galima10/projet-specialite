@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@modules/shared/hooks/redux";
 import { logoutThunk } from "@stores/thunks/users";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@constants/route";
 
 export default function ProfilePage() {
   const { currentUser } = useAppSelector((state) => state.user);
@@ -8,7 +9,7 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   function handleLogout() {
     dispatch(logoutThunk());
-    navigate("/");
+    navigate(ROUTES.PROFILE.route);
   }
   return (
     <>
