@@ -9,6 +9,7 @@ use App\Repository\KmMileageRatesRepository;
 use App\Entity\InfosRequests;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Users;
+use App\Enum\Budget;
 
 class InfosRequestsService
 {
@@ -22,8 +23,11 @@ class InfosRequestsService
 
   public function getRequests(Users $currentUser): array|string|null
   {
-    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
-    $requests = $this->infos_requests_repository->findAll();
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $requests = $this->infos_requests_repository->findAll();
+    } else {
+      $requests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+    }
     if (!$requests) return null;
     return array_map(fn($r) => [
       'id' => $r->getId(),
@@ -41,7 +45,7 @@ class InfosRequestsService
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return null;
-    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     return [
       'id' => $request->getId(),
       'createdAt' => $request->getCreatedAt(),
@@ -58,10 +62,10 @@ class InfosRequestsService
   {
     $existingRequest = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
     if ($existingRequest) return null;
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
     $request = new InfosRequests();
     $request->setReason($data['reason']);
-    $request->setBudget($data['budget']);
+    $request->setBudget(Budget::from($data['budget']));
     $request->setAmountWaiver($data['amount_waiver']);
     $request->setUser($currentUser);
     $waiverMileageRate = $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId']);
@@ -88,9 +92,9 @@ class InfosRequestsService
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return null;
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $request->setReason($data['reason']);
-    $request->setBudget($data['budget']);
+    $request->setBudget(Budget::from($data['budget']));
     $request->setAmountWaiver($data['amount_waiver']);
     $user = $this->users_repository->find($data['userId']);
     if (!$user) return null;
@@ -118,7 +122,7 @@ class InfosRequestsService
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return null;
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$request->getUser()->getId()) return 'Forbidden';
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $this->entityManager->remove($request);
     $this->entityManager->flush();
     return true;

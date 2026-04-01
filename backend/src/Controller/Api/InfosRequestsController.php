@@ -16,7 +16,7 @@ final class InfosRequestsController extends AbstractController
   {
     $currentUser = $this->getUser();
     $requests = $infosRequestsService->getRequests($currentUser);
-    if (!$requests) return $this->json(['error' => 'Rates not found'], 404);
+    if (!$requests) return $this->json(['error' => 'Requests not found'], 404);
     if ($requests === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
     return $this->json($requests, 200);
   }
@@ -26,7 +26,7 @@ final class InfosRequestsController extends AbstractController
   {
     $currentUser = $this->getUser();
     $request = $infosRequestsService->getRequest($id, $currentUser);
-    if (!$request) return $this->json(['error' => 'Rate not found'], 404);
+    if (!$request) return $this->json(['error' => 'Request not found'], 404);
     if ($request === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
     return $this->json($request, 200);
   }

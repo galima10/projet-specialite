@@ -31,13 +31,17 @@ class ExpensesReportsService
 
   public function getReports(Users $currentUser): ?array
   {
-    $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-    if (!$infosRequests) return null;
-    $reports = [];
-    foreach ($infosRequests as $request) {
-      $reports = array_merge($reports, $request->getExpensesReports()->toArray());
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $reports = $this->expenses_reports_repository->findAll();
+    } else {
+      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+      if (!$infosRequests) return null;
+      $reports = [];
+      foreach ($infosRequests as $request) {
+        $reports = array_merge($reports, $request->getExpensesReports()->toArray());
+      }
+      $reports = array_unique($reports, SORT_REGULAR);
     }
-    $reports = array_unique($reports, SORT_REGULAR);
     if (!$reports) return null;
     return array_map(fn($r) => [
       'id' => $r->getId(),

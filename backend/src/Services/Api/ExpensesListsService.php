@@ -31,13 +31,17 @@ class ExpensesListsService
 
   public function getLists(Users $currentUser): ?array
   {
-    $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-    if (!$infosRequests) return null;
-    $lists = [];
-    foreach ($infosRequests as $request) {
-      $lists = array_merge($lists, $request->getExpensesLists()->toArray());
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $lists = $this->expenses_lists_repository->findAll();
+    } else {
+      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+      if (!$infosRequests) return null;
+      $lists = [];
+      foreach ($infosRequests as $request) {
+        $lists = array_merge($lists, $request->getExpensesLists()->toArray());
+      }
+      $lists = array_unique($lists, SORT_REGULAR);
     }
-    $lists = array_unique($lists, SORT_REGULAR);
     if (!$lists) return null;
     return array_map(fn($l) => [
       'id' => $l->getId(),

@@ -65,7 +65,7 @@ class UsersService
 
   public function setUser(array $data, int $id, Users $currentUser): array|string|null
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return null;
     $user->setName($data['name']);
@@ -82,7 +82,7 @@ class UsersService
 
   public function deleteUser(int $id, Users $currentUser): ?bool
   {
-    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' || $currentUser->getId() !== (int)$id) return 'Forbidden';
+    if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return null;
     $this->entityManager->remove($user);
