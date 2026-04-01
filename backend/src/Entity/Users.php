@@ -31,7 +31,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(enumType: Role::class)]
     private ?Role $role = null;
 
-    #[ORM\OneToMany(mappedBy: "user", targetEntity: InfosRequests::class)]
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: InfosRequests::class, cascade: ["remove"])]
     private Collection $infosRequests;
 
     public function __construct()

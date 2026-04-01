@@ -38,7 +38,7 @@ class ExpensesLists
     #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
     private ?InfosRequests $infosRequest = null;
 
-    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesDocuments::class)]
+    #[ORM\OneToMany(mappedBy: "expensesList", targetEntity: ExpensesDocuments::class, cascade: ["remove"])]
     private Collection $expensesDocuments;
 
     public function getId(): ?int

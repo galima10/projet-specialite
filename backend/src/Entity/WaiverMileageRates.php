@@ -23,7 +23,7 @@ class WaiverMileageRates
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]
     private ?string $amount_per_km = null;
 
-    #[ORM\OneToMany(mappedBy: "waiverMileageRate", targetEntity: InfosRequests::class)]
+    #[ORM\OneToMany(mappedBy: "waiverMileageRate", targetEntity: InfosRequests::class, cascade: ["remove"])]
     private Collection $infosRequests;
 
     public function getId(): ?int

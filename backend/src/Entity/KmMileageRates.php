@@ -23,7 +23,7 @@ class KmMileageRates
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]
     private ?string $amountPerKm = null;
 
-    #[ORM\OneToMany(mappedBy: "kmMileageRate", targetEntity: InfosRequests::class)]
+    #[ORM\OneToMany(mappedBy: "kmMileageRate", targetEntity: InfosRequests::class, cascade: ["remove"])]
     private Collection $infosRequests;
 
     public function getId(): ?int

@@ -138,6 +138,12 @@ class ExpensesListsService
     $list->setOthersCost($data['othersCost']);
     $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
     if (!$infosRequest) return null;
+    if (
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+      && $infosRequest->getUser()->getId() !== $currentUser->getId()
+    ) {
+      return 'Forbidden';
+    }
     $list->setInfosRequest($infosRequest);
     $this->entityManager->flush();
     return [

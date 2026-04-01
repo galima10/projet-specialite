@@ -47,10 +47,10 @@ class InfosRequests
     #[ORM\JoinColumn(name: "km_mileage_rate_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?KmMileageRates $kmMileageRate = null;
 
-    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesLists::class)]
+    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesLists::class, cascade: ["remove"])]
     private Collection $expensesLists;
 
-    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesReports::class)]
+    #[ORM\OneToMany(mappedBy: "infosRequest", targetEntity: ExpensesReports::class, cascade: ["remove"])]
     private Collection $expensesReports;
 
     #[ORM\PrePersist]
