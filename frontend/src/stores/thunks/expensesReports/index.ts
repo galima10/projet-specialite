@@ -6,6 +6,7 @@ import { formatExpensesReports } from "@utils/formatExpensesReports";
 import {
   CreateExpensesReportService,
   FetchExpensesReportsService,
+  DeleteExpensesReportService,
 } from "@services/expensesReports";
 
 import type {
@@ -35,5 +36,13 @@ export const createExpensesReportThunk = createAsyncThunk<
       userId,
     );
     return createdExpensesReport;
+  },
+);
+
+export const deleteExepensesReportThunk = createAsyncThunk<number, number>(
+  "expensesReports/deleteExepensesReport",
+  async (expensesReportId: number) => {
+    await DeleteExpensesReportService(expensesReportId);
+    return expensesReportId;
   },
 );

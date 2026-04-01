@@ -167,6 +167,17 @@ export async function CreateExpensesReportService(
   return expenseReport;
 }
 
-export async function DeleteExpensesReportService() {
-  
+export async function DeleteExpensesReportService(expensesReportId: number) {
+  const res = await fetch(
+    `${API_URL}${API_ROUTES.INFOS_REQUESTS}/${expensesReportId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  if (!res.ok) {
+    throw new Error(`Erreur lors de la suppression : ${res.status}`);
+  }
 }
