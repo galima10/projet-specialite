@@ -37,6 +37,7 @@ final class ExpensesDocumentsController extends AbstractController
     $document = $expensesDocumentsService->addDocument($data, $currentUser);
     if (!$document) return $this->json(['error' => 'Document already exists'], 409);
     if ($document === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($document === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($document, 201);
   }
 
@@ -47,6 +48,7 @@ final class ExpensesDocumentsController extends AbstractController
     $data = json_decode($request->getContent(), true);
     $document = $expensesDocumentsService->setDocument($data, $id, $currentUser);
     if (!$document) return $this->json(['error' => 'Document not found']);
+    if ($document === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($document, 200);
   }
 

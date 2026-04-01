@@ -35,6 +35,7 @@ final class WaiverMileageRatesController extends AbstractController
     $rate = $waiverMileageRatesService->addRate($data, $currentUser);
     if (!$rate) return $this->json(['error' => 'Rate already exists'], 409);
     if ($rate === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($rate === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($rate, 201);
   }
 
@@ -46,6 +47,7 @@ final class WaiverMileageRatesController extends AbstractController
     $rate = $waiverMileageRatesService->setRate($data, $id, $currentUser);
     if (!$rate) return $this->json(['error' => 'Rate not found']);
     if ($rate === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
+    if ($rate === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($rate, 200);
   }
 

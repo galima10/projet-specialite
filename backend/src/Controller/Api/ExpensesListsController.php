@@ -37,6 +37,7 @@ final class ExpensesListsController extends AbstractController
     $list = $expensesListsService->addList($data, $currentUser);
     if (!$list) return $this->json(['error' => 'List already exists'], 403);
     if ($list === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($list === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($list, 201);
   }
 
@@ -47,6 +48,7 @@ final class ExpensesListsController extends AbstractController
     $data = json_decode($request->getContent(), true);
     $list = $expensesListsService->setList($data, $id, $currentUser);
     if (!$list) return $this->json(['error' => 'List not found']);
+    if ($list === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($list, 200);
   }
 

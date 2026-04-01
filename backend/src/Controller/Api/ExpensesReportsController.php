@@ -37,6 +37,7 @@ final class ExpensesReportsController extends AbstractController
     $report = $expensesReportsService->addReport($data, $currentUser);
     if (!$report) return $this->json(['error' => 'Report already exists'], 409);
     if ($report === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($report === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($report, 201);
   }
 
@@ -47,6 +48,7 @@ final class ExpensesReportsController extends AbstractController
     $data = json_decode($request->getContent(), true);
     $report = $expensesReportsService->setReport($data, $id, $currentUser);
     if (!$report) return $this->json(['error' => 'Report not found']);
+    if ($report === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($report, 200);
   }
 

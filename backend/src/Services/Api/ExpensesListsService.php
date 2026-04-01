@@ -76,6 +76,7 @@ class ExpensesListsService
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
       $lists = $this->expenses_lists_repository->findAll();
     } else {
+
       $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
       if (!$infosRequests) return null;
       $lists = [];
@@ -90,6 +91,9 @@ class ExpensesListsService
     );
     $existingList = $existingList ? array_values($existingList)[0] : null;
     if ($existingList) return null;
+    if (empty($data['date']) || empty($data['object']) || empty($data['infosRequestId']) || empty($data['infosRequestId'])) {
+      return 'Missing';
+    }
     $list = new ExpensesLists();
     $list->setExpenseDate(new \DateTimeImmutable($data['date']));
     $list->setExpenseObject($data['object']);
@@ -118,12 +122,15 @@ class ExpensesListsService
     ];
   }
 
-  public function setList(array $data, int $id, Users $currentUser): ?array
+  public function setList(array $data, int $id, Users $currentUser): array|string|null
   {
     $list = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_lists_repository->find($id)
       : $this->getUserListById($id, $currentUser);
     if (!$list) return null;
+    if (empty($data['date']) || empty($data['object']) || empty($data['infosRequestId']) || empty($data['infosRequestId'])) {
+      return 'Missing';
+    }
     $list->setExpenseDate(new \DateTimeImmutable($data['date']));
     $list->setExpenseObject($data['object']);
     $list->setKilometers($data['km']);

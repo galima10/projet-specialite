@@ -47,6 +47,9 @@ class UsersService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $existingUser = $this->usersRepository->findOneBy(['email' => $data['email']]);
     if ($existingUser) return null;
+    if (empty($data['name']) || empty($data['email']) || empty($data['role']) || empty($data['password'])) {
+      return 'Missing';
+    }
     $user = new Users();
     $user->setName($data['name']);
     $user->setEmail($data['email']);
@@ -68,6 +71,9 @@ class UsersService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return null;
+    if (empty($data['name']) || empty($data['email']) || empty($data['role']) || empty($data['password'])) {
+      return 'Missing';
+    }
     $user->setName($data['name']);
     $user->setEmail($data['email']);
     $user->setRole(Role::from($data['role']));
@@ -80,7 +86,7 @@ class UsersService
     ];
   }
 
-  public function deleteUser(int $id, Users $currentUser):  bool|string|null
+  public function deleteUser(int $id, Users $currentUser): bool|string|null
   {
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);

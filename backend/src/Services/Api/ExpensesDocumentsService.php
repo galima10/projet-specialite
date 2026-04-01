@@ -98,6 +98,9 @@ class ExpensesDocumentsService
       fn($r) => $r->getName() === $data['name']
     );
     if ($existingDocument) return null;
+    if (empty($data['name']) || empty($data['pathFile']) || empty($data['expensesListId'])) {
+      return 'Missing';
+    }
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
@@ -120,12 +123,15 @@ class ExpensesDocumentsService
     ];
   }
 
-  public function setDocument(array $data, int $id, Users $currentUser): ?array
+  public function setDocument(array $data, int $id, Users $currentUser): array|string|null
   {
     $document = !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_documents_repository->find($id)
       : $this->getUserDocumentById($id, $currentUser);
     if (!$document) return null;
+    if (empty($data['name']) || empty($data['pathFile']) || empty($data['expensesListId'])) {
+      return 'Missing';
+    }
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
     $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);

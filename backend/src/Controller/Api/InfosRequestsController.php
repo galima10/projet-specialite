@@ -38,6 +38,7 @@ final class InfosRequestsController extends AbstractController
     $data = json_decode($request->getContent(), true);
     $request = $infosRequestsService->addRequest($data, $currentUser);
     if ($request === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($request === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     if (!$request) return $this->json(['error' => 'Request already exists'], 404);
     return $this->json($request, 201);
   }
@@ -50,6 +51,7 @@ final class InfosRequestsController extends AbstractController
     $request = $infosRequestsService->setRequest($data, $id, $currentUser);
     if (!$request) return $this->json(['error' => 'Rate not found']);
     if ($request === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
+    if ($request === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($request, 200);
   }
 

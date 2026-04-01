@@ -35,6 +35,7 @@ final class AssociationContactsController extends AbstractController
     $contact = $associationContactsService->addContact($data, $currentUser);
     if (!$contact) return $this->json(['error' => 'Contact already exists'], 409);
     if ($contact === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($contact === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($contact, 201);
   }
 
@@ -46,6 +47,7 @@ final class AssociationContactsController extends AbstractController
     $contact = $associationContactsService->setContact($data, $id, $currentUser);
     if (!$contact) return $this->json(['error' => 'Contact not found']);
     if ($contact === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
+    if ($contact === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($contact, 200);
   }
 

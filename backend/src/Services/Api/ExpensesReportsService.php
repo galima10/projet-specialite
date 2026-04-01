@@ -81,6 +81,9 @@ class ExpensesReportsService
       $reports,
       fn($r) => $r->getname() === $data['name']
     );
+    if (empty($data['name']) || empty($data['pathFile']) || empty($data['infosRequestId'])) {
+      return 'Missing';
+    }
     $existingReport = $existingReport ? array_values($existingReport)[0] : null;
     if ($existingReport) return null;
     $report = new ExpensesReports();
@@ -105,12 +108,15 @@ class ExpensesReportsService
     ];
   }
 
-  public function setReport(array $data, int $id, Users $currentUser): ?array
+  public function setReport(array $data, int $id, Users $currentUser): array|string|null
   {
     $report = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
       ? $this->expenses_reports_repository->find($id)
       : $this->getUserReportsById($id, $currentUser);
     if (!$report) return null;
+    if (empty($data['name']) || empty($data['pathFile']) || empty($data['infosRequestId'])) {
+      return 'Missing';
+    }
     $report->setName($data['name']);
     $report->setPathFile($data['pathFile']);
     $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);

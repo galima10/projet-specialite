@@ -39,8 +39,11 @@ class AssociationContactsService
   public function addContact(array $data, Users $currentUser): array|string|null
   {
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
-    $existingContacts = $this->association_contacts_repository->findOneBy(['name' => $data['name']]);
+    $existingContacts = $this->association_contacts_repository->findOneBy(['label' => $data['label']]);
     if ($existingContacts) return null;
+    if (empty($data['label']) || empty($data['email'])) {
+      return 'Missing';
+    }
     $contact = new AssociationContacts();
     $contact->setLabel($data['label']);
     $contact->setContactEmail($data['email']);
@@ -56,8 +59,11 @@ class AssociationContactsService
   public function setContact(array $data, int $id, Users $currentUser): array|string|null
   {
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) return 'Forbidden';
-    $contact = $this->association_contacts_repository->find($$data['id']);
+    $contact = $this->association_contacts_repository->find($id);
     if (!$contact) return null;
+    if (empty($data['label']) || empty($data['email'])) {
+      return 'Missing';
+    }
     $contact->setLabel($data['label']);
     $contact->setContactEmail($data['email']);
     $this->entityManager->flush();

@@ -41,6 +41,9 @@ class WaiverMileageRatesService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $existingRate = $this->waiver_mileage_rates_repository->findOneBy(['label' => $data['label']]);
     if ($existingRate) return null;
+    if (empty($data['label']) || empty($data['amountPerKm'])) {
+      return 'Missing';
+    }
     $rate = new WaiverMileageRates();
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
@@ -58,6 +61,9 @@ class WaiverMileageRatesService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN') return 'Forbidden';
     $rate = $this->waiver_mileage_rates_repository->find($id);
     if (!$rate) return null;
+    if (empty($data['label']) || empty($data['amountPerKm'])) {
+      return 'Missing';
+    }
     $rate->setLabel($data['label']);
     $rate->setAmountPerKm($data['amountPerKm']);
     $this->entityManager->flush();

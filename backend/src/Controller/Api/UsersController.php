@@ -39,6 +39,7 @@ final class UsersController extends AbstractController
     $user = $usersService->addUser($data, $currentUser);
     if (!$user) return $this->json(['error' => 'User already exists'], 404);
     if ($user === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if ($user === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($user, 201);
   }
 
@@ -50,6 +51,7 @@ final class UsersController extends AbstractController
     $user = $usersService->setUser($data, $id, $currentUser);
     if (!$user) return $this->json(['error' => 'User not found'], 404);
     if ($user === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
+    if ($user === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($user, 200);
   }
 

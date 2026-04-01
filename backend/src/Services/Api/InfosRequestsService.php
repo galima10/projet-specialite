@@ -65,8 +65,11 @@ class InfosRequestsService
       'user' => $currentUser,
     ]);
     if ($existingRequest) return null;
+    if (empty($data['reason']) || empty($data['budget']) || empty($data['amountWaiver'])) {
+      return 'Missing';
+    }
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-      if (!isset($data['userId'])) return 'Missing userId';
+      if (!isset($data['userId'])) return 'Missing';
       if ($currentUser->getId() !== (int)$data['userId'] && !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
         return 'Forbidden';
       }
@@ -111,6 +114,9 @@ class InfosRequestsService
   {
     $request = $this->infos_requests_repository->find($id);
     if (!$request) return null;
+    if (empty($data['reason']) || empty($data['budget']) || empty($data['amountWaiver']) || empty($data['userId'])) {
+      return 'Missing';
+    }
     if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
     $request->setReason($data['reason']);
     $request->setBudget(Budget::from($data['budget']));
