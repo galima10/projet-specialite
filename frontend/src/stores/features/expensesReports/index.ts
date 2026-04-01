@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ExpensesReport {
   id?: number;
-  createdAt: string;
+  createdAt?: string;
   reason: string;
+  budget: string;
+  amountWaiver: number;
   waiverMileageRateId: number;
   kmMileageRateId: number;
   reportDocumentPath: ReportFile | null;

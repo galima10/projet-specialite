@@ -34,6 +34,7 @@ export default defineConfig({
       "@app-types": path.resolve(__dirname, "src/types"),
       "@utils": path.resolve(__dirname, "src/utils"),
       "@constants": path.resolve(__dirname, "src/constants"),
+      "@services": path.resolve(__dirname, "src/services"),
     },
     extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".scss"],
   },

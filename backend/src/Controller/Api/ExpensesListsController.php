@@ -32,9 +32,11 @@ final class ExpensesListsController extends AbstractController
   #[Route('', name: 'list_create', methods: ['POST'])]
   public function list_create(Request $request, ExpensesListsService $expensesListsService): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $list = $expensesListsService->addList($data);
+    $list = $expensesListsService->addList($data, $currentUser);
     if (!$list) return $this->json(['error' => 'List already exists'], 403);
+    if ($list === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     return $this->json($list, 201);
   }
 

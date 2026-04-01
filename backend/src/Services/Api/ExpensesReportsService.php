@@ -65,15 +65,35 @@ class ExpensesReportsService
     ];
   }
 
-  public function addReport(array $data): ?array
+  public function addReport(array $data, Users $currentUser): array|string|null
   {
-    $existingreport = $this->expenses_reports_repository->findOneBy(['name' => $data['name']]);
-    if ($existingreport) return null;
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $reports = $this->expenses_reports_repository->findAll();
+    } else {
+      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+      if (!$infosRequests) return null;
+      $reports = [];
+      foreach ($infosRequests as $request) {
+        $reports = array_merge($reports, $request->getExpensesReports()->toArray());
+      }
+    }
+    $existingReport = array_filter(
+      $reports,
+      fn($r) => $r->getname() === $data['name']
+    );
+    $existingReport = $existingReport ? array_values($existingReport)[0] : null;
+    if ($existingReport) return null;
     $report = new ExpensesReports();
     $report->setName($data['name']);
     $report->setPathFile($data['pathFile']);
     $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
     if (!$infosRequest) return null;
+    if (
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+      && $infosRequest->getUser()->getId() !== $currentUser->getId()
+    ) {
+      return 'Forbidden';
+    }
     $report->setInfosRequest($infosRequest);
     $this->entityManager->persist($report);
     $this->entityManager->flush();

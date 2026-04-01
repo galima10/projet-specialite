@@ -32,9 +32,11 @@ final class ExpensesReportsController extends AbstractController
   #[Route('', name: 'report_create', methods: ['POST'])]
   public function report_create(Request $request, ExpensesReportsService $expensesReportsService): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $report = $expensesReportsService->addReport($data);
+    $report = $expensesReportsService->addReport($data, $currentUser);
     if (!$report) return $this->json(['error' => 'Report already exists'], 409);
+    if ($report === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     return $this->json($report, 201);
   }
 

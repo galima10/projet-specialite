@@ -71,9 +71,24 @@ class ExpensesListsService
     ];
   }
 
-  public function addList(array $data): ?array
+  public function addList(array $data, Users $currentUser): array|string|null
   {
-    $existingList = $this->expenses_lists_repository->findOneBy(['expenseObject' => $data['object']]);
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $lists = $this->expenses_lists_repository->findAll();
+    } else {
+      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+      if (!$infosRequests) return null;
+      $lists = [];
+      foreach ($infosRequests as $request) {
+        $lists = array_merge($lists, $request->getExpensesLists()->toArray());
+      }
+      $lists = array_unique($lists, SORT_REGULAR);
+    }
+    $existingList = array_filter(
+      $lists,
+      fn($l) => $l->getExpenseObject() === $data['object']
+    );
+    $existingList = $existingList ? array_values($existingList)[0] : null;
     if ($existingList) return null;
     $list = new ExpensesLists();
     $list->setExpenseDate(new \DateTimeImmutable($data['date']));
@@ -83,6 +98,12 @@ class ExpensesListsService
     $list->setOthersCost($data['othersCost']);
     $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
     if (!$infosRequest) return null;
+    if (
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+      && $infosRequest->getUser()->getId() !== $currentUser->getId()
+    ) {
+      return 'Forbidden';
+    }
     $list->setInfosRequest($infosRequest);
     $this->entityManager->persist($list);
     $this->entityManager->flush();

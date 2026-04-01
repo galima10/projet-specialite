@@ -21,7 +21,8 @@
       "@styles/*": ["./styles/*"],
       "@app-types/*": ["./types/*"],
       "@utils/*": ["./utils/*"],
-      "@constants/*": ["./constants/*"]
+      "@constants/*": ["./constants/*"],
+      "@services/*": ["./services/*"]
     }
   },
   "include": ["./src"],

@@ -32,9 +32,11 @@ final class ExpensesDocumentsController extends AbstractController
   #[Route('', name: 'document_create', methods: ['POST'])]
   public function document_create(Request $request, ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
+    $currentUser = $this->getUser();
     $data = json_decode($request->getContent(), true);
-    $document = $expensesDocumentsService->addDocument($data);
+    $document = $expensesDocumentsService->addDocument($data, $currentUser);
     if (!$document) return $this->json(['error' => 'Document already exists'], 409);
+    if ($document === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     return $this->json($document, 201);
   }
 

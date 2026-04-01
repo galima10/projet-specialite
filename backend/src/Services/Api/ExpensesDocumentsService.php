@@ -75,15 +75,40 @@ class ExpensesDocumentsService
     ];
   }
 
-  public function addDocument(array $data): ?array
+  public function addDocument(array $data, $currentUser): array|string|null
   {
-    $existingDocument = $this->expenses_documents_repository->findOneBy(['name' => $data['name']]);
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      $documents = $this->expenses_documents_repository->findAll();
+    } else {
+      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
+      if (!$infosRequests) return null;
+      $documents = [];
+      foreach ($infosRequests as $request) {
+        $documents = array_merge($documents, $request->getExpensesLists()->toArray());
+      }
+      $documents = array_unique($documents, SORT_REGULAR);
+      if (!$documents) return null;
+      $documents = array_filter(
+        $this->expenses_documents_repository->findAll(),
+        fn($d) => in_array($d->getExpensesList(), $documents, true)
+      );
+    }
+    $existingDocument = array_filter(
+      $documents,
+      fn($r) => $r->getName() === $data['name']
+    );
     if ($existingDocument) return null;
     $document = new ExpensesDocuments();
     $document->setName($data['name']);
     $document->setPathFile($data['pathFile']);
     $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
     if (!$expensesList) return null;
+    if (
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+      && $expensesList->getInfosRequest()->getUser()->getId() !== $currentUser->getId()
+    ) {
+      return 'Forbidden';
+    }
     $document->setExpensesList($expensesList);
     $this->entityManager->persist($document);
     $this->entityManager->flush();

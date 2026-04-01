@@ -10,7 +10,7 @@ import type {
   DocumentRaw,
   ListItemRaw,
   ReportFileRaw,
-} from "@stores/thunks/expensesReports";
+} from "@services/expensesReports/index";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
 interface ReportWithUserId extends ExpensesReport {
@@ -33,6 +33,8 @@ export function formatExpensesReports(
         userId: request.userId,
         createdAt: request.createdAt,
         reason: request.reason,
+        budget: request.budget,
+        amountWaiver: parseFloat(request.amountWaiver) ?? 0,
         waiverMileageRateId: request.waiverMileageRateId ?? null,
         kmMileageRateId: request.kmMileageRateId ?? null,
         reportDocumentPath: reportFile,

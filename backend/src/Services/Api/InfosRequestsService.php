@@ -60,9 +60,19 @@ class InfosRequestsService
 
   public function addRequest(array $data, Users $currentUser): array|string|null
   {
-    $existingRequest = $this->infos_requests_repository->findOneBy(['reason' => $data['reason']]);
+    $existingRequest = $this->infos_requests_repository->findOneBy([
+      'reason' => $data['reason'],
+      'user' => $currentUser,
+    ]);
     if ($existingRequest) return null;
-    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== (int)$data['userId']) return 'Forbidden';
+    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+      if (!isset($data['userId'])) return 'Missing userId';
+      if ($currentUser->getId() !== (int)$data['userId'] && !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
+        return 'Forbidden';
+      }
+    } else {
+      $data['userId'] = $currentUser->getId(); // safe
+    }
     $request = new InfosRequests();
     $request->setCreatedAtValue();
     $request->setReason($data['reason']);
@@ -79,8 +89,8 @@ class InfosRequestsService
       ? $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId'])
       : null;
     $request->setWaiverMileageRate($waiverMileageRate);
-    $kmMileageRate = $data['waiverMileageRateId']
-      ? $this->km_mileage_rates_repository->find($data['waiverMileageRateId'])
+    $kmMileageRate = $data['kmMileageRateId']
+      ? $this->km_mileage_rates_repository->find($data['kmMileageRateId'])
       : null;
     $request->setKmMileageRate($kmMileageRate);
     $this->entityManager->persist($request);
@@ -116,8 +126,8 @@ class InfosRequestsService
       ? $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId'])
       : null;
     $request->setWaiverMileageRate($waiverMileageRate);
-    $kmMileageRate = $data['waiverMileageRateId']
-      ? $this->km_mileage_rates_repository->find($data['waiverMileageRateId'])
+    $kmMileageRate = $data['kmMileageRateId']
+      ? $this->km_mileage_rates_repository->find($data['kmMileageRateId'])
       : null;
     $request->setKmMileageRate($kmMileageRate);
     $this->entityManager->flush();
