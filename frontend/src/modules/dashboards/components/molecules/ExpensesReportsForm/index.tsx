@@ -98,33 +98,6 @@ export default function ExpensesReportsForm({
     }
   }
 
-  async function generatePdf() {
-    const html = `
-    <html><head><script src=\"https:\/\/cdn.tailwindcss.com\"><\/script><\/head><body class=\"h-screen grid place-items-center\"><span class=\"print:hidden\">IT SHOULD NO BE PRINTED<\/span><div class=\"bg-pink-300 text-pink-800 p-8 h-[100px] grid place-items-center font-medium font-mono\">@mathieutu<\/div><\/body><\/html>
-  `;
-
-    const response = await fetch("https://pdf.mathieutu.dev/api/gen", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        filename: "report.pdf",
-        html,
-        merge: [], // tu peux mettre des URLs de PDF à fusionner
-      }),
-    });
-
-    const blob = await response.blob();
-    // télécharger le PDF côté frontend
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "report.pdf";
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
 
   function handleGeneratePdf() {
     let kmMileageRateId: number, waiverMileageRateId: number;
@@ -154,7 +127,7 @@ export default function ExpensesReportsForm({
   }
   return (
     <form action="" onSubmit={handleSubmit}>
-      <button onClick={generatePdf}>Test pdf</button>
+      <button>Test pdf</button>
       {step === 1 ? (
         <>
           <div className={styles.input}>
