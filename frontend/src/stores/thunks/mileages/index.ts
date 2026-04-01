@@ -5,10 +5,13 @@ import type { WithRequiredId } from "@app-types/WithRequiredId";
 
 import type { MileageRate } from "@stores/features/mileages";
 
-export const fetchMileageRatesThunk = createAsyncThunk<{
-  waiverRates: WithRequiredId<MileageRate>[];
-  kmRates: WithRequiredId<MileageRate>[];
-}>("mileage/fetchMileageRates", async () => {
+export const fetchMileageRatesThunk = createAsyncThunk<
+  {
+    waiverRates: WithRequiredId<MileageRate>[];
+    kmRates: WithRequiredId<MileageRate>[];
+  },
+  void
+>("mileage/fetchMileageRates", async () => {
   const resWaiverRates = await fetch(
     `${API_URL}${API_ROUTES.WAIVER_MILEAGE_RATES}`,
   );
@@ -111,7 +114,7 @@ export const deleteMileageRateThunk = createAsyncThunk<
     if (type === "KM") ROUTE = API_ROUTES.KM_MILEAGE_RATES;
     else ROUTE = API_ROUTES.WAIVER_MILEAGE_RATES;
     if (!ROUTE) throw new Error("Route not exists");
-    const res = await fetch(`${API_URL}${API_ROUTES.USERS}/${rateId}`, {
+    const res = await fetch(`${API_URL}${ROUTE}/${rateId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

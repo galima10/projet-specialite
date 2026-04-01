@@ -6,7 +6,6 @@ import {
   deleteMileageRateThunk,
 } from "@stores/thunks/mileages";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
-import { act } from "react";
 
 export interface MileageRate {
   id?: number;
