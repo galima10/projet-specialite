@@ -37,7 +37,6 @@ export const createUserThunk = createAsyncThunk<
     const res = await fetch(`${API_URL}${API_ROUTES.USERS}`, {
       method: "POST",
       body: JSON.stringify({
-        id: newUser.id,
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
