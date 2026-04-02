@@ -16,7 +16,9 @@ export const fetchMileageRatesThunk = createAsyncThunk<
     `${API_URL}${API_ROUTES.WAIVER_MILEAGE_RATES}`,
     { credentials: "include" },
   );
-  const resKmRates = await fetch(`${API_URL}${API_ROUTES.KM_MILEAGE_RATES}`);
+  const resKmRates = await fetch(`${API_URL}${API_ROUTES.KM_MILEAGE_RATES}`, {
+    credentials: "include",
+  });
 
   if (!resWaiverRates.ok || !resKmRates.ok)
     throw new Error("Error fetch mileage rates");

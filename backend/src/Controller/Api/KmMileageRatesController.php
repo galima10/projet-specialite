@@ -14,6 +14,8 @@ final class KmMileageRatesController extends AbstractController
   #[Route('', name: 'rates_get', methods: ['GET'])]
   public function rates_get(KmMileageRatesService $kmMileageRatesService): JsonResponse
   {
+    $user = $this->getUser();
+    dump($user);
     $rates = $kmMileageRatesService->getRates();
     if (!$rates) return $this->json(['error' => 'Rates not found'], 404);
     return $this->json($rates, 200);

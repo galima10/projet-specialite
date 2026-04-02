@@ -25,5 +25,6 @@
       "@services/*": ["./services/*"]
     }
   },
-  "include": ["./src"],
+  // "include": ["./src"],
+  "include": ["src/**/*"]
 }

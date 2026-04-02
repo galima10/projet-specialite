@@ -13,7 +13,7 @@ export interface ExpensesReport {
   amountWaiver: number;
   waiverMileageRateId: number | null;
   kmMileageRateId: number | null;
-  reportDocumentPath: ReportFile | null;
+  reportDocumentFile: ReportFile | null;
   expensesList: ExpensesListItem[];
 }
 
@@ -24,8 +24,7 @@ export interface UserReport {
 
 export interface ReportFile {
   id?: number;
-  name: string;
-  pathFile: string;
+  file: File;
 }
 
 export interface ExpensesListItem {
@@ -41,7 +40,8 @@ export interface ExpensesListItem {
 export interface ExpensesDocument {
   id?: number;
   name: string;
-  pathFile: string;
+  preview: string;
+  file: File;
 }
 
 const initialState = {
