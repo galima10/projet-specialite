@@ -436,7 +436,6 @@ export default function ExpensesReportsForm({
             <button
               onClick={() => {
                 handleGeneratePdf();
-                setStep(4);
               }}
             >
               Générer le PDF
@@ -483,7 +482,7 @@ export default function ExpensesReportsForm({
                   userIBAN: "",
                   userBIC: "",
                 });
-                setTab("addReport");
+                setTab("home");
                 sendData(userSelected);
               }}
             >

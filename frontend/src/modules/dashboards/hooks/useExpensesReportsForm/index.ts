@@ -190,7 +190,10 @@ export function useExpensesReportsForm() {
     }
 
     let userId: number, kmMileageRateId: number, waiverMileageRateId: number;
-    if (currentUser.role === "ROLE_ADMIN") {
+    if (
+      currentUser.role === "ROLE_ADMIN" ||
+      currentUser.role === "ROLE_TREASURER"
+    ) {
       if (userSelected) userId = userSelected.id;
       else userId = currentUser.id;
     } else {
@@ -358,6 +361,11 @@ export function useExpensesReportsForm() {
       );
       return null;
     }
+    await generatePdf();
+    setStep(4);
+  }
+
+  async function generatePdf() {
     const element = document.createElement("div");
     element.innerHTML = generateHtml();
 
