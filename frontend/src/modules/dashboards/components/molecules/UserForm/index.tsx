@@ -154,7 +154,19 @@ export default function UserForm({
         </select>
       </div>
       <div className={styles.nextPrevButton}>
-        <button onClick={() => setTab("home")}>Annuler</button>
+        <button
+          onClick={() => {
+            setTab("home");
+            setFormData({
+              name: "",
+              email: "",
+              role: "",
+              password: "",
+            });
+          }}
+        >
+          Annuler
+        </button>
         <button onClick={sendData}>Enregistrer</button>
       </div>
     </form>

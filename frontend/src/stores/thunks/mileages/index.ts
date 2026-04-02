@@ -20,11 +20,19 @@ export const fetchMileageRatesThunk = createAsyncThunk<
     credentials: "include",
   });
 
-  if (!resWaiverRates.ok || !resKmRates.ok)
+  let kmRates: WithRequiredId<MileageRate>[] = [];
+  let waiverRates: WithRequiredId<MileageRate>[] = [];
+
+  if (resKmRates.ok) {
+    kmRates = await resKmRates.json();
+  }
+  if (resWaiverRates.ok) {
+    waiverRates = await resWaiverRates.json();
+  }
+
+  if (!resWaiverRates.ok && !resKmRates.ok)
     throw new Error("Error fetch mileage rates");
-  const waiverRates: WithRequiredId<MileageRate>[] =
-    await resWaiverRates.json();
-  const kmRates: WithRequiredId<MileageRate>[] = await resKmRates.json();
+
   return {
     waiverRates,
     kmRates,

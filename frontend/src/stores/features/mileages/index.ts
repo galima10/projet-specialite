@@ -42,11 +42,18 @@ export const mileageSlice = createSlice({
         ) => {
           state.loading = false;
           const { waiverRates, kmRates } = action.payload;
-          if (state.waiverMileageRates.length === 0) {
-            state.waiverMileageRates = waiverRates;
+          if (state.waiverMileageRates.length === 0 && waiverRates) {
+            state.waiverMileageRates = waiverRates.map((rate) => ({
+              ...rate,
+              amountPerKm: Number(rate.amountPerKm),
+            }));
           }
-          if (state.kmMileageRates.length === 0) {
-            state.kmMileageRates = kmRates;
+
+          if (state.kmMileageRates.length === 0 && kmRates) {
+            state.kmMileageRates = kmRates.map((rate) => ({
+              ...rate,
+              amountPerKm: Number(rate.amountPerKm),
+            }));
           }
         },
       )

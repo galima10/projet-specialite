@@ -29,13 +29,14 @@ export const budget = [
 ];
 
 export function useExpensesReportsForm() {
-  const disptach = useAppDispatch();
+  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.user);
   const { waiverMileageRates, kmMileageRates } = useAppSelector(
     (state) => state.mileage,
   );
   useEffect(() => {
-    disptach(fetchMileageRatesThunk());
+    if (waiverMileageRates.length === 0 || kmMileageRates.length === 0)
+      dispatch(fetchMileageRatesThunk());
   }, []);
 
   const [step, setStep] = useState<number>(1);
@@ -212,6 +213,8 @@ export function useExpensesReportsForm() {
       ).id;
     }
 
+    
+
     const request: ExpensesReport = {
       createdAt: formData.createdAt,
       reason: formData.reason,
@@ -223,7 +226,7 @@ export function useExpensesReportsForm() {
       expensesList: formData.expensesList,
     };
 
-    disptach(createExpensesReportThunk({ data: request, userId: userId }));
+    dispatch(createExpensesReportThunk({ data: request, userId: userId }));
 
     console.log(request);
   }
@@ -381,7 +384,7 @@ export function useExpensesReportsForm() {
       return null;
     }
     await generatePdf();
-    
+
     setStep(4);
   }
 

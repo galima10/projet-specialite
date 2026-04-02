@@ -154,10 +154,14 @@ export default function ExpensesReportsForm({
         </>
       ) : step === 2.5 ? (
         <>
-          <button onClick={() => {
-            setStep(2);
-            setCurrentDocuments([])
-          }}>Retour</button>
+          <button
+            onClick={() => {
+              setStep(2);
+              setCurrentDocuments([]);
+            }}
+          >
+            Retour
+          </button>
           <div className={styles.input}>
             <label htmlFor="expenseDate">Date de la dépense</label>
             <input
@@ -197,8 +201,22 @@ export default function ExpensesReportsForm({
                     id="expenseKm"
                     type="number"
                     placeholder="Entrez le nombre de km parcouru"
+                    step="0.01"
                     name="km"
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*([.,]\d{0,2})?$/.test(value) || value === "") {
+                        handleInputChange(e, true);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const value = parseFloat(e.target.value);
+                      if (!isNaN(value)) {
+                        e.target.value = value.toFixed(2);
+                      }
+                    }}
+                    defaultValue={0}
+                    min={0}
                   />
                 </div>
               )}
@@ -221,9 +239,23 @@ export default function ExpensesReportsForm({
                   <input
                     id="expenseTransport"
                     type="number"
+                    step="0.01"
                     placeholder="Entrez le coût ici"
                     name="transportCost"
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*([.,]\d{0,2})?$/.test(value) || value === "") {
+                        handleInputChange(e, true);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const value = parseFloat(e.target.value);
+                      if (!isNaN(value)) {
+                        e.target.value = value.toFixed(2);
+                      }
+                    }}
+                    defaultValue={0}
+                    min={0}
                   />
                 </div>
               )}
@@ -244,9 +276,23 @@ export default function ExpensesReportsForm({
                   <input
                     id="expenseOther"
                     type="number"
+                    step="0.01"
                     placeholder="Entrez le coût ici"
                     name="othersCost"
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*([.,]\d{0,2})?$/.test(value) || value === "") {
+                        handleInputChange(e, true);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const value = parseFloat(e.target.value);
+                      if (!isNaN(value)) {
+                        e.target.value = value.toFixed(2);
+                      }
+                    }}
+                    defaultValue={0}
+                    min={0}
                   />
                 </div>
               )}
@@ -348,9 +394,24 @@ export default function ExpensesReportsForm({
                       <input
                         id="amountWaiver"
                         type="number"
+                        step="0.01"
                         name="amountWaiver"
                         placeholder="Entrez la somme abandonnée ici"
-                        onChange={handleInputChange}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (
+                            /^\d*([.,]\d{0,2})?$/.test(value) ||
+                            value === ""
+                          ) {
+                            handleInputChange(e, true);
+                          }
+                        }}
+                        onBlur={(e) => {
+                          const value = parseFloat(e.target.value);
+                          if (!isNaN(value)) {
+                            e.target.value = value.toFixed(2);
+                          }
+                        }}
                         defaultValue={0}
                         min={0}
                       />
@@ -452,7 +513,6 @@ export default function ExpensesReportsForm({
                   userIBAN: "",
                   userBIC: "",
                 });
-                
               }}
             >
               Générer le PDF
@@ -462,8 +522,8 @@ export default function ExpensesReportsForm({
       ) : step === 4 ? (
         <>
           <p>
-            Envoyer directement la note de frais à l'association à l'adresse mail
-            suivante : adressemail@gmail.com
+            Envoyer directement la note de frais à l'association à l'adresse
+            mail suivante : adressemail@gmail.com
           </p>
           <div className={styles.nextPrevButton}>
             <button type="button">Envoyer</button>

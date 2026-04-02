@@ -7,10 +7,11 @@ import UserProfile from "../../molecules/UserProfile";
 import ExpensesReportsForm from "../../molecules/ExpensesReportsForm";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import UserForm from "../../molecules/UserForm";
+import MileagesManagement from "../../molecules/MileagesManagement";
 
 export default function ContentAdminDashboard() {
   const [tab, setTab] = useState<
-    "home" | "viewProfile" | "addReport" | "setUser"
+    "home" | "viewProfile" | "addReport" | "setUser" | "mileagesManagement"
   >("home");
   const [formType, setFormType] = useState<{
     type: "create" | "update";
@@ -31,12 +32,17 @@ export default function ContentAdminDashboard() {
   return (
     <div>
       {tab === "home" ? (
-        <UsersList
-          users={users}
-          setSelectedUser={setSelectedUser}
-          setTab={setTab}
-          setFormType={setFormType}
-        />
+        <>
+          <button onClick={() => setTab("mileagesManagement")}>
+            Voir les barèmes
+          </button>
+          <UsersList
+            users={users}
+            setSelectedUser={setSelectedUser}
+            setTab={setTab}
+            setFormType={setFormType}
+          />
+        </>
       ) : tab === "viewProfile" ? (
         <UserProfile
           user={selectedUser}
@@ -46,8 +52,15 @@ export default function ContentAdminDashboard() {
         />
       ) : tab === "addReport" ? (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
+      ) : tab === "setUser" ? (
+        <UserForm
+          type={formType.type}
+          setTab={setTab}
+          users={users}
+          userId={formType.userId}
+        />
       ) : (
-        tab === "setUser" && <UserForm type={formType.type} setTab={setTab} users={users} userId={formType.userId} />
+        tab === "mileagesManagement" && <MileagesManagement setTab={setTab} />
       )}
     </div>
   );
