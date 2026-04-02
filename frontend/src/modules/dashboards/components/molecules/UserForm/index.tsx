@@ -139,7 +139,7 @@ export default function UserForm({
         />
       </div>
       <div
-        className={`${styles.input} ${adminsCount.length === 1 && currentUser.role === "ROLE_ADMIN" && "disabled"}`}
+        className={`${styles.input} ${adminsCount.length === 1 && currentUser.role === "ROLE_ADMIN" && currentUser.id === userId && "disabled"}`}
       >
         <label htmlFor="role">Rôle</label>
         <select

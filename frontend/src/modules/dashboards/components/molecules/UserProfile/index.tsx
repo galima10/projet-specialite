@@ -44,20 +44,25 @@ export default function UserProfile({
   return (
     <div>
       <button onClick={() => setTab("home")}>Retour</button>
-      <button
-        onClick={() => {
-          setFormType({
-            type: "update",
-            userId: user.id,
-          });
-          setTab("setUser");
-        }}
-      >
-        Modifier le compte
-      </button>
-      <button onClick={() => deleteAccount(user.id)}>
-        Supprimer le compte
-      </button>
+      {((currentUser && currentUser.id === user.id) ||
+        currentUser.role === "ROLE_ADMIN") && (
+        <>
+          <button
+            onClick={() => {
+              setFormType({
+                type: "update",
+                userId: user.id,
+              });
+              setTab("setUser");
+            }}
+          >
+            Modifier le compte
+          </button>
+          <button onClick={() => deleteAccount(user.id)}>
+            Supprimer le compte
+          </button>
+        </>
+      )}
       <p>{user.name}</p>
       <p>{user.email}</p>
       <p>{user.role}</p>

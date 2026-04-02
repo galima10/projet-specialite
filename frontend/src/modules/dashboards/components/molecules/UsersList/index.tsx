@@ -6,26 +6,32 @@ export default function UsersList({
   setSelectedUser,
   setTab,
   setFormType,
+  currentUser,
 }: {
   users: Users[];
   setSelectedUser: Dispatch<SetStateAction<Users>>;
-  setTab: Dispatch<SetStateAction<"home" | "viewProfile" | "setUser">>;
+  setTab: Dispatch<
+    SetStateAction<"home" | "viewProfile" | "setUser" | "addReport">
+  >;
   setFormType: Dispatch<
     SetStateAction<{ type: "create" | "update"; userId?: number }>
   >;
+  currentUser?: Users;
 }) {
   return (
     <div>
-      <button
-        onClick={() => {
-          setFormType({
-            type: "create",
-          });
-          setTab("setUser");
-        }}
-      >
-        Ajouter un nouvel utilisateur
-      </button>
+      {currentUser && currentUser.role === 'ROLE_ADMIN' && (
+        <button
+          onClick={() => {
+            setFormType({
+              type: "create",
+            });
+            setTab("setUser");
+          }}
+        >
+          Ajouter un nouvel utilisateur
+        </button>
+      )}
       <ul>
         {users.map((user) => {
           return (
