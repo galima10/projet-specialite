@@ -128,22 +128,12 @@ export function useExpensesReportsForm() {
     if (isExpense) {
       setCurrentExpense((prev) => ({
         ...prev,
-        [name]:
-          type === "checkbox"
-            ? checked
-            : type === "file"
-              ? (files?.[0] ?? null)
-              : value,
+        [name]: type === "checkbox" ? checked : value,
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]:
-          type === "checkbox"
-            ? checked
-            : type === "file"
-              ? (files?.[0] ?? null)
-              : value,
+        [name]: type === "checkbox" ? checked : value,
       }));
     }
   }
@@ -160,6 +150,11 @@ export function useExpensesReportsForm() {
       },
     ]);
   }
+  useEffect(() => {
+    if (currentDocuments.length > 0) {
+      console.log("Documents prêts :", currentDocuments);
+    }
+  }, [currentDocuments]);
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
   }
@@ -212,8 +207,6 @@ export function useExpensesReportsForm() {
         (wv) => wv.label === formData.waiverMileageRate,
       ).id;
     }
-
-    
 
     const request: ExpensesReport = {
       createdAt: formData.createdAt,
@@ -329,8 +322,8 @@ export function useExpensesReportsForm() {
         </table>
         <p style="margin-top: .65rem"><strong style="font-size: 0.85rem">Total des frais : ${parseFloat(totalAll) > 0 ? parseFloat(totalAll).toFixed(2) : 0} €</strong></p>
         ${
-          formData.waiverMileageRate &&
-          `
+          formData.waiverMileageRate
+            ? `
           <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Abandon de frais</h3>
           <p style="font-size: 0.75rem; margin-bottom: .75rem">
             Il vous est possible de faire don au CST du total ou d'une partie de cette somme. 
@@ -341,6 +334,7 @@ export function useExpensesReportsForm() {
           <p><em style="font-size: 0.65rem; opacity: .75">Barème d'abandon de frais : ${formData.waiverMileageRate ? wvRate.amountPerKm.toFixed(3) : 0}/km</em></p>
           <p><small style="font-size: 0.75rem">Après déduction d'impôts, le montant réel dépensé sera de : ${realAmountWaiver.toFixed(2)} €</small></p>
         `
+            : ""
         }
         <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Remboursement</h3>
         <p><strong style="font-size: 0.85rem">Je souhaite que le CST me rembourse : ${totalAll.toFixed(2) - Number(formData.amountWaiver || 0)} €</strong></p>
@@ -439,13 +433,23 @@ export function useExpensesReportsForm() {
   }
 
   function handleAddExpense() {
-    console.log(currentExpense);
+    const km =
+      typeof currentExpense.km === "string"
+        ? parseFloat(currentExpense.km) || 0
+        : currentExpense.km || 0;
+    const transport =
+      typeof currentExpense.transportCost === "string"
+        ? parseFloat(currentExpense.transportCost) || 0
+        : currentExpense.transportCost || 0;
+    const other =
+      typeof currentExpense.otherCost === "string"
+        ? parseFloat(currentExpense.otherCost) || 0
+        : currentExpense.otherCost || 0;
+
     if (
       currentExpense.date === "" ||
       currentExpense.object === "" ||
-      (Number(currentExpense.km) === 0 &&
-        Number(currentExpense.transportCost) === 0 &&
-        Number(currentExpense.otherCost) === 0) ||
+      (km === 0 && transport === 0 && other === 0) ||
       currentDocuments.length === 0
     ) {
       console.log("Il manque des champs");
@@ -455,6 +459,12 @@ export function useExpensesReportsForm() {
       ...currentExpense,
       documents: currentDocuments,
     };
+    setCurrentExpense((prev) => {
+      return {
+        ...prev,
+        documents: currentDocuments,
+      };
+    });
 
     setFormData((prev) => ({
       ...prev,

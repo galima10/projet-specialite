@@ -1,13 +1,12 @@
 import styles from "./Header.module.scss";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@modules/shared/hooks/redux";
 
 import { ROUTES } from "@constants/route";
 
 export default function Header() {
   const navigate = useNavigate();
-  const pathname = useLocation().pathname;
   const { currentUser } = useAppSelector((state) => state.user);
   function handleDashboard() {
     if (!currentUser) return;
@@ -27,15 +26,28 @@ export default function Header() {
   }
   return (
     <header className={styles.header}>
-      <button className={styles.headerButton} onClick={handleDashboard}>
-        Dashboard
-      </button>
-      <button
-        className={styles.headerButton}
-        onClick={() => navigate(ROUTES.PROFILE.route)}
-      >
-        Profil
-      </button>
+      {currentUser ? (
+        <button className={styles.headerButton} onClick={handleDashboard}>
+          Dashboard
+        </button>
+      ) : (
+        <button
+          className={styles.headerButton}
+          onClick={() => {
+            navigate(ROUTES.HOME.route);
+          }}
+        >
+          Home
+        </button>
+      )}
+      {currentUser && (
+        <button
+          className={styles.headerButton}
+          onClick={() => navigate(ROUTES.PROFILE.route)}
+        >
+          Profil
+        </button>
+      )}
     </header>
   );
 }
