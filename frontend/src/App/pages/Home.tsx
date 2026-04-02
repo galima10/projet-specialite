@@ -9,6 +9,7 @@ export default function HomePage() {
     <>
       <h1>Home</h1>
       <button onClick={() => navigate(ROUTES.LOGIN.route)}>Login</button>
+      <button onClick={() => navigate(ROUTES.REGISTER.route)}>Register</button>
     </>
   );
 }

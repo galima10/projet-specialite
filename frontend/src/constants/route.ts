@@ -8,7 +8,7 @@ export const ROUTES = {
     label: "Page de connexion",
   },
   REGISTER: {
-    route: "/login",
+    route: "/register",
     label: "Page d'enregistrement",
   },
   PROFILE: {

@@ -118,7 +118,7 @@ export default function UserForm({
         <label htmlFor="email">Email</label>
         <input
           id="email"
-          type="text"
+          type="email"
           placeholder="Entrez un email..."
           name="email"
           onChange={handleInputChange}
