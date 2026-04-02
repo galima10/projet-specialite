@@ -2,16 +2,25 @@ import { Users } from "@stores/features/users";
 import { Dispatch, SetStateAction } from "react";
 import { UserReport } from "@stores/features/expensesReports";
 const API_URL = import.meta.env.VITE_API_URL;
+import { useAppDispatch } from "@modules/shared/hooks/redux";
+import { deleteUserThunk } from "@stores/thunks/users";
 
 export default function UserProfile({
   user,
   setTab,
   expensesReports,
+  setFormType,
 }: {
   user: Users;
-  setTab: Dispatch<SetStateAction<"home" | "viewProfile" | "addReport">>;
+  setTab: Dispatch<
+    SetStateAction<"home" | "viewProfile" | "addReport" | "setUser">
+  >;
   expensesReports: UserReport[];
+  setFormType: Dispatch<
+    SetStateAction<{ type: "create" | "update"; userId?: number }>
+  >;
 }) {
+  const dispatch = useAppDispatch();
   const userReports = expensesReports.find(
     (report) => report.userId === user.id,
   );
@@ -19,7 +28,23 @@ export default function UserProfile({
   return (
     <div>
       <button onClick={() => setTab("home")}>Retour</button>
+      <button
+        onClick={() => {
+          setFormType({
+            type: "update",
+            userId: user.id,
+          });
+          setTab("setUser");
+        }}
+      >
+        Modifier le compte
+      </button>
+      <button onClick={() => dispatch(deleteUserThunk(user.id))}>
+        Supprimer le compte
+      </button>
       <p>{user.name}</p>
+      <p>{user.email}</p>
+      <p>{user.role}</p>
       {user.role === "ROLE_MEMBER" && (
         <>
           <button onClick={() => setTab("addReport")}>
