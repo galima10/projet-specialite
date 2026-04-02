@@ -92,7 +92,7 @@ export function useExpensesReportsForm() {
     );
 
     const totalOtherCost = formData.expensesList.reduce(
-      (sum, item) => sum + Number(item.othersCost || 0),
+      (sum, item) => sum + Number(item.otherCost || 0),
       0,
     );
 
@@ -223,115 +223,131 @@ export function useExpensesReportsForm() {
       expensesList: formData.expensesList,
     };
 
-    console.log(userId);
-
     disptach(createExpensesReportThunk({ data: request, userId: userId }));
 
     console.log(request);
   }
 
-  function generateHtml() {
-    // --- Totaux ---
-    const totalKm = formData.expensesList.reduce(
-      (sum, item) => sum + Number(item.km || 0),
-      0,
+  const {
+    totalAll,
+    totalKm,
+    totalKmAmount,
+    totalTransportCost,
+    totalOtherCost,
+  } = calculateTotals();
+
+  function generateHtmlPages() {
+    const budgetFound = budget.find((b) => b.value === formData.budget).name;
+    const wvRate = waiverMileageRates.find(
+      (r) => r.label === formData.waiverMileageRate,
+    );
+    const kmRate = kmMileageRates.find(
+      (r) => r.label === formData.kmMileageRate,
     );
 
-    const rate = kmMileageRates.find(
-      (rate) => rate.label === formData.kmMileageRate,
+    const totalAmountWaiver = wvRate ? totalKm * wvRate.amountPerKm : 0;
+    const effectiveAmountWaiver = Math.min(
+      totalAmountWaiver,
+      formData.amountWaiver,
+    );
+    const realAmountWaiver = effectiveAmountWaiver * (1 - 0.66);
+    const pages: string[] = [];
+
+    // Découpe les dépenses par lot si nécessaire
+    const expensesPerPage = 15;
+    const totalPages = Math.ceil(
+      formData.expensesList.length / expensesPerPage,
     );
 
-    const totalKmAmount = rate ? totalKm * rate.amountPerKm : 0;
+    for (let i = 0; i < totalPages; i++) {
+      const slice = formData.expensesList.slice(
+        i * expensesPerPage,
+        (i + 1) * expensesPerPage,
+      );
 
-    const totalTransportCost = formData.expensesList.reduce(
-      (sum, item) => sum + Number(item.transportCost || 0),
-      0,
-    );
-
-    const totalOtherCost = formData.expensesList.reduce(
-      (sum, item) => sum + Number(item.othersCost || 0),
-      0,
-    );
-
-    const totalAll = totalKmAmount + totalTransportCost + totalOtherCost;
-
-    // --- Justificatifs HTML ---
-    const expensesRows = formData.expensesList
-      .map(
-        (exp) => `
+      const rows = slice
+        .map(
+          (exp) => `
       <tr>
-        <td>${exp.date}</td>
-        <td>${exp.object}</td>
-        <td>${exp.km}</td>
-        <td>${exp.transportCost} €</td>
-        <td>${exp.othersCost} €</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.date}</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.km).toFixed(2)}</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.transportCost).toFixed(2)} €</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.otherCost).toFixed(2)} €</td>
       </tr>
     `,
-      )
-      .join("");
+        )
+        .join("");
 
-    // --- Frais d'abandon ---
-    let realAmountWaiver = 0;
-    if (formData.waiverMileageRate) {
-      const waiverRate = waiverMileageRates.find(
-        (r) => r.label === formData.waiverMileageRate,
-      );
-      realAmountWaiver = waiverRate
-        ? totalKm * waiverRate.amountPerKm * (1 - 0.66)
-        : 0;
+      pages.push(`
+      <div style="position: absolute; top:0; left: 0;max-width: 100%; max-height: 100%;padding: 0; width: 100%; min-height: 297mm; box-sizing: border-box; font-family: Arial">
+        <h1 style="font-size: 2.35rem; text-align: center; margin-bottom: 2rem">Note de frais</h1>
+        <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Informations</h3>
+        <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Nom du demandeur :</strong> ${formData.userName}</p>
+        <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Date de la demande demande :</strong> ${formData.createdAt.split("T")[0]}</p>
+        <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Raison de la dépense :</strong> ${formData.reason}</p>
+        <p style="font-size: 0.85rem"><strong>Budget :</strong> ${budgetFound}</p>
+
+        <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Dépenses</h3>
+        <table cellspacing="0" cellpadding="5" width="100%">
+          <thead>
+            <tr>
+              <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Date<br/><small style="font-size: 0.75rem;">de la dépense</small></th>
+              <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Objet de la dépense</th>
+              <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Km<br/><small style="font-size: 0.75rem;">effectués</small></th>
+              <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Péages,<br/>autres transports</th>
+              <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Autres</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+            <tr>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+              <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Total de km :</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalKm > 0 ? Number(totalKm).toFixed(2) : 0} km</td>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+            </tr>
+            <tr>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+              <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Barème kilométrique :</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${formData.kmMileageRate ? Number(kmRate.amountPerKm).toFixed(3) : 0}/km</td>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+            </tr>
+            <tr>
+              <td style="font-size: 0.85rem; padding: .35rem"></td>
+              <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Totaux par catégorie :</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${(totalKmAmount && totalKmAmount > 0) ? Number(totalKmAmount).toFixed(2) : 0} €</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${(totalTransportCost && totalTransportCost > 0) ? Number(totalTransportCost).toFixed(2) : 0} €</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${(totalOtherCost && totalOtherCost > 0) ? totalOtherCost.toFixed(2) : 0} €</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: .65rem"><strong style="font-size: 0.85rem">Total des frais : ${totalAll > 0 ? Number(totalAll).toFixed(2) : 0} €</strong></p>
+        ${formData.waiverMileageRate && `
+          <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Abandon de frais</h3>
+          <p style="font-size: 0.75rem; margin-bottom: .75rem">
+            Il vous est possible de faire don au CST du total ou d'une partie de cette somme. 
+            Dans ce cas, conformément à l’article 41 de la loi 2000 627 du 6 juillet 2000 modifiant la loi du 16 juillet 1984 relative à l’organisation et la promotion des activités physiques et sportives, vous bénéficierez d’une réduction d’impôts égale à 66 % de la somme concernée (dans la limite de 20 % du revenu imposable). Un reçu fiscal vous sera envoyé. 
+            Attention le barême kilomètrique est différent dans ce cas.
+          </p>
+          <p><strong style="font-size: 0.85rem">J'abandonne le remboursement de la somme de : ${formData.amountWaiver > 0 ? Number(formData.amountWaiver).toFixed(2) : 0} €</strong></p>
+          <p><em style="font-size: 0.65rem; opacity: .75">Barème d'abandon de frais : ${formData.waiverMileageRate ? Number(wvRate.amountPerKm).toFixed(3) : 0}/km</em></p>
+          <p><small style="font-size: 0.75rem">Après déduction d'impôts, le montant réel dépensé sera de : ${Number(realAmountWaiver).toFixed(2)} €</small></p>
+        `}
+        <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Remboursement</h3>
+        <p><strong style="font-size: 0.85rem">Je souhaite que le CST me rembourse : ${totalAll.toFixed(2) - Number(formData.amountWaiver || 0)} €</strong></p>
+        <p style="font-size: 0.85rem; text-decoration: underline; margin-top: 0.5rem; margin-bottom: .5rem">Sur le compte : </p>
+        <p><strong style="font-size: 0.85rem">IBAN :</strong> ${formData.userIBAN}</p>
+        <p><strong style="font-size: 0.85rem">BIC :</strong> ${formData.userBIC}</p>
+
+        <div style="page-break-after: always;"></div>
+      </div>
+    `);
     }
 
-    // --- Génération HTML ---
-    return `
-    <div style="padding:20px;font-family:Arial">
-      <h1>Note de frais</h1>
-  
-      <h3>Informations</h3>
-      <p><strong>Nom:</strong> ${formData.userName}</p>
-      <p><strong>Date demande:</strong> ${formData.createdAt}</p>
-      <p><strong>Motif:</strong> ${formData.reason}</p>
-      <p><strong>Budget:</strong> ${budget.find((b) => b.value === formData.budget).name}</p>
-  
-      <h3>Dépenses</h3>
-      <table border="1" cellspacing="0" cellpadding="5" width="100%">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Objet</th>
-            <th>Km</th>
-            <th>Transport</th>
-            <th>Autres</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${expensesRows}
-        </tbody>
-      </table>
-  
-      <h3>Totaux</h3>
-      <ul>
-        <li>Total km : ${totalKm}</li>
-        <li>Total frais km : ${totalKmAmount.toFixed(2)} €</li>
-        <li>Total frais transport : ${totalTransportCost.toFixed(2)} €</li>
-        <li>Total autres frais : ${totalOtherCost.toFixed(2)} €</li>
-        <li>Total général : ${totalAll.toFixed(2)} €</li>
-      </ul>
-  
-      ${
-        formData.waiverMileageRate
-          ? `
-        <h3>Frais d'abandon</h3>
-        <p>Barème choisi : ${formData.waiverMileageRate}</p>
-        <p>Après déduction d’impôts, le montant réel dépensé sera de : ${realAmountWaiver.toFixed(2)} €</p>
-      `
-          : ""
-      }
-  
-      <h3>Coordonnées bancaires</h3>
-      <p>IBAN: ${formData.userIBAN}</p>
-      <p>BIC: ${formData.userBIC}</p>
-    </div>
-    `;
+    return pages.join("");
   }
 
   async function handleGeneratePdf() {
@@ -367,13 +383,24 @@ export function useExpensesReportsForm() {
 
   async function generatePdf() {
     const element = document.createElement("div");
-    element.innerHTML = generateHtml();
+    element.style.width = "100%";
+    element.style.minHeight = "297mm";
+    element.style.margin = "0";
+    element.style.padding = "0";
+    element.style.display = "block";
+    element.style.boxSizing = "border-box";
+    element.style.position = "relative";
+    element.innerHTML = generateHtmlPages();
 
     const opt = {
       margin: 10,
       filename: "note-de-frais.pdf",
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollY: -5
+      },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 

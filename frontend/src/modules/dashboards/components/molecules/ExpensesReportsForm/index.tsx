@@ -154,7 +154,10 @@ export default function ExpensesReportsForm({
         </>
       ) : step === 2.5 ? (
         <>
-          <button onClick={() => setStep(2)}>Retour</button>
+          <button onClick={() => {
+            setStep(2);
+            setCurrentDocuments([])
+          }}>Retour</button>
           <div className={styles.input}>
             <label htmlFor="expenseDate">Date de la dépense</label>
             <input
@@ -370,25 +373,22 @@ export default function ExpensesReportsForm({
                       </select>
                     </div>
                     {formData.waiverMileageRate &&
+                      formData.amountWaiver > 0 &&
                       (() => {
-                        // Total km parcourus
-                        const totalKm = formData.expensesList.reduce(
-                          (sum, item) => sum + Number(item.km || 0),
-                          0,
-                        );
-
-                        // Trouver le barème choisi pour l'abandon
                         const rate = waiverMileageRates.find(
                           (r) => r.label === formData.waiverMileageRate,
                         );
 
-                        // Calcul du montant avant impôt
                         const totalAmount = rate
                           ? totalKm * rate.amountPerKm
                           : 0;
 
-                        // Après déduction fiscale (66%)
-                        const realAmount = totalAmount * (1 - 0.66);
+                        const effectiveAmount = Math.min(
+                          totalAmount,
+                          formData.amountWaiver,
+                        );
+
+                        const realAmount = effectiveAmount * (1 - 0.66);
 
                         return (
                           <p>
@@ -436,38 +436,7 @@ export default function ExpensesReportsForm({
             <button
               onClick={() => {
                 handleGeneratePdf();
-              }}
-            >
-              Générer le PDF
-            </button>
-          </div>
-        </>
-      ) : step === 4 ? (
-        <>
-          <p>
-            Voulez-vous l'envoyer directement à l'association à l'adresse mail
-            suivante : adressemail@gmail.com
-          </p>
-          <div className={styles.radio}>
-            <label htmlFor="userGetFile">
-              Oui
-              <input
-                id="userGetFile"
-                name="userFile"
-                type="radio"
-                defaultChecked
-              />
-            </label>
-            <label htmlFor="userWaiverFile">
-              Non
-              <input id="userWaiverFile" name="userFile" type="radio" />
-            </label>
-          </div>
-          <div className={styles.nextPrevButton}>
-            <button onClick={() => setStep(3)}>Retour</button>
-            <button
-              onClick={() => {
-                setStep(1);
+
                 setFormData({
                   dateRequest: "",
                   userName: "",
@@ -482,11 +451,29 @@ export default function ExpensesReportsForm({
                   userIBAN: "",
                   userBIC: "",
                 });
-                setTab("home");
+
                 sendData(userSelected);
               }}
             >
-              Valider
+              Générer le PDF
+            </button>
+          </div>
+        </>
+      ) : step === 4 ? (
+        <>
+          <p>
+            Envoyer directement la note de frais à l'association à l'adresse mail
+            suivante : adressemail@gmail.com
+          </p>
+          <div className={styles.nextPrevButton}>
+            <button type="button">Envoyer</button>
+            <button
+              onClick={() => {
+                setTab("home");
+                setStep(1);
+              }}
+            >
+              Revenir au tableau de bord
             </button>
           </div>
         </>

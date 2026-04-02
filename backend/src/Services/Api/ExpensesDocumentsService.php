@@ -101,10 +101,12 @@ class ExpensesDocumentsService
     }
 
     // Déplacer le fichier
-    $uploadDir = __DIR__ . '/uploads/'; // adapter au chemin réel
+    $uploadDir = dirname(__DIR__, 3) . '/public/uploads/expenses-documents/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
     $destination = $uploadDir . basename($file['name']);
     move_uploaded_file($file['tmp_name'], $destination);
+
+    
 
     // Créer l’entité
     $document = new ExpensesDocuments();
@@ -112,13 +114,15 @@ class ExpensesDocumentsService
     $document->setPathFile($destination);
     $document->setExpensesList($expensesList);
 
+    $pathFile = '/uploads/expenses-documents/' . $document->getName();
+
     $this->entityManager->persist($document);
     $this->entityManager->flush();
 
     return [
       'id' => $document->getId(),
       'name' => $document->getName(),
-      'pathFile' => $document->getPathFile(),
+      'pathFile' => $pathFile,
       'expensesListId' => $expensesList->getId(),
     ];
   }

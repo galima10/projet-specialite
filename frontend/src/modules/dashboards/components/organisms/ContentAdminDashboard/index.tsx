@@ -5,17 +5,22 @@ import { fetchUsersThunk } from "@stores/thunks/users";
 import { Users } from "@stores/features/users";
 import UserProfile from "../../molecules/UserProfile";
 import ExpensesReportsForm from "../../molecules/ExpensesReportsForm";
+import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 
 export default function ContentAdminDashboard() {
   const [tab, setTab] = useState<"home" | "viewProfile" | "addReport">("home");
   const [selectedUser, setSelectedUser] = useState<Users>(null);
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.user);
+  const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (!users || users.length === 0) {
       dispatch(fetchUsersThunk());
     }
-  }, [dispatch, users]);
+    if (!expensesReports || expensesReports.length === 0) {
+      dispatch(fetchExpensesReportsThunk());
+    }
+  }, []);
   return (
     <div>
       {tab === "home" ? (
@@ -25,7 +30,11 @@ export default function ContentAdminDashboard() {
           setTab={setTab}
         />
       ) : tab === "viewProfile" ? (
-        <UserProfile user={selectedUser} setTab={setTab} />
+        <UserProfile
+          user={selectedUser}
+          setTab={setTab}
+          expensesReports={expensesReports}
+        />
       ) : (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
       )}

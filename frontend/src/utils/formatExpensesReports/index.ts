@@ -37,7 +37,7 @@ export function formatExpensesReports(
         amountWaiver: parseFloat(request.amountWaiver) ?? 0,
         waiverMileageRateId: request.waiverMileageRateId ?? null,
         kmMileageRateId: request.kmMileageRateId ?? null,
-        reportDocumentPath: reportFile,
+        reportDocumentFile: reportFile,
         expensesList: [],
       };
 
@@ -71,24 +71,18 @@ export function formatExpensesReports(
     (acc, item) => {
       const key = item.userId;
       if (!acc[key]) {
-        acc[key] = {
-          id: item.id,
-          createdAt: item.createdAt,
-          reason: item.reason,
-          waiverMileageRateId: item.waiverMileageRateId,
-          kmMileageRateId: item.kmMileageRateId,
-          reportDocumentPath: item.reportDocumentPath,
-          expensesList: item.expensesList,
-        };
+        acc[key] = [];
       }
+      acc[key].push(item);
       return acc;
     },
-    {} as Record<number, any>,
+    {} as Record<number, WithRequiredId<ReportWithUserId>[]>,
   );
+
   const treated: UserReport[] = Object.entries(userReports).map(
-    ([userId, ur]) => ({
+    ([userId, reports]) => ({
       userId: Number(userId),
-      reports: Array.isArray(ur) ? ur : [ur],
+      reports, // tous les reports de cet utilisateur
     }),
   );
 
