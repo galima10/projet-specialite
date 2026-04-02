@@ -166,3 +166,17 @@ export const registerThunk = createAsyncThunk<void, UserRegister>(
     if (!res.ok) throw new Error("Error register user");
   },
 );
+
+export const fetchCountUsersThunk = createAsyncThunk<number, void>(
+  "users/fetchCountUsers",
+  async () => {
+    const res = await fetch(`${API_URL}${API_ROUTES.COUNT_USERS}`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) throw new Error("Error fetch users count");
+
+    const data: { count: number } = await res.json();
+    return data.count;
+  },
+);

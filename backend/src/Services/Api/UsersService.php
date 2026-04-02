@@ -97,4 +97,11 @@ class UsersService
     $this->entityManager->flush();
     return true;
   }
+
+  public function getUsersCount()
+  {
+    $users = $this->usersRepository->findAll();
+    if (!$users) return 0;
+    return count($users);
+  }
 }

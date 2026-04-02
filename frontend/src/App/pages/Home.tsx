@@ -1,4 +1,3 @@
-import HomeHero from "@modules/home/components/organisms/HomeHero";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/route";
 

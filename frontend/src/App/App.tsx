@@ -14,7 +14,10 @@ import RegisterPage from "@App/pages/Auth/RegisterPage";
 
 import { useAppDispatch, useAppSelector } from "@modules/shared/hooks/redux";
 import { useEffect } from "react";
-import { fetchCurrentUserThunk } from "@stores/thunks/users";
+import {
+  fetchCurrentUserThunk,
+  fetchCountUsersThunk,
+} from "@stores/thunks/users";
 
 import { ROUTES } from "@constants/route";
 
@@ -72,6 +75,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(fetchCurrentUserThunk());
+    dispatch(fetchCountUsersThunk());
   }, [dispatch]);
 
   if (loading) {

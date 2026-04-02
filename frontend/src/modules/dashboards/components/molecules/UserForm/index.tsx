@@ -24,12 +24,16 @@ export default function UserForm({
   userId,
   setTab,
   users,
+  currentUser,
 }: {
   type: "update" | "create" | null;
   userId?: number;
   setTab: Dispatch<SetStateAction<"home" | "addReport">>;
   users: Users[];
+  currentUser: Users;
+  countUsers: number;
 }) {
+  const adminsCount = users.filter((u) => u.role === "ROLE_ADMIN");
   const dispatch = useAppDispatch();
   const [formData, setFormData] = useState<Users & { password: string }>({
     name: "",
@@ -135,8 +139,10 @@ export default function UserForm({
           onChange={handleInputChange}
         />
       </div>
-      <div className={styles.input}>
-        <label htmlFor="role">Budget</label>
+      <div
+        className={`${styles.input} ${adminsCount.length === 1 && currentUser.role === "ROLE_ADMIN" && "disabled"}`}
+      >
+        <label htmlFor="role">Rôle</label>
         <select
           name="role"
           id="role"

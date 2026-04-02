@@ -64,4 +64,11 @@ final class UsersController extends AbstractController
     if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);
     return $this->json(null, 204);
   }
+
+  #[Route('/count', name: 'users_count', methods: ['GET'])]
+  public function users_count(UsersService $usersService,): JsonResponse
+  {
+    $count = $usersService->getUsersCount();
+    return $this->json(['count' => $count], 200);
+  }
 }

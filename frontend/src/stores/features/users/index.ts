@@ -7,6 +7,7 @@ import {
   fetchCurrentUserThunk,
   logoutThunk,
   loginThunk,
+  fetchCountUsersThunk,
 } from "@stores/thunks/users";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
@@ -20,6 +21,7 @@ export interface Users {
 const initialState = {
   users: [] as WithRequiredId<Users>[],
   currentUser: null as WithRequiredId<Users> | null,
+  countUsers: null as number | null,
   loading: false,
   error: null as string | null,
 };
@@ -47,6 +49,29 @@ export const userSlice = createSlice({
       .addCase(
         fetchUsersThunk.rejected,
         (state, action: ReturnType<typeof fetchUsersThunk.rejected>) => {
+          state.loading = false;
+          state.error = action.error.message ?? "Erreur inconnue";
+        },
+      );
+
+    // fetchCountUsersThunk
+    builder
+      .addCase(fetchCountUsersThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCountUsersThunk.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.loading = false;
+          if (!state.countUsers) {
+            state.countUsers = action.payload;
+          }
+        },
+      )
+      .addCase(
+        fetchCountUsersThunk.rejected,
+        (state, action: ReturnType<typeof fetchCountUsersThunk.rejected>) => {
           state.loading = false;
           state.error = action.error.message ?? "Erreur inconnue";
         },

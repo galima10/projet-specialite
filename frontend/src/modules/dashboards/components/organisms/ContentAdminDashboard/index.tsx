@@ -59,6 +59,7 @@ export default function ContentAdminDashboard() {
           setTab={setTab}
           users={users}
           userId={formType.userId}
+          currentUser={currentUser}
         />
       ) : (
         tab === "mileagesManagement" && <MileagesManagement setTab={setTab} />

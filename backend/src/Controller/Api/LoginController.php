@@ -50,11 +50,6 @@ final class LoginController extends AbstractController
     if (!$user) {
       return $this->json(['error' => 'User already exists'], 409);
     }
-    return $this->json([
-      'id' => $user->getId(),
-      'name' => $user->getName(),
-      'email' => $user->getEmail(),
-      'role' => $user->getRole()->value
-    ], 201);
+    return $this->json($user, 201);
   }
 }
