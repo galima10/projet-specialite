@@ -31,7 +31,6 @@ export default function UserForm({
   setTab: Dispatch<SetStateAction<"home" | "addReport">>;
   users: Users[];
   currentUser: Users;
-  countUsers: number;
 }) {
   const adminsCount = users.filter((u) => u.role === "ROLE_ADMIN");
   const dispatch = useAppDispatch();
