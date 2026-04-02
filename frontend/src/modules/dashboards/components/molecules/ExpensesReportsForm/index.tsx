@@ -434,9 +434,10 @@ export default function ExpensesReportsForm({
           <div className={styles.nextPrevButton}>
             <button onClick={() => setStep(2)}>Retour</button>
             <button
-              onClick={() => {
-                handleGeneratePdf();
+              onClick={async () => {
+                await handleGeneratePdf();
 
+                sendData(userSelected);
                 setFormData({
                   dateRequest: "",
                   userName: "",
@@ -451,8 +452,7 @@ export default function ExpensesReportsForm({
                   userIBAN: "",
                   userBIC: "",
                 });
-
-                sendData(userSelected);
+                
               }}
             >
               Générer le PDF
