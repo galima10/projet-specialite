@@ -32,7 +32,7 @@ class InfosRequests
     #[ORM\Column(enumType: Budget::class)]
     private ?Budget $budget = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2, nullable: true)]
     private ?string $amountWaiver = null;
 
     #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: "infosRequests")]
@@ -106,7 +106,7 @@ class InfosRequests
         return $this->amountWaiver;
     }
 
-    public function setAmountWaiver(string $amountWaiver): static
+    public function setAmountWaiver(?string $amountWaiver): static
     {
         $this->amountWaiver = $amountWaiver;
 
@@ -167,8 +167,7 @@ class InfosRequests
     public function getExpensesLists(): Collection
     {
         return $this->expensesLists;
-    
-        }
+    }
     public function getExpensesReports(): Collection
     {
         return $this->expensesReports;

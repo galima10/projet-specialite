@@ -79,51 +79,55 @@ export async function FetchExpensesReportsService() {
 
 export async function CreateExpensesReportService(
   data: ExpensesReport,
-  userId: number,
+  userId?: number,
 ): Promise<ExpensesReport> {
+  const body: any = {
+    reason: data.reason,
+    budget: data.budget,
+    amountWaiver: String(data.amountWaiver),
+    waiverMileageRateId: data.waiverMileageRateId ?? null,
+    kmMileageRateId: data.kmMileageRateId ?? null,
+  };
+
+  // Ne passer userId que si défini
+  if (userId) {
+    body.userId = userId;
+  }
+
   const resInfosRequest = await fetch(
     `${API_URL}${API_ROUTES.INFOS_REQUESTS}`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({
-        reason: data.reason,
-        budget: data.budget,
-        amountWaiver: data.amountWaiver,
-        waiverMileageRateId: data.waiverMileageRateId,
-        kmMileageRateId: data.kmMileageRateId,
-        userId,
-      }),
+      body: JSON.stringify(body),
     },
   );
   const infosRequestJson = await resInfosRequest.json();
 
-  const resReportsFiles = await fetch(
-    `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  let reportsFileJson = null;
+  if (data.reportDocumentFile?.file) {
+    const formDataPdf = new FormData();
+    formDataPdf.append("name", data.reportDocumentFile.file.name);
+    formDataPdf.append("expensesListId", infosRequestJson.id.toString());
+    formDataPdf.append("file", data.reportDocumentFile.file);
+
+    const resReportsFiles = await fetch(
+      `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: formDataPdf,
       },
-      credentials: "include",
-      body: JSON.stringify({
-        name: data.reportDocumentPath?.name,
-        pathFile: data.reportDocumentPath?.pathFile,
-        infosRequestId: infosRequestJson.id,
-      }),
-    },
-  );
-  const reportsFileJson = await resReportsFiles.json();
+    );
+    reportsFileJson = await resReportsFiles.json();
+  }
 
   const listPromises = data.expensesList.map(async (list) => {
+    // Créer la dépense
     const resList = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
         date: String(list.date),
@@ -138,21 +142,24 @@ export async function CreateExpensesReportService(
     const listJson = await resList.json();
 
     const documentsPromises = list.documents.map(async (document) => {
+      if (!document.file) return null;
+
+      const formDataDoc = new FormData();
+      formDataDoc.append("name", document.name);
+      formDataDoc.append("expensesListId", listJson.id.toString());
+      formDataDoc.append("file", document.file);
+
       const resDoc = await fetch(`${API_URL}${API_ROUTES.EXPENSES_DOCUMENTS}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         credentials: "include",
-        body: JSON.stringify({
-          name: document.name,
-          pathFile: document.pathFile,
-          expensesListId: listJson.id,
-        }),
+        body: formDataDoc,
       });
       return (await resDoc.json()) as ExpensesReport["expensesList"][0]["documents"][0];
     });
-    const documentsJson = await Promise.all(documentsPromises);
+
+    const documentsJson = (await Promise.all(documentsPromises)).filter(
+      Boolean,
+    );
 
     return {
       id: listJson.id,
@@ -168,9 +175,10 @@ export async function CreateExpensesReportService(
       })),
     };
   });
+
   const expensesListWithDocs = await Promise.all(listPromises);
 
-  const expenseReport: ExpensesReport = {
+  return {
     id: infosRequestJson.id,
     createdAt: infosRequestJson.createdAt,
     reason: infosRequestJson.reason,
@@ -178,7 +186,7 @@ export async function CreateExpensesReportService(
     amountWaiver: parseFloat(infosRequestJson.amountWaiver),
     waiverMileageRateId: infosRequestJson.waiverMileageRateId ?? 0,
     kmMileageRateId: infosRequestJson.kmMileageRateId ?? 0,
-    reportDocumentPath: reportsFileJson
+    reportDocumentFile: reportsFileJson
       ? {
           id: reportsFileJson.id,
           name: reportsFileJson.name,
@@ -187,8 +195,6 @@ export async function CreateExpensesReportService(
       : null,
     expensesList: expensesListWithDocs,
   };
-
-  return expenseReport;
 }
 
 export async function DeleteExpensesReportService(expensesReportId: number) {

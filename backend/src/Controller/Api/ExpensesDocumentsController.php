@@ -33,11 +33,20 @@ final class ExpensesDocumentsController extends AbstractController
   public function document_create(Request $request, ExpensesDocumentsService $expensesDocumentsService): JsonResponse
   {
     $currentUser = $this->getUser();
-    $data = json_decode($request->getContent(), true);
+
+    // Avec FormData, $_POST contient les champs et $_FILES le fichier
+    $data = [
+      'name' => $_POST['name'] ?? null,
+      'expensesListId' => $_POST['expensesListId'] ?? null,
+    ];
+
     $document = $expensesDocumentsService->addDocument($data, $currentUser);
-    if (!$document) return $this->json(['error' => 'Document already exists'], 409);
+
+    if ($document === 'Missing or invalid file') return $this->json(['error' => 'Missing or invalid file'], 400);
     if ($document === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     if ($document === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
+    if (!$document) return $this->json(['error' => 'Document already exists'], 409);
+
     return $this->json($document, 201);
   }
 

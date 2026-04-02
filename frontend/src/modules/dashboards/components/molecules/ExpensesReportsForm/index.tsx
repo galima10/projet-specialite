@@ -32,8 +32,10 @@ const budget = [
 
 export default function ExpensesReportsForm({
   setTab,
+  userSelected,
 }: {
   setTab: Dispatch<SetStateAction<"home" | "addReport">>;
+  userSelected?: Users | null;
 }) {
   const [hasKm, setHasKm] = useState(false);
   const [hasTransport, setHasTransport] = useState(false);
@@ -121,22 +123,24 @@ export default function ExpensesReportsForm({
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
   }
-  function sendData() {
-    if (
-      !formData.reason ||
-      !formData.budget ||
-      !formData.amountWaiver ||
-      !formData.expensesList
-    ) {
-      console.log("manque de champs");
-      return null;
-    }
+  function sendData(userSelected: Users | null = null) {
+    console.log(formData);
+    // if (
+    //   !formData.reason ||
+    //   !formData.budget ||
+    //   !formData.amountWaiver ||
+    //   !formData.expensesList
+    // ) {
+    //   console.log("manque de champs");
+    //   return null;
+    // }
 
     let userId: number, kmMileageRateId: number, waiverMileageRateId: number;
     if (currentUser.role === "ROLE_ADMIN") {
-      if (users.length !== 0) {
-        userId = users.find((u) => (u.name = formData.userName)).id;
-      }
+      if (userSelected) userId = userSelected.id;
+      else userId = currentUser.id;
+    } else {
+      userId = currentUser.id;
     }
 
     if (formData.kmMileageRate && kmMileageRates.length !== 0) {
@@ -161,6 +165,10 @@ export default function ExpensesReportsForm({
       reportDocumentFile: formData.reportDocumentFile,
       expensesList: formData.expensesList,
     };
+
+    console.log(userId);
+
+    disptach(createExpensesReportThunk({ data: request, userId: userId }));
 
     console.log(request);
   }
@@ -344,9 +352,9 @@ export default function ExpensesReportsForm({
 
     window.html2pdf().set(opt).from(element).save();
   }
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [formData]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -616,94 +624,101 @@ export default function ExpensesReportsForm({
               <li>Total des autres frais : {totalOtherCost.toFixed(2)} €</li>
             )}
           </ul>
-          <div className={styles.input}>
-            <label htmlFor="kmMileageRate">Votre condition</label>
-            <select
-              name="kmMileageRate"
-              id="kmMileageRate"
-              onChange={handleInputChange}
-            >
-              <option value="">--Choisissez une option--</option>
-              {kmMileageRates.map((item, index) => (
-                <option key={`kmRate-${index}`} value={item.label}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <p>Abandon de frais</p>
-          <div className={styles.inputContainer}>
-            <div className={styles.checkbox}>
-              <label htmlFor="expenseHasWaiver">
-                Je souhaite faire un abandon de frais
-              </label>
-              <input
-                id="expenseHasWaiver"
-                type="checkbox"
-                checked={hasWaiver}
-                onChange={(e) => setHasWaiver(e.target.checked)}
-              />
-            </div>
-            {hasWaiver && (
-              <>
-                <div className={styles.input}>
-                  <label htmlFor="amountWaiver">De la somme de :</label>
+          {formData.expensesList.some((item) => item.km && item.km > 0) && (
+            <>
+              <div className={styles.input}>
+                <label htmlFor="kmMileageRate">Votre condition</label>
+                <select
+                  name="kmMileageRate"
+                  id="kmMileageRate"
+                  onChange={handleInputChange}
+                >
+                  <option value="">--Choisissez une option--</option>
+                  {kmMileageRates.map((item, index) => (
+                    <option key={`kmRate-${index}`} value={item.label}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <p>Abandon de frais</p>
+              <div className={styles.inputContainer}>
+                <div className={styles.checkbox}>
+                  <label htmlFor="expenseHasWaiver">
+                    Je souhaite faire un abandon de frais
+                  </label>
                   <input
-                    id="amountWaiver"
-                    type="number"
-                    name="amountWaiver"
-                    placeholder="Entrez la somme abandonnée ici"
-                    onChange={handleInputChange}
-                    defaultValue={0}
-                    min={0}
+                    id="expenseHasWaiver"
+                    type="checkbox"
+                    checked={hasWaiver}
+                    onChange={(e) => setHasWaiver(e.target.checked)}
                   />
                 </div>
-                <div className={styles.input}>
-                  <label htmlFor="waiverMileageRate">Votre condition</label>
-                  <select
-                    name="waiverMileageRate"
-                    id="waiverMileageRate"
-                    onChange={handleInputChange}
-                  >
-                    <option value="">--Choisissez une option--</option>
-                    {waiverMileageRates.map((item, index) => {
-                      return (
-                        <option key={`wvRate-${index}`} value={item.label}>
-                          {item.label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                {formData.waiverMileageRate &&
-                  (() => {
-                    // Total km parcourus
-                    const totalKm = formData.expensesList.reduce(
-                      (sum, item) => sum + Number(item.km || 0),
-                      0,
-                    );
+                {hasWaiver && (
+                  <>
+                    <div className={styles.input}>
+                      <label htmlFor="amountWaiver">De la somme de :</label>
+                      <input
+                        id="amountWaiver"
+                        type="number"
+                        name="amountWaiver"
+                        placeholder="Entrez la somme abandonnée ici"
+                        onChange={handleInputChange}
+                        defaultValue={0}
+                        min={0}
+                      />
+                    </div>
+                    <div className={styles.input}>
+                      <label htmlFor="waiverMileageRate">Votre condition</label>
+                      <select
+                        name="waiverMileageRate"
+                        id="waiverMileageRate"
+                        onChange={handleInputChange}
+                      >
+                        <option value="">--Choisissez une option--</option>
+                        {waiverMileageRates.map((item, index) => {
+                          return (
+                            <option key={`wvRate-${index}`} value={item.label}>
+                              {item.label}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    {formData.waiverMileageRate &&
+                      (() => {
+                        // Total km parcourus
+                        const totalKm = formData.expensesList.reduce(
+                          (sum, item) => sum + Number(item.km || 0),
+                          0,
+                        );
 
-                    // Trouver le barème choisi pour l'abandon
-                    const rate = waiverMileageRates.find(
-                      (r) => r.label === formData.waiverMileageRate,
-                    );
+                        // Trouver le barème choisi pour l'abandon
+                        const rate = waiverMileageRates.find(
+                          (r) => r.label === formData.waiverMileageRate,
+                        );
 
-                    // Calcul du montant avant impôt
-                    const totalAmount = rate ? totalKm * rate.amountPerKm : 0;
+                        // Calcul du montant avant impôt
+                        const totalAmount = rate
+                          ? totalKm * rate.amountPerKm
+                          : 0;
 
-                    // Après déduction fiscale (66%)
-                    const realAmount = totalAmount * (1 - 0.66);
+                        // Après déduction fiscale (66%)
+                        const realAmount = totalAmount * (1 - 0.66);
 
-                    return (
-                      <p>
-                        Après déduction d'impôts, le montant réel dépensé sera
-                        de : {realAmount.toFixed(2)} €
-                      </p>
-                    );
-                  })()}
-              </>
-            )}
-          </div>
+                        return (
+                          <p>
+                            Après déduction d'impôts, le montant réel dépensé
+                            sera de : {realAmount.toFixed(2)} €
+                          </p>
+                        );
+                      })()}
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
           <p>Remboursement</p>
           <p>
             Je souhaite que le CST me rembourse :{" "}
@@ -767,7 +782,7 @@ export default function ExpensesReportsForm({
           </div>
           <div className={styles.nextPrevButton}>
             <button onClick={() => setStep(3)}>Retour</button>
-            <button onClick={sendData}>Valider</button>
+            <button onClick={() => sendData(userSelected)}>Valider</button>
           </div>
         </>
       ) : null}

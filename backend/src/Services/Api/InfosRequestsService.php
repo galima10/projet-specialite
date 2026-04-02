@@ -65,7 +65,11 @@ class InfosRequestsService
       'user' => $currentUser,
     ]);
     if ($existingRequest) return null;
-    if (empty($data['reason']) || empty($data['budget']) || empty($data['amountWaiver'])) {
+    if (
+      !isset($data['reason']) || $data['reason'] === ''
+      || !isset($data['budget']) || $data['budget'] === ''
+      || !isset($data['amountWaiver']) || $data['amountWaiver'] === null
+    ) {
       return 'Missing';
     }
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
@@ -80,7 +84,11 @@ class InfosRequestsService
     $request->setCreatedAtValue();
     $request->setReason($data['reason']);
     $request->setBudget(Budget::from($data['budget']));
-    $request->setAmountWaiver($data['amountWaiver']);
+    if (isset($data['amountWaiver'])) {
+      $request->setAmountWaiver((string)$data['amountWaiver']);
+    } else {
+      $request->setAmountWaiver(null);
+    }
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
       $user = $this->users_repository->find($data['userId']);
       if (!$user) return null;
@@ -88,11 +96,12 @@ class InfosRequestsService
     } else {
       $request->setUser($currentUser);
     }
-    $waiverMileageRate = $data['waiverMileageRateId']
+    $waiverMileageRate = isset($data['waiverMileageRateId']) && $data['waiverMileageRateId'] !== null
       ? $this->waiver_mileage_rates_repository->find($data['waiverMileageRateId'])
       : null;
     $request->setWaiverMileageRate($waiverMileageRate);
-    $kmMileageRate = $data['kmMileageRateId']
+
+    $kmMileageRate = isset($data['kmMileageRateId']) && $data['kmMileageRateId'] !== null
       ? $this->km_mileage_rates_repository->find($data['kmMileageRateId'])
       : null;
     $request->setKmMileageRate($kmMileageRate);

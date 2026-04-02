@@ -77,49 +77,49 @@ class ExpensesDocumentsService
 
   public function addDocument(array $data, $currentUser): array|string|null
   {
-    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-      $documents = $this->expenses_documents_repository->findAll();
-    } else {
-      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-      if (!$infosRequests) return null;
-      $documents = [];
-      foreach ($infosRequests as $request) {
-        $documents = array_merge($documents, $request->getExpensesLists()->toArray());
-      }
-      $documents = array_unique($documents, SORT_REGULAR);
-      if (!$documents) return null;
-      $documents = array_filter(
-        $this->expenses_documents_repository->findAll(),
-        fn($d) => in_array($d->getExpensesList(), $documents, true)
-      );
+    $file = $_FILES['file'] ?? null;
+    if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+      return 'Missing or invalid file';
     }
-    $existingDocument = array_filter(
-      $documents,
-      fn($r) => $r->getName() === $data['name']
-    );
-    if ($existingDocument) return null;
-    if (empty($data['name']) || empty($data['pathFile']) || empty($data['expensesListId'])) {
-      return 'Missing';
+
+    $expensesListId = $_POST['expensesListId'] ?? null;
+    $name = $_POST['name'] ?? null;
+
+    if (!$expensesListId || !$name) {
+      return 'Missing data';
     }
-    $document = new ExpensesDocuments();
-    $document->setName($data['name']);
-    $document->setPathFile($data['pathFile']);
-    $expensesList = $this->expenses_lists_repository->find($data['expensesListId']);
+
+    $expensesList = $this->expenses_lists_repository->find($expensesListId);
     if (!$expensesList) return null;
+
+    // Vérification droits
     if (
-      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      && $expensesList->getInfosRequest()->getUser()->getId() !== $currentUser->getId()
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) &&
+      $expensesList->getInfosRequest()->getUser()->getId() !== $currentUser->getId()
     ) {
       return 'Forbidden';
     }
+
+    // Déplacer le fichier
+    $uploadDir = __DIR__ . '/uploads/'; // adapter au chemin réel
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+    $destination = $uploadDir . basename($file['name']);
+    move_uploaded_file($file['tmp_name'], $destination);
+
+    // Créer l’entité
+    $document = new ExpensesDocuments();
+    $document->setName($name);
+    $document->setPathFile($destination);
     $document->setExpensesList($expensesList);
+
     $this->entityManager->persist($document);
     $this->entityManager->flush();
+
     return [
       'id' => $document->getId(),
       'name' => $document->getName(),
       'pathFile' => $document->getPathFile(),
-      'expensesListId' => $document->getExpensesListId()
+      'expensesListId' => $expensesList->getId(),
     ];
   }
 

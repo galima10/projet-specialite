@@ -24,7 +24,9 @@ export interface UserReport {
 
 export interface ReportFile {
   id?: number;
-  file: File;
+  file?: File;
+  name?: string;
+  pathFile?: string;
 }
 
 export interface ExpensesListItem {
@@ -40,8 +42,9 @@ export interface ExpensesListItem {
 export interface ExpensesDocument {
   id?: number;
   name: string;
-  preview: string;
-  file: File;
+  preview?: string;
+  file?: File;
+  pathFile?: string;
 }
 
 const initialState = {
@@ -98,16 +101,21 @@ export const expensesReportSlice = createSlice({
         ) => {
           state.loading = false;
           const { createdExpensesReport, userId } = action.payload;
-          const index = state.expensesReports.findIndex(
+
+          let index = state.expensesReports.findIndex(
             (item) => item.userId === userId,
           );
+
           if (index === -1) {
+            // créer et push le nouvel utilisateur
             state.expensesReports.push({
               userId: userId,
-              reports: [],
+              reports: [createdExpensesReport], // on met directement le report
             });
+          } else {
+            // sinon on ajoute au tableau existant
+            state.expensesReports[index].reports.push(createdExpensesReport);
           }
-          state.expensesReports[index].reports.push(createdExpensesReport);
         },
       )
       .addCase(
