@@ -3,7 +3,7 @@ import {
   fetchAssociationContactsThunk,
   createAssociationContactThunk,
   updateAssociationContactThunk,
-  deleteMileageRateThunk,
+  deleteAssociationContact,
 } from "@stores/thunks/association";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
@@ -108,14 +108,14 @@ export const associationSlice = createSlice({
         },
       );
 
-    // deleteMileageRateThunk
+    // deleteAssociationContact
     builder
-      .addCase(deleteMileageRateThunk.pending, (state) => {
+      .addCase(deleteAssociationContact.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(
-        deleteMileageRateThunk.fulfilled,
+        deleteAssociationContact.fulfilled,
         (state, action: PayloadAction<number>) => {
           state.loading = false;
           const exists = state.contacts.some(
@@ -129,8 +129,8 @@ export const associationSlice = createSlice({
         },
       )
       .addCase(
-        deleteMileageRateThunk.rejected,
-        (state, action: ReturnType<typeof deleteMileageRateThunk.rejected>) => {
+        deleteAssociationContact.rejected,
+        (state, action: ReturnType<typeof deleteAssociationContact.rejected>) => {
           state.loading = false;
           state.error = action.error.message ?? "Erreur inconnue";
         },

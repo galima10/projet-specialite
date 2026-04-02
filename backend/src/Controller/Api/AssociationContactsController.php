@@ -19,6 +19,16 @@ final class AssociationContactsController extends AbstractController
     return $this->json($contacts, 200);
   }
 
+  #[Route('/send/{id}', name: 'pdf_send', requirements: ['id' => '\d+'], methods: ['POST'])]
+  public function pdf_send(AssociationContactsService $associationContactsService, int $id): JsonResponse
+  {
+    $contact = $associationContactsService->sendMail($id);
+    if ($contact === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
+    if (!$contact) return $this->json(['error' => 'Error not found'], 404);
+    if ($contact === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
+    return $this->json($contact, 200);
+  }
+
   #[Route('/{id}', name: 'contact_get', requirements: ['id' => '\d+'], methods: ['GET'])]
   public function contact_get(AssociationContactsService $associationContactsService, $id): JsonResponse
   {

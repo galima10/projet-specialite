@@ -3,7 +3,10 @@ import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import { fetchMileageRatesThunk } from "@stores/thunks/mileages";
 import { Users } from "@stores/features/users";
 import { createExpensesReportThunk } from "@stores/thunks/expensesReports";
-import { ExpensesReport } from "@stores/features/expensesReports";
+import { ExpensesReport, ReportFile } from "@stores/features/expensesReports";
+import { fetchAssociationContactsThunk } from "@stores/thunks/association";
+const API_URL = import.meta.env.VITE_API_URL;
+import { API_ROUTES } from "@constants/apiroute";
 
 export const budget = [
   {
@@ -28,15 +31,20 @@ export const budget = [
   },
 ];
 
-export function useExpensesReportsForm() {
+export function useExpensesReportsForm(userSelected: Users | null) {
   const dispatch = useAppDispatch();
-  const { currentUser } = useAppSelector((state) => state.user);
+  const { currentUser, users } = useAppSelector((state) => state.user);
   const { waiverMileageRates, kmMileageRates } = useAppSelector(
     (state) => state.mileage,
   );
+  const { contacts } = useAppSelector((state) => state.association);
+  const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (waiverMileageRates.length === 0 || kmMileageRates.length === 0)
       dispatch(fetchMileageRatesThunk());
+    if (contacts.length === 0) {
+      dispatch(fetchAssociationContactsThunk());
+    }
   }, []);
 
   const [step, setStep] = useState<number>(1);
@@ -330,7 +338,7 @@ export function useExpensesReportsForm() {
             Dans ce cas, conformément à l’article 41 de la loi 2000 627 du 6 juillet 2000 modifiant la loi du 16 juillet 1984 relative à l’organisation et la promotion des activités physiques et sportives, vous bénéficierez d’une réduction d’impôts égale à 66 % de la somme concernée (dans la limite de 20 % du revenu imposable). Un reçu fiscal vous sera envoyé. 
             Attention le barême kilomètrique est différent dans ce cas.
           </p>
-          <p><strong style="font-size: 0.85rem">J'abandonne le remboursement de la somme de : ${formData.amountWaiver > 0 ? formData.amountWaiver.toFixed(2) : 0} €</strong></p>
+          <p><strong style="font-size: 0.85rem">J'abandonne le remboursement de la somme de : ${formData.amountWaiver > 0 ? formData.amountWaiver : 0} €</strong></p>
           <p><em style="font-size: 0.65rem; opacity: .75">Barème d'abandon de frais : ${formData.waiverMileageRate ? wvRate.amountPerKm.toFixed(3) : 0}/km</em></p>
           <p><small style="font-size: 0.75rem">Après déduction d'impôts, le montant réel dépensé sera de : ${realAmountWaiver.toFixed(2)} €</small></p>
         `
@@ -482,6 +490,27 @@ export function useExpensesReportsForm() {
     setStep(2);
   }
 
+  async function handleSendPdf() {
+    const user = userSelected
+      ? users.find((u) => u.id === userSelected.id)
+      : currentUser;
+    const report: ReportFile = expensesReports
+      .find((e) => e.userId === user.id).reports.find(r => r.reason === formData.reason).reportDocumentFile
+      ;
+    console.log(report, formData.reason)
+    const res = await fetch(
+      `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      },
+    );
+    if (!res.ok) throw new Error("Error create contact");
+  }
+
   return {
     formData,
     setFormData,
@@ -503,6 +532,8 @@ export function useExpensesReportsForm() {
     setStep,
     handleAddExpense,
     handleValidateInfos,
+    contact: contacts[0],
+    handleSendPdf,
   };
 }
 

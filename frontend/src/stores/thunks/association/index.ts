@@ -62,8 +62,8 @@ export const updateAssociationContactThunk = createAsyncThunk<
   },
 );
 
-export const deleteMileageRateThunk = createAsyncThunk<number, number>(
-  "mileage/deleteMileageRate",
+export const deleteAssociationContact = createAsyncThunk<number, number>(
+  "mileage/deleteAssociationContact",
   async (contactId: number) => {
     const res = await fetch(
       `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/${contactId}`,

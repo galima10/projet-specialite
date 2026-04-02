@@ -7,6 +7,8 @@ import { deleteUserThunk } from "@stores/thunks/users";
 import { logoutThunk } from "@stores/thunks/users";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/route";
+import { ExpensesReport } from "@stores/features/expensesReports";
+import { deleteExepensesReportThunk } from "@stores/thunks/expensesReports";
 
 export default function UserProfile({
   user,
@@ -14,16 +16,20 @@ export default function UserProfile({
   expensesReports,
   setFormType,
   currentUser,
+  setSelectedReport,
 }: {
   user: Users;
   currentUser: Users;
   setTab: Dispatch<
-    SetStateAction<"home" | "viewProfile" | "addReport" | "setUser">
+    SetStateAction<
+      "home" | "viewProfile" | "addReport" | "setUser" | "viewReport" | "association"
+    >
   >;
   expensesReports: UserReport[];
   setFormType: Dispatch<
     SetStateAction<{ type: "create" | "update"; userId?: number }>
   >;
+  setSelectedReport: Dispatch<SetStateAction<ExpensesReport>>;
 }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -88,6 +94,26 @@ export default function UserProfile({
                         ? report.reportDocumentFile.pathFile
                         : "Pas de fichier"}
                     </p>
+                    <button
+                      onClick={() => {
+                        setTab("viewReport");
+                        setSelectedReport(report);
+                      }}
+                    >
+                      Voir les détails
+                    </button>
+                    <button
+                      onClick={() => {
+                        dispatch(
+                          deleteExepensesReportThunk({
+                            expensesReportId: report.id,
+                            userId: user.id,
+                          }),
+                        );
+                      }}
+                    >
+                      Supprimer
+                    </button>
                     {report.reportDocumentFile &&
                       "pathFile" in report.reportDocumentFile && (
                         <button

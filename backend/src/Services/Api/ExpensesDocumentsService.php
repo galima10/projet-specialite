@@ -111,10 +111,10 @@ class ExpensesDocumentsService
     // Créer l’entité
     $document = new ExpensesDocuments();
     $document->setName($name);
-    $document->setPathFile($destination);
+    $publicPath = '/uploads/expenses-documents/' . basename($file['name']);
+    $document->setPathFile($publicPath);
     $document->setExpensesList($expensesList);
 
-    $pathFile = '/uploads/expenses-documents/' . $document->getName();
 
     $this->entityManager->persist($document);
     $this->entityManager->flush();
@@ -122,7 +122,7 @@ class ExpensesDocumentsService
     return [
       'id' => $document->getId(),
       'name' => $document->getName(),
-      'pathFile' => $pathFile,
+      'pathFile' => $publicPath,
       'expensesListId' => $expensesList->getId(),
     ];
   }

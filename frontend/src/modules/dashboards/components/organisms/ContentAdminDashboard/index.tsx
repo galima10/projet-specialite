@@ -8,10 +8,19 @@ import ExpensesReportsForm from "../../molecules/ExpensesReportsForm";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import UserForm from "../../molecules/UserForm";
 import MileagesManagement from "../../molecules/MileagesManagement";
+import UserReport from "../../molecules/UserReport";
+import { ExpensesReport } from "@stores/features/expensesReports";
+import AssociationContactManagement from "../../molecules/AssociationContactManagement";
 
 export default function ContentAdminDashboard() {
   const [tab, setTab] = useState<
-    "home" | "viewProfile" | "addReport" | "setUser" | "mileagesManagement"
+    | "home"
+    | "viewProfile"
+    | "addReport"
+    | "setUser"
+    | "mileagesManagement"
+    | "viewReport"
+    | "association"
   >("home");
   const [formType, setFormType] = useState<{
     type: "create" | "update";
@@ -21,6 +30,9 @@ export default function ContentAdminDashboard() {
   const dispatch = useAppDispatch();
   const { users, currentUser } = useAppSelector((state) => state.user);
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
+  const [selectedReport, setSelectedReport] = useState<ExpensesReport | null>(
+    null,
+  );
   useEffect(() => {
     if (!users || users.length === 0) {
       dispatch(fetchUsersThunk());
@@ -50,6 +62,7 @@ export default function ContentAdminDashboard() {
           expensesReports={expensesReports}
           setFormType={setFormType}
           currentUser={currentUser}
+          setSelectedReport={setSelectedReport}
         />
       ) : tab === "addReport" ? (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
@@ -61,9 +74,11 @@ export default function ContentAdminDashboard() {
           userId={formType.userId}
           currentUser={currentUser}
         />
-      ) : (
-        tab === "mileagesManagement" && <MileagesManagement setTab={setTab} />
-      )}
+      ) : tab === "mileagesManagement" ? (
+        <MileagesManagement setTab={setTab} />
+      ) : tab === "viewReport" ? (
+        <UserReport report={selectedReport} setTab={setTab} />
+      ) : <AssociationContactManagement setTab={setTab} />}
     </div>
   );
 }

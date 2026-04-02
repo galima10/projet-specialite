@@ -18,9 +18,8 @@ export default function ExpensesReportsForm({
     formData,
     setFormData,
     currentDocuments,
-    currentExpense,
+    contact,
     setCurrentDocuments,
-    setCurrentExpense,
     calculateTotals,
     removeExpense,
     handleDocumentChange,
@@ -34,7 +33,8 @@ export default function ExpensesReportsForm({
     step,
     handleAddExpense,
     handleValidateInfos,
-  } = useExpensesReportsForm();
+    handleSendPdf,
+  } = useExpensesReportsForm(userSelected);
   const {
     totalAll,
     totalKm,
@@ -403,7 +403,7 @@ export default function ExpensesReportsForm({
                             /^\d*([.,]\d{0,2})?$/.test(value) ||
                             value === ""
                           ) {
-                            handleInputChange(e, true);
+                            handleInputChange(e, false);
                           }
                         }}
                         onBlur={(e) => {
@@ -467,7 +467,9 @@ export default function ExpensesReportsForm({
           <p>Remboursement</p>
           <p>
             Je souhaite que le CST me rembourse :{" "}
-            {totalAll.toFixed(2) - Number(formData.amountWaiver || 0)}
+            {(totalAll.toFixed(2) - Number(formData.amountWaiver || 0)).toFixed(
+              2,
+            )}
           </p>
           <p>Sur le compte</p>
           <div className={styles.inputContainer}>
@@ -499,6 +501,26 @@ export default function ExpensesReportsForm({
                 await handleGeneratePdf();
 
                 sendData(userSelected);
+              }}
+            >
+              Générer le PDF
+            </button>
+          </div>
+        </>
+      ) : step === 4 ? (
+        <>
+          <p>
+            Envoyer directement la note de frais à l'association à l'adresse
+            mail suivante : {contact.label} - {contact.email}
+          </p>
+          <div className={styles.nextPrevButton}>
+            <button type="button" onClick={handleSendPdf}>
+              Envoyer
+            </button>
+            <button
+              onClick={() => {
+                setTab("home");
+                setStep(1);
                 setFormData({
                   dateRequest: "",
                   userName: "",
@@ -513,24 +535,6 @@ export default function ExpensesReportsForm({
                   userIBAN: "",
                   userBIC: "",
                 });
-              }}
-            >
-              Générer le PDF
-            </button>
-          </div>
-        </>
-      ) : step === 4 ? (
-        <>
-          <p>
-            Envoyer directement la note de frais à l'association à l'adresse
-            mail suivante : adressemail@gmail.com
-          </p>
-          <div className={styles.nextPrevButton}>
-            <button type="button">Envoyer</button>
-            <button
-              onClick={() => {
-                setTab("home");
-                setStep(1);
               }}
             >
               Revenir au tableau de bord

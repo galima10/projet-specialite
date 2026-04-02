@@ -11,7 +11,15 @@ export default function UsersList({
   users: Users[];
   setSelectedUser: Dispatch<SetStateAction<Users>>;
   setTab: Dispatch<
-    SetStateAction<"home" | "viewProfile" | "setUser" | "addReport">
+    SetStateAction<
+      | "home"
+      | "viewProfile"
+      | "setUser"
+      | "addReport"
+      | "viewReport"
+      | "mileagesManagement"
+      | "association"
+    >
   >;
   setFormType: Dispatch<
     SetStateAction<{ type: "create" | "update"; userId?: number }>
@@ -20,7 +28,7 @@ export default function UsersList({
 }) {
   return (
     <div>
-      {currentUser && currentUser.role === 'ROLE_ADMIN' && (
+      {currentUser && currentUser.role === "ROLE_ADMIN" && (
         <button
           onClick={() => {
             setFormType({
@@ -32,6 +40,9 @@ export default function UsersList({
           Ajouter un nouvel utilisateur
         </button>
       )}
+      <button onClick={() => setTab("association")}>
+        Voir le contact de l'association
+      </button>
       <ul>
         {users.map((user) => {
           return (
