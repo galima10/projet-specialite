@@ -83,10 +83,12 @@ export default function ExpensesReportsForm({
       | HTMLInputElement
       | HTMLTextAreaElement
       | HTMLSelectElement;
+
     const { name, value, type } = target;
 
     const checked =
       type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
+
     const files =
       type === "file" ? (target as HTMLInputElement).files : undefined;
 
@@ -103,7 +105,12 @@ export default function ExpensesReportsForm({
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: type === "checkbox" ? checked : value,
+        [name]:
+          type === "checkbox"
+            ? checked
+            : type === "file"
+              ? (files?.[0] ?? null)
+              : value,
       }));
     }
   }
@@ -125,15 +132,30 @@ export default function ExpensesReportsForm({
   }
   function sendData(userSelected: Users | null = null) {
     console.log(formData);
-    // if (
-    //   !formData.reason ||
-    //   !formData.budget ||
-    //   !formData.amountWaiver ||
-    //   !formData.expensesList
-    // ) {
-    //   console.log("manque de champs");
-    //   return null;
-    // }
+    if (
+      formData.reason.trim() === "" ||
+      formData.budget.trim() === "" ||
+      formData.amountWaiver === null ||
+      formData.expensesList.length === 0
+    ) {
+      console.log("manque de champs");
+      return null;
+    }
+
+    const hasKm = formData.expensesList.some((item) => item.km > 0);
+    if (hasKm && formData.kmMileageRate === null) {
+      console.log(
+        "Il faut sélectionner un kmMileageRate pour les dépenses avec km",
+      );
+      return null;
+    }
+
+    if (formData.amountWaiver > 0 && formData.waiverMileageRate === null) {
+      console.log(
+        "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
+      );
+      return null;
+    }
 
     let userId: number, kmMileageRateId: number, waiverMileageRateId: number;
     if (currentUser.role === "ROLE_ADMIN") {
@@ -327,6 +349,30 @@ export default function ExpensesReportsForm({
   }
 
   async function handleGeneratePdf() {
+    if (
+      formData.reason.trim() === "" ||
+      formData.budget.trim() === "" ||
+      formData.amountWaiver === null ||
+      formData.expensesList.length === 0
+    ) {
+      console.log("manque de champs");
+      return null;
+    }
+
+    const hasKm = formData.expensesList.some((item) => item.km > 0);
+    if (hasKm && formData.kmMileageRate === null) {
+      console.log(
+        "Il faut sélectionner un kmMileageRate pour les dépenses avec km",
+      );
+      return null;
+    }
+
+    if (formData.amountWaiver > 0 && formData.waiverMileageRate === null) {
+      console.log(
+        "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
+      );
+      return null;
+    }
     const element = document.createElement("div");
     element.innerHTML = generateHtml();
 

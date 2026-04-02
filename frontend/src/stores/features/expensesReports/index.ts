@@ -13,7 +13,7 @@ export interface ExpensesReport {
   amountWaiver: number;
   waiverMileageRateId: number | null;
   kmMileageRateId: number | null;
-  reportDocumentFile: ReportFile | null;
+  reportDocumentFile: File | ReportFile | null;
   expensesList: ExpensesListItem[];
 }
 

@@ -33,11 +33,20 @@ final class ExpensesReportsController extends AbstractController
   public function report_create(Request $request, ExpensesReportsService $expensesReportsService): JsonResponse
   {
     $currentUser = $this->getUser();
-    $data = json_decode($request->getContent(), true);
+
+    // récupérer depuis FormData
+    $data = [
+      'name' => $_POST['name'] ?? null,
+      'infosRequestId' => $_POST['infosRequestId'] ?? null,
+    ];
+
     $report = $expensesReportsService->addReport($data, $currentUser);
-    if (!$report) return $this->json(['error' => 'Report already exists'], 409);
+
     if ($report === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     if ($report === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
+    if ($report === 'Missing or invalid file') return $this->json(['error' => 'Missing file'], 400);
+    if (!$report) return $this->json(['error' => 'Report already exists'], 409);
+
     return $this->json($report, 201);
   }
 

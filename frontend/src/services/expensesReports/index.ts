@@ -89,7 +89,6 @@ export async function CreateExpensesReportService(
     kmMileageRateId: data.kmMileageRateId ?? null,
   };
 
-  // Ne passer userId que si défini
   if (userId) {
     body.userId = userId;
   }
@@ -106,11 +105,14 @@ export async function CreateExpensesReportService(
   const infosRequestJson = await resInfosRequest.json();
 
   let reportsFileJson = null;
-  if (data.reportDocumentFile?.file) {
+
+  if (data.reportDocumentFile instanceof File) {
+    const file = data.reportDocumentFile;
+
     const formDataPdf = new FormData();
-    formDataPdf.append("name", data.reportDocumentFile.file.name);
-    formDataPdf.append("expensesListId", infosRequestJson.id.toString());
-    formDataPdf.append("file", data.reportDocumentFile.file);
+    formDataPdf.append("name", file.name);
+    formDataPdf.append("infosRequestId", infosRequestJson.id.toString());
+    formDataPdf.append("file", file);
 
     const resReportsFiles = await fetch(
       `${API_URL}${API_ROUTES.EXPENSES_REPORTS}`,
@@ -120,11 +122,11 @@ export async function CreateExpensesReportService(
         body: formDataPdf,
       },
     );
+
     reportsFileJson = await resReportsFiles.json();
   }
 
   const listPromises = data.expensesList.map(async (list) => {
-    // Créer la dépense
     const resList = await fetch(`${API_URL}${API_ROUTES.EXPENSES_LISTS}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

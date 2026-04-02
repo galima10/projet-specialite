@@ -67,44 +67,58 @@ class ExpensesReportsService
 
   public function addReport(array $data, Users $currentUser): array|string|null
   {
-    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-      $reports = $this->expenses_reports_repository->findAll();
-    } else {
-      $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-      if (!$infosRequests) return null;
-      $reports = [];
-      foreach ($infosRequests as $request) {
-        $reports = array_merge($reports, $request->getExpensesReports()->toArray());
-      }
+    $file = $_FILES['file'] ?? null;
+    if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+      return 'Missing or invalid file';
     }
-    $existingReport = array_filter(
-      $reports,
-      fn($r) => $r->getname() === $data['name']
-    );
-    if (empty($data['name']) || empty($data['pathFile']) || empty($data['infosRequestId'])) {
+
+    $infosRequestId = $_POST['infosRequestId'] ?? null;
+    $name = $_POST['name'] ?? null;
+
+    if (!$infosRequestId || !$name) {
       return 'Missing';
     }
-    $existingReport = $existingReport ? array_values($existingReport)[0] : null;
-    if ($existingReport) return null;
-    $report = new ExpensesReports();
-    $report->setName($data['name']);
-    $report->setPathFile($data['pathFile']);
-    $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
+
+    $infosRequest = $this->infos_requests_repository->find($infosRequestId);
     if (!$infosRequest) return null;
+
+    // Vérification droits
     if (
-      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      && $infosRequest->getUser()->getId() !== $currentUser->getId()
+      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) &&
+      $infosRequest->getUser()->getId() !== $currentUser->getId()
     ) {
       return 'Forbidden';
     }
+
+    // Upload
+    $uploadDir = dirname(__DIR__, 3) . '/public/uploads/reports/';
+    if (!is_dir($uploadDir)) {
+      mkdir($uploadDir, 0755, true);
+    }
+
+    $fileName = uniqid() . '_' . basename($file['name']);
+    $destination = $uploadDir . $fileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+      return 'Upload failed';
+    }
+
+    // Chemin public
+    $pathFile = '/uploads/reports/' . $fileName;
+
+    $report = new ExpensesReports();
+    $report->setName($name);
+    $report->setPathFile($pathFile);
     $report->setInfosRequest($infosRequest);
+
     $this->entityManager->persist($report);
     $this->entityManager->flush();
+
     return [
       'id' => $report->getId(),
       'name' => $report->getName(),
       'pathFile' => $report->getPathFile(),
-      'infosRequestId' => $report->getInfosRequestId(),
+      'infosRequestId' => $infosRequest->getId(),
     ];
   }
 
