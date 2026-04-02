@@ -4,14 +4,19 @@ import { UserReport } from "@stores/features/expensesReports";
 const API_URL = import.meta.env.VITE_API_URL;
 import { useAppDispatch } from "@modules/shared/hooks/redux";
 import { deleteUserThunk } from "@stores/thunks/users";
+import { logoutThunk } from "@stores/thunks/users";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@constants/route";
 
 export default function UserProfile({
   user,
   setTab,
   expensesReports,
   setFormType,
+  currentUser,
 }: {
   user: Users;
+  currentUser: Users;
   setTab: Dispatch<
     SetStateAction<"home" | "viewProfile" | "addReport" | "setUser">
   >;
@@ -21,9 +26,20 @@ export default function UserProfile({
   >;
 }) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const userReports = expensesReports.find(
     (report) => report.userId === user.id,
   );
+
+  async function deleteAccount(userId: number) {
+    if (userId === currentUser.id) {
+      dispatch(logoutThunk());
+      dispatch(deleteUserThunk(currentUser.id));
+      navigate(ROUTES.LOGIN.route);
+    } else {
+      dispatch(deleteUserThunk(user.id));
+    }
+  }
 
   return (
     <div>
@@ -39,7 +55,7 @@ export default function UserProfile({
       >
         Modifier le compte
       </button>
-      <button onClick={() => dispatch(deleteUserThunk(user.id))}>
+      <button onClick={() => deleteAccount(user.id)}>
         Supprimer le compte
       </button>
       <p>{user.name}</p>

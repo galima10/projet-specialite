@@ -19,7 +19,7 @@ export default function ContentAdminDashboard() {
   } | null>(null);
   const [selectedUser, setSelectedUser] = useState<Users>(null);
   const dispatch = useAppDispatch();
-  const { users } = useAppSelector((state) => state.user);
+  const { users, currentUser } = useAppSelector((state) => state.user);
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (!users || users.length === 0) {
@@ -49,6 +49,7 @@ export default function ContentAdminDashboard() {
           setTab={setTab}
           expensesReports={expensesReports}
           setFormType={setFormType}
+          currentUser={currentUser}
         />
       ) : tab === "addReport" ? (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
