@@ -7,7 +7,7 @@ export default function HomePage() {
 
   return (
     <div className={styles.home}>
-      <h1>Bienvenu sur la plate-forme pour gérer vos notes de frais !</h1>
+      <h1>Bienvenue sur la plate-forme pour gérer vos notes de frais !</h1>
       <div className={styles.buttons}>
         <button
           className="primary"
