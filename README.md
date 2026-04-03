@@ -53,8 +53,8 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
 - Gestion des utilisateurs (Admin)
 
 ## Architecture / Structure
-/
-`
+
+```
 /backend                                        # Symfony Backend
 📦config                                        # Config
  ┣ 📂packages
@@ -250,20 +250,20 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
  ┣ 📜main.tsx                       # Entrée de l'application
  ┗ 📜window.d.ts
 📜.env                              # Variables d'environnement pour Vite
-`
+```
 
 ## Installation
 - **Backend** : 
-`
+```
 cd backend
 composer install
-`
+```
 
 - **Frontend** : 
-`
+```
 cd frontend
 npm install
-`
+```
 
 
 ## Configuration .env
@@ -278,7 +278,7 @@ npm install
   - VITE_BASE_URL
 
 ### Exemples de .env.local pour un environnement de développement local
-`
+```
 /backend/.env.local :
 
 DATABASE_URL="mysql://user:password@127.0.0.1:3306/db_name?serverVersion=8"     # Connexion à la base de donnée d'un serveur (WAMP, XAMPP, MAMP etc...)
@@ -294,11 +294,11 @@ SESSION_COOKIE_DOMAIN=localhost                       # Permettre l'envoi de coo
 VITE_API_URL=http://localhost:8000                    # Récupération de l'URL où le backend Symfony écoute
 
 VITE_BASE_URL=./                                      # Réglage des chemins relatifs de build Vite
-`
+```
 
 ### Exemples de .env.local pour un environnement de développement avec IP local exposée (pour plusieurs appareils)
 
-`
+```
 /backend/.env.local :
 
 DATABASE_URL="mysql://user:password@127.0.0.1:3306/db_name?serverVersion=8"     # Connexion à la base de donnée d'un serveur (WAMP, XAMPP, MAMP etc...)
@@ -314,7 +314,7 @@ SESSION_COOKIE_DOMAIN=ADREESS_IP                       # Permettre l'envoi de co
 VITE_API_URL=http://ADREESS_IP:8000               # Récupération de l'URL où le backend Symfony écoute
 
 VITE_BASE_URL=./                                      # Réglage des chemins relatifs de build Vite
-`
+```
 
 ## Utilisation / Mode d'emploi
 
@@ -327,18 +327,18 @@ VITE_BASE_URL=./                                      # Réglage des chemins rel
 
 **Lancer l'application** : 
 - Backend : 
-`
+```
 cd backend
 php bin/console cache:clear                         # Vider le cache Symfony si nécessaire
 php bin/console cache:warmup                        # Faire chauffer le cache
 symfony serve --listen-ip=0.0.0.0 --port=8000       # <--- --listen-ip=0.0.0.0 --port=8000 pour exposer l'adresse IP ou juste symfony serve:start pour un environnement de développement local
-`
+```
 
 - Frontend : 
-`
+```
 cd frontend
 npm run dev
-`
+```
 
 
 ### Mode d'emploi
