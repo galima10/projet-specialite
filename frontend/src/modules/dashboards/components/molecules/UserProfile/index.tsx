@@ -68,7 +68,7 @@ export default function UserProfile({
           >
             Modifier le compte
           </button>
-          {currentUser.id !== user.id && (
+          {currentUser.id !== user.id && currentUser.role === "ROLE_ADMIN" && (
             <button className="tertiary" onClick={() => deleteAccount(user.id)}>
               Supprimer le compte
             </button>
