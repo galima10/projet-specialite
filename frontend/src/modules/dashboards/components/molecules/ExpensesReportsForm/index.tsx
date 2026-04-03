@@ -131,7 +131,7 @@ export default function ExpensesReportsForm({
                   <ul>
                     <li>
                       <strong>
-                        n°{indexItem} - {item.date}
+                        n°{indexItem + 1} - {item.date}
                         {item.object}
                       </strong>
                     </li>
