@@ -45,12 +45,7 @@ export default function UserProfile({
   );
 
   async function deleteAccount(userId: number) {
-    if (userId === currentUser.id) {
-      await dispatch(logoutThunk()).unwrap();
-      await dispatch(deleteUserThunk(currentUser.id)).unwrap();
-    } else {
-      await dispatch(deleteUserThunk(userId)).unwrap();
-    }
+    await dispatch(deleteUserThunk(userId)).unwrap();
   }
 
   return (
@@ -73,9 +68,11 @@ export default function UserProfile({
           >
             Modifier le compte
           </button>
-          <button className="tertiary" onClick={() => deleteAccount(user.id)}>
-            Supprimer le compte
-          </button>
+          {currentUser.id !== user.id && (
+            <button className="tertiary" onClick={() => deleteAccount(user.id)}>
+              Supprimer le compte
+            </button>
+          )}
         </div>
       )}
       <div className={styles.infos}>
