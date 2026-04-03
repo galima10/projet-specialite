@@ -333,7 +333,7 @@ export default function ExpensesReportsForm({
                 <input
                   id="expenseDocument"
                   type="file"
-                  accept="image/png, image/jpeg"
+                  accept="image/png, image/jpeg, image/webp"
                   onChange={handleDocumentChange}
                 />
               </div>
