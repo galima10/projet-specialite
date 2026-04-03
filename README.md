@@ -1,159 +1,360 @@
-# Template Full-Stack
-Un projet full-stack React/TS Sass et Symfony/Doctrine configuré pour un déploiement gratuit
+# Plate-forme de création de notes de frais
+Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les associations pour effectuer des activités, en leur facilitant la mise en œuvre de leur notes de frais à transmettre aux associations (trésoriers plus précisément).
 
-## Technologies
-**Front-end**<br />
-=> React<br />
-=> Redux Store<br />
-=> TypeScript<br />
-=> Sass<br />
-=> Vite<br /><br />
+## Table des matières
+[Technologies utilisées](#technologies-utilisées)
+[Fonctionnalités](#fonctionnalités)
+[Architecture / Structure](#architecture--structure)
+[Installation](#installation)
+[Configuration .env](#configuration-env)
+[Utilisation / Mode d'emploi](#utilisation--mode-demploi)
+[Auteure](#auteure)
+[Futur / Roadmap](#futur--roadmap)
+[Déploiement](#déploiement)
 
-**Back-end**<br />
-=> Symfony (PHP)<br />
-=> Doctrine<br />
-=> <u>MySQL</u> / PostgreSQL / SQLite<br /><br />
+## Technologies utilisées
+- **Back-end** :<br />
+> Symfony 8 ![Symfony](https://img.shields.io/badge/Symfony-FFFFFF?style=for-the-badge&logo=symfony&logoColor=black)<br />
+> PHP 8.5.4 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)<br />
+> Doctrine ORM<br />
 
-**Hébergement & Déploiement**<br />
-=> Front-end : Github Pages<br />
-=> Back-end : Railway<br />
+- **Front-end** :<br />
+> React 19.2.4 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)<br />
+> TypeScript 5.9.3 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)<br />
+> Redux Toolkit (state global)<br />
+> Sass ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)<br />
 
-## Configurer le déploiement
+- **Base de données** : <br />
+> MySQL ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)<br />
 
-**Déployer le projet sur Github Pages & Railway**
-1. Initialiser un repository Github
-2. Cloner en local le repository dans source/ 
-3. Créer le template dans le clone
-4. Lancer la commande npm run install:all pour installer les dépendances front-end et back-end
-5. Créer un nouveau service MySQL dans Railway (Add > Database > MySQL)
-6. Créer un nouveau service en liant un repository Github dans Railway
-7. Dans les variables Railway du service du repository, ajouter la variable <u>DATABASE_URL</u> avec comme valeur, celle de la variable MySQL_URL dans le service MySQL
-8. Ajouter la variable <u>CORS_ALLOW_ORIGIN</u> avec comme valeur https://pseudonyme.github.io (https://galima10.github.io)
-9. Dans les paramètres du service back-end du repository, pointer le directory sur backend/
-10. Toujours dans les paramètres du service, générer un domaine avec le port 8080
-10. Sur le repository Github, dans les Settings > Secret & Variables > Actions, ajouter une nouvelle variable <u>VITE_API_URL</u> avec l'URL publique du service backend sur Railway (ex : https://template-fullstack-react-symfony-production.up.railway.app)
-11. Ajouter une nouvelle variable <u>VITE_BASE_URL</u> avec / si il y a un nom de domaine personnalisé ou ./ ou /nomdurepo/ si c'est avec Github Pages
-12. Ajouter une nouvelle variable <u>PAT_TOKEN</u> avec le Personal Access Token avec un Repo scope dans les Settings du compte > Developper Settings > Personal Access Token > Tokens (classic), pour permettre à Github Actions de push sur la branche *gh-pages*
-13. Pusher le first commit sur la branche *main* pour créer le build de l'app sur la branche *gh-pages*
-14. Vérifier que la branche gh-pages est bien servie par Github Pages dans Settings > Pages<br />
+- **PDF** : <br />
+> html2pdf.js<br />
 
-**Pour mettre à jour la BDD en local et la synchroniser avec le distant**
-1. Effectuer une migration depuis le terminal en local dans backend/ avec php bin/console doctrine:migrations:migrate
-2. Dans le terminal, faire railway login si ce n'est pas déjà fait
-3. Entrer la commande railway link et choisir le bon projet et le service backend déployé
-4. Entrer la commande railway shell
-5. Entrer la commande railway run php bin/console doctrine:migrations:migrate --no-interaction
-6. Puis, entrer la commande railway run php bin/console doctrine:fixtures:load --no-interaction pour charger les fixtures Symfony et les faire persister dans le service MySQL Railway
+- **Authentification** : <br />
+> Symfony Security<br />
 
-## Fonctionnement du template
+## Fonctionnalités
+- Authentification et rôles (ROLE_MEMBER, ROLE_TREASURER, ROLE_ADMIN)
+- Gestion des notes de frais :
+  - Entrée des informations globale de la note
+  - Ajout/modification/suppression des dépenses
+  - Upload de justificatifs
+  - Calcul automatique des totaux en fonction de barèmes
+  - Génération de PDF
+  - Stockage des fichiers de justificatifs des dépenses
+- Gestion des barèmes kilométriques et abandon de frais
+- Dashboard pour l'admin, le trésorier et le membre
+- Gestion des utilisateurs (Admin)
 
-**Pour lancer le projet en local**
-- Bien configurer les .env.local du dossier frontend/ et backend/
-- Lancer WAMP pour obtenir la BDD MySQL à connecter à Symfony
-- Ouvrir un terminal pour le dossier backend/ et lancer avec symfony serve:start ou 
-php bin/console cache:clear 
-php bin/console cache:warmup 
-symfony serve:start 
-pour faire chauffer le cache et lancer plus vite le serveur backend de Symfony
-- Ouvrir un autre terminal pour le dossier frontend/ et lancer npm run dev pour lancer l'application React frontend avec Vite
+## Architecture / Structure
+`
+/backend                                        # Symfony backend
+📦config                                        # Config
+ ┣ 📂packages
+ ┃ ┣ 📜framework.yaml                           # Gestion de la sécurité des cookies
+ ┃ ┣ 📜security.yaml                            # Gestion du firewall de sécurité des routes
+ ┣ 📜bundles.php
+ ┣ 📜preload.php
+ ┣ 📜reference.php
+ ┣ 📜routes.yaml
+ ┗ 📜services.yaml   
+📦public
+ ┣ 📂uploads                                     # Uploads et fichiers publics
+ ┃ ┣ 📂expenses-documents
+ ┃ ┗ 📂reports
+ ┗ 📜index.php                                   # Gestion des services de Symfony
+📦src
+ ┣ 📂Controller                                  # Controller : routes APIs
+ ┃ ┣ 📂Api
+ ┃ ┃ ┣ 📜AssociationContactsController.php
+ ┃ ┃ ┣ 📜ExpensesDocumentsController.php
+ ┃ ┃ ┣ 📜ExpensesListsController.php
+ ┃ ┃ ┣ 📜ExpensesReportsController.php
+ ┃ ┃ ┣ 📜InfosRequestsController.php
+ ┃ ┃ ┣ 📜KmMileageRatesController.php
+ ┃ ┃ ┣ 📜LoginController.php
+ ┃ ┃ ┣ 📜UsersController.php
+ ┃ ┃ ┗ 📜WaiverMileageRatesController.php
+ ┃ ┣ 📜.gitignore
+ ┣ 📂Entity                                       # Entités : Structure des tables à envoyer avec Doctrine
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜AssociationContacts.php
+ ┃ ┣ 📜ExpensesDocuments.php
+ ┃ ┣ 📜ExpensesLists.php
+ ┃ ┣ 📜ExpensesReports.php
+ ┃ ┣ 📜InfosRequests.php
+ ┃ ┣ 📜KmMileageRates.php
+ ┃ ┣ 📜Users.php
+ ┃ ┗ 📜WaiverMileageRates.php
+ ┣ 📂Enum                                         # Enum : Typage des ENUM pour les champs de la base de données
+ ┃ ┣ 📜Budget.php
+ ┃ ┗ 📜Role.php
+ ┣ 📂EventListener                                # Listener du status de déconnexion
+ ┃ ┗ 📜LogoutListener.php
+ ┣ 📂Repository                                   # Repository : Accès aux données de la base de données via Doctrine
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜AssociationContactsRepository.php
+ ┃ ┣ 📜ExpensesDocumentsRepository copy.php
+ ┃ ┣ 📜ExpensesDocumentsRepository.php
+ ┃ ┣ 📜ExpensesListsRepository.php
+ ┃ ┣ 📜ExpensesReportsRepository.php
+ ┃ ┣ 📜InfosRequestsRepository.php
+ ┃ ┣ 📜KmMileageRatesRepository.php
+ ┃ ┣ 📜UsersRepository.php
+ ┃ ┗ 📜WaiverMileageRatesRepository.php
+ ┣ 📂Security                                     # Handler de sécurité : gestion des erreurs de connexion
+ ┃ ┗ 📜JsonLoginSuccessHandler.php
+ ┣ 📂Services                                     # Services métiers associés aux Controllers
+ ┃ ┗ 📂Api
+ ┃ ┃ ┣ 📜AssociationContactsService.php
+ ┃ ┃ ┣ 📜ExpensesDocumentsService.php
+ ┃ ┃ ┣ 📜ExpensesListsService.php
+ ┃ ┃ ┣ 📜ExpensesReportsService.php
+ ┃ ┃ ┣ 📜InfosRequestsService.php
+ ┃ ┃ ┣ 📜KmMileageRatesService.php
+ ┃ ┃ ┣ 📜LoginService.php
+ ┃ ┃ ┣ 📜UsersService.php
+ ┃ ┃ ┗ 📜WaiverMileageRatesService.php
+ ┗ 📜Kernel.php
+📜.env                                              # Variables d'environnement pour Symfony
 
-### Développement
-**Back-end** (dans le dossier backend/)
-- Créer un Controller : php bin/console make:controller NomDuController, puis supprimer le template Twig
-- Dans un Controller : peut y avoir plusieurs routes APIs et ne contiennent que la définition des routes APIs
-- Les Services : permettent de gérer la logique de restructuration des données brutes en données traitées
-- Créer une Entité : php bin/console make:entity et entrer les colonnes en suivant le guide dans le terminal
-- Créer une Migration locale en fonction des nouvelles Entités : php bin/console make:migration
-- Envoyer une Migration au serveur WAMP : php bin/console doctrine:migrations:migrate
-- Créer des Fixtures (NomentitéFixture) : php bin/console make:fixtures
-- Envoyer les Fixtures à la BDD du serveur WAMP : php bin/console doctrine:fixtures:load<br />
+/frontend                                           # React frontend
+📦src
+ ┣ 📂App                                            # L'application
+ ┃ ┣ 📂pages                                        # Les différentes pages
+ ┃ ┃ ┣ 📂Auth                                       # Pages d'authentification
+ ┃ ┃ ┃ ┣ 📜LoginPage.tsx
+ ┃ ┃ ┃ ┗ 📜RegisterPage.tsx
+ ┃ ┃ ┣ 📂Dashboards                                 # Dashboards en fonction des rôles
+ ┃ ┃ ┃ ┣ 📜AdminDashboard.tsx
+ ┃ ┃ ┃ ┣ 📜MemberDashboard.tsx
+ ┃ ┃ ┃ ┗ 📜TreasurerDashboard.tsx
+ ┃ ┃ ┣ 📜Home.tsx                                   # Page d'accueil
+ ┃ ┃ ┗ 📜Profile.tsx
+ ┃ ┗ 📜App.tsx                                      # Composant principal de l'app (gère les routes, les connexions, etc...)
+ ┣ 📂assets
+ ┃ ┗ 📂images
+ ┣ 📂constants                                      # Référencement des routes de l'application et des routes des APIs
+ ┃ ┣ 📜apiroute.ts
+ ┃ ┗ 📜route.ts
+ ┣ 📂modules                                        # Modules : Blocs composants React avec ou sans hook personnalisé, classés par page
+ ┃ ┣ 📂auth
+ ┃ ┃ ┗ 📂components
+ ┃ ┃ ┃ ┣ 📂molecules
+ ┃ ┃ ┃ ┃ ┣ 📂LoginForm
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜LoginForm.module.scss
+ ┃ ┃ ┃ ┃ ┗ 📂RegisterForm
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜Register.module.scss
+ ┃ ┃ ┃ ┗ 📂organisms
+ ┃ ┣ 📂dashboards
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📂molecules
+ ┃ ┃ ┃ ┃ ┣ 📂AssociationContactManagement
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜AssociationContactManagement.module.scss
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┣ 📂ExpensesReportsForm
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜ExpensesReportForm.module.scss
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┣ 📂MileagesManagement
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜MileagesManagement.module.scss
+ ┃ ┃ ┃ ┃ ┣ 📂UserForm
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserForm.module.scss
+ ┃ ┃ ┃ ┃ ┣ 📂UserProfile
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┣ 📂UserReport
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂UsersList
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┗ 📂organisms
+ ┃ ┃ ┃ ┃ ┣ 📂ContentAdminDashboard
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┣ 📂ContentMemberDashboard
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┃ ┗ 📂ContentTreasurerDashboard
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┗ 📂useExpensesReportsForm
+ ┃ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┗ 📂member
+ ┃ ┃ ┃ ┗ 📂components
+ ┃ ┃ ┃ ┃ ┣ 📂molecules
+ ┃ ┃ ┃ ┃ ┗ 📂organisms
+ ┃ ┣ 📂home
+ ┃ ┃ ┗ 📂components
+ ┃ ┃ ┃ ┗ 📂organisms
+ ┃ ┃ ┃ ┃ ┗ 📂HomeHero
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┗ 📂shared
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📂Footer
+ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┃ ┗ 📂Header
+ ┃ ┃ ┃ ┃ ┣ 📜Header.module.scss
+ ┃ ┃ ┃ ┃ ┗ 📜index.tsx
+ ┃ ┃ ┗ 📂hooks
+ ┃ ┃ ┃ ┗ 📜redux.ts
+ ┣ 📂services                      # Services frontend pour effectuer des actions APIs complexes
+ ┃ ┗ 📂expensesReports
+ ┃ ┃ ┗ 📜index.ts
+ ┣ 📂stores                         # Redux Toolkit : store global pour stocker l'arrivée des données de la base de données
+ ┃ ┣ 📂features                     # Slices du store global
+ ┃ ┃ ┣ 📂association
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┣ 📂expensesReports
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┣ 📂mileages
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┗ 📂users
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┣ 📂thunks                     # Thunks : actions asynchrones en charge de modifier le store en fonction de l'évolution de la base de données
+ ┃ ┃ ┣ 📂association
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┣ 📂expensesReports
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┣ 📂mileages
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┃ ┗ 📂users
+ ┃ ┃ ┃ ┗ 📜index.ts
+ ┃ ┗ 📜index.ts
+ ┣ 📂styles                         # Sass Styles
+ ┃ ┣ 📂abstracts                    # Abstracts Sass : partials des fonctions Sass, mixins, placeholders et variables
+ ┃ ┃ ┣ 📜_functions.scss
+ ┃ ┃ ┣ 📜_keyframes.scss
+ ┃ ┃ ┣ 📜_mixins.scss
+ ┃ ┃ ┣ 📜_placeholders.scss
+ ┃ ┃ ┗ 📜_variables.scss
+ ┃ ┣ 📂base                         # Styles de base
+ ┃ ┃ ┣ 📜_fonts.scss                # Gestion de la police
+ ┃ ┃ ┣ 📜_global.scss               # Gestion du style global
+ ┃ ┃ ┣ 📜_reset.scss                # Réinitialisation du style par défaut
+ ┃ ┃ ┗ 📜_theme.scss                # Thème de l'application
+ ┃ ┗ 📜main.scss
+ ┣ 📂types                          # Types et interfaces personnalisés pour TypeScript
+ ┃ ┗ 📜WithRequiredId.d.ts
+ ┣ 📂utils                          # Fonctions utilitaires (ex : Restructuration de données)
+ ┃ ┗ 📂formatExpensesReports
+ ┃ ┃ ┗ 📜index.ts
+ ┣ 📜env.d.ts                       # Typage globaux pour TypeScript
+ ┣ 📜global.d.ts                    
+ ┣ 📜main.tsx                       # Entrée de l'application
+ ┗ 📜window.d.ts
+📜.env                              # Variables d'environnement pour Vite
+`
 
-📦src<br />
- ┣ 📂Controller<br />
- ┃ ┣ 📂Api<br />
- ┃ ┃ ┗ 📜TestController.php<br />
- ┃ ┗ 📜.gitignore<br />
- ┣ 📂DataFixtures<br />
- ┃ ┣ 📜AppFixtures.php<br />
- ┃ ┗ 📜UserFixtures.php<br />
- ┣ 📂Entity<br />
- ┃ ┣ 📜.gitignore<br />
- ┃ ┗ 📜User.php<br />
- ┣ 📂Repository<br />
- ┃ ┣ 📜.gitignore<br />
- ┃ ┗ 📜UserRepository.php<br />
- ┣ 📂Services<br />
- ┃ ┗ 📂Api<br />
- ┃ ┃ ┗ 📜TestService.php<br />
- ┗ 📜Kernel.php<br />
-<br />
+## Installation
+- **Backend** : 
+`
+cd backend
+composer install
+`
 
-**Front-end**
-- Les slices du Redux Sore permettent de stocker les données de la base de données à travers toutes l'application
-- Les extra reducers des slices permettent de mettre à jour de manière asynchrones les slices
-- Les thunks sont asynchrones avec createAsyncThunk
-- Les thunks exécute des fetch() avec les APIs configurés dans les Controller Symfony pour exécuter des requêtes depuis l'UI
-- Les thunks n'ont pas de logique de restructuration
-- Les routes front-end qui sont associés à une URL de page sont dans constants/route.ts
-- Les routes APIs du backend sont dans constants/apiroute.ts
-- Les styles sont scopés par composant avec .module.scss, et des styles globaux sont présents dans styles/<br />
-- Bien penser à changer index.html à la racine de frontend/ et ajouter les favicon grâce à [realFaviconGenerator](https://realfavicongenerator.net/) et l'OpenGraph sur [opengraph](https://www.opengraph.xyz/) (fichiers à déposer dans public/)
+- **Frontend** : 
+`
+cd frontend
+npm install
+`
 
-📦src<br />
- ┣ 📂App<br />
- ┃ ┣ 📂pages<br />
- ┃ ┃ ┗ 📜Home.tsx<br />
- ┃ ┗ 📜App.tsx<br />
- ┣ 📂assets<br />
- ┃ ┣ 📂fonts<br />
- ┃ ┗ 📂images<br />
- ┃ ┃ ┣ 📜hero.png<br />
- ┃ ┃ ┣ 📜react.svg<br />
- ┃ ┃ ┗ 📜vite.svg<br />
- ┣ 📂constants<br />
- ┃ ┣ 📜apiroute.ts<br />
- ┃ ┗ 📜route.ts<br />
- ┣ 📂modules<br />
- ┃ ┣ 📂home<br />
- ┃ ┃ ┣ 📂components<br />
- ┃ ┃ ┃ ┣ 📂atoms<br />
- ┃ ┃ ┃ ┣ 📂molecules<br />
- ┃ ┃ ┃ ┗ 📂organisms<br />
- ┃ ┃ ┃ ┃ ┗ 📂HomeHero<br />
- ┃ ┃ ┃ ┃ ┃ ┗ 📜index.tsx<br />
- ┃ ┃ ┗ 📂hooks<br />
- ┃ ┗ 📂shared<br />
- ┃ ┃ ┣ 📂components<br />
- ┃ ┃ ┃ ┣ 📂Footer<br />
- ┃ ┃ ┃ ┃ ┗ 📜index.tsx<br />
- ┃ ┃ ┃ ┗ 📂Navbar<br />
- ┃ ┃ ┃ ┃ ┗ 📜index.tsx<br />
- ┃ ┃ ┗ 📂hooks<br />
- ┃ ┃ ┃ ┗ 📜redux.ts<br />
- ┣ 📂stores<br />
- ┃ ┣ 📂features<br />
- ┃ ┃ ┗ 📂users<br />
- ┃ ┃ ┃ ┗ 📜index.ts<br />
- ┃ ┣ 📂thunks<br />
- ┃ ┃ ┗ 📂users<br />
- ┃ ┃ ┃ ┗ 📜index.ts<br />
- ┃ ┗ 📜index.ts<br />
- ┣ 📂styles<br />
- ┃ ┣ 📂abstracts<br />
- ┃ ┃ ┣ 📜_functions.scss<br />
- ┃ ┃ ┣ 📜_keyframes.scss<br />
- ┃ ┃ ┣ 📜_mixins.scss<br />
- ┃ ┃ ┣ 📜_placeholders.scss<br />
- ┃ ┃ ┗ 📜_variables.scss<br />
- ┃ ┣ 📂base<br />
- ┃ ┃ ┣ 📜_fonts.scss<br />
- ┃ ┃ ┣ 📜_global.scss<br />
- ┃ ┃ ┣ 📜_reset.scss<br />
- ┃ ┃ ┗ 📜_theme.scss<br />
- ┃ ┗ 📜main.scss<br />
- ┣ 📂types<br />
- ┣ 📂utils<br />
- ┣ 📜env.d.ts<br />
- ┣ 📜global.d.ts<br />
- ┗ 📜main.tsx<br />
-<br />
+
+## Configuration .env
+### Variables
+- **Backend** :
+  - DATABASE_URL
+  - CORS_ALLOW_ORIGIN
+  - SESSION_COOKIE_DOMAIN
+
+- **Frontend** : 
+  - VITE_API_URL
+  - VITE_BASE_URL
+
+### Exemples de .env.local pour un environnement de développement local
+`
+/backend/.env.local :
+
+DATABASE_URL="mysql://user:password@127.0.0.1:3306/db_name?serverVersion=8"     # Connexion à la base de donnée d'un serveur (WAMP, XAMPP, MAMP etc...)
+
+CORS_ALLOW_ORIGIN=http://localhost:5173               # Permettre les requêtes envoyées depuis le frontend
+
+SESSION_COOKIE_DOMAIN=localhost                       # Permettre l'envoi de cookies de session
+
+
+
+/frontend/.env.local
+
+VITE_API_URL=http://localhost:8000                    # Récupération de l'URL où le backend Symfony écoute
+
+VITE_BASE_URL=./                                      # Réglage des chemins relatifs de build Vite
+`
+
+### Exemples de .env.local pour un environnement de développement avec IP local exposée (pour plusieurs appareils)
+
+`
+/backend/.env.local :
+
+DATABASE_URL="mysql://user:password@127.0.0.1:3306/db_name?serverVersion=8"     # Connexion à la base de donnée d'un serveur (WAMP, XAMPP, MAMP etc...)
+
+CORS_ALLOW_ORIGIN=http://ADREESS_IP:5173              # Permettre les requêtes envoyées depuis le frontend
+
+SESSION_COOKIE_DOMAIN=ADREESS_IP                       # Permettre l'envoi de cookies de session
+
+
+
+/frontend/.env.local
+
+VITE_API_URL=http://ADREESS_IP:8000               # Récupération de l'URL où le backend Symfony écoute
+
+VITE_BASE_URL=./                                      # Réglage des chemins relatifs de build Vite
+`
+
+## Utilisation / Mode d'emploi
+
+### Utilisation
+*Notes* : 
+- Le premier utilisateur à vouloir créer un compte aura forcément un compte Admin, les prochains auront forcément le rôle Membre
+- Seuls les admin peuvent créer d'autres comptes Admin et Trésoriers, ainsi que les modifier et les supprimer
+- Les admin et trésoriers peuvent voir les notes de frais de tous les utilisateurs membres, seuls les membres ne peuvent voir que les leurs
+- Les justificatifs de dépenses sont accessibles depuis la plate-forme
+
+**Lancer l'application** : 
+- Backend : 
+`
+cd backend
+php bin/console cache:clear                         # Vider le cache Symfony si nécessaire
+php bin/console cache:warmup                        # Faire chauffer le cache
+symfony serve --listen-ip=0.0.0.0 --port=8000       # <--- --listen-ip=0.0.0.0 --port=8000 pour exposer l'adresse IP ou juste symfony serve:start pour un environnement de développement local
+`
+
+- Frontend : 
+`
+cd frontend
+npm run dev
+`
+
+
+### Mode d'emploi
+- Se connecter ou créer un compte
+- Ajouter une note de frais
+- Ajouter des dépenses et télécharger les justificatifs
+- Générer le PDF
+
+
+## Auteur
+- **Nom** : Magali MAI
+- **LinkedInd** : https://www.linkedin.com/in/mai-magali/
+- **Github** : https://github.com/galima10/
+- **Site** : https://magalimai.fr/
+
+## Futur / Roadmap
+- Envoi des notes par mail (la table des adresses mail avec ajout, modification et suppression avec leurs actions sont déjà en place)
+- Dashboard statistique avancé
+- Version mobile responsive
+- Design frontend UI attrayant
+
+## Déploiement
+- Docker / Docker Compose pour backend + frontend
+- Hébergement backend : Symfony Flex / VPS / Cloud (ex : Render, AWS, OVH)
+- Hébergement frontend : Vite build → dist/ → Netlify / Vercel
+- Config SSL / SMTP réel en production
