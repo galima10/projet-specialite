@@ -160,6 +160,7 @@ export default function UserForm({
       </div>
       <div className={styles.nextPrevButton}>
         <button
+          className="secondary"
           onClick={() => {
             setTab("home");
             setFormData({
@@ -172,7 +173,9 @@ export default function UserForm({
         >
           Annuler
         </button>
-        <button onClick={sendData}>Enregistrer</button>
+        <button className="primary" onClick={sendData}>
+          Enregistrer
+        </button>
       </div>
     </form>
   );

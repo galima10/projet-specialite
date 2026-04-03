@@ -25,7 +25,6 @@ export default function MileagesManagement({
   );
   useEffect(() => {
     dispatch(fetchMileageRatesThunk());
-    console.log("test");
   }, []);
 
   function handleInputChange(
@@ -71,19 +70,23 @@ export default function MileagesManagement({
   }
 
   return (
-    <div>
+    <div className={styles.mileage}>
       {mileagesTab === "list" ? (
         <>
           <h4>Liste des barèmes</h4>
           <button
+            className="secondary"
             onClick={() => {
               setTab("home");
             }}
           >
             Retour
           </button>
-          <h5>Barèmes kilométriques</h5>
+          <h5 style={{ marginTop: "3rem", marginBottom: "1rem" }}>
+            Barèmes kilométriques
+          </h5>
           <button
+            className="primary"
             onClick={() => {
               setFormType("km");
               setMileagesTab("setMileage");
@@ -99,6 +102,7 @@ export default function MileagesManagement({
                     {item.label} - {item.amountPerKm}/km
                   </p>
                   <button
+                    className="tertiary"
                     onClick={() =>
                       dispatch(
                         deleteMileageRateThunk({ rateId: item.id, type: "KM" }),
@@ -111,8 +115,11 @@ export default function MileagesManagement({
               );
             })}
           </ul>
-          <h5>Barèmes d'abandon de frais</h5>
+          <h5 style={{ marginTop: "3rem", marginBottom: "1rem" }}>
+            Barèmes d'abandon de frais
+          </h5>
           <button
+            className="primary"
             onClick={() => {
               setFormType("waiver");
               setMileagesTab("setMileage");
@@ -128,6 +135,7 @@ export default function MileagesManagement({
                     {item.label} - {item.amountPerKm}/km
                   </p>
                   <button
+                    className="tertiary"
                     onClick={() =>
                       dispatch(
                         deleteMileageRateThunk({
@@ -180,6 +188,7 @@ export default function MileagesManagement({
           </div>
           <div className={styles.nextPrevButton}>
             <button
+              className="secondary"
               onClick={() => {
                 setMileagesTab("list");
                 setFormData({
@@ -190,7 +199,9 @@ export default function MileagesManagement({
             >
               Annuler
             </button>
-            <button onClick={sendData}>Enregistrer</button>
+            <button className="primary" onClick={sendData}>
+              Enregistrer
+            </button>
           </div>
         </form>
       )}

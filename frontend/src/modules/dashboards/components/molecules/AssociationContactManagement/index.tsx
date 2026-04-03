@@ -81,9 +81,10 @@ export default function AssociationContactManagement({
   }
 
   return (
-    <div>
+    <div className={styles.association}>
       <h4>Contact actuel de l'association</h4>
       <button
+        className="secondary"
         onClick={() => {
           setTab("home");
           setIsModified(false);
@@ -101,9 +102,13 @@ export default function AssociationContactManagement({
         </p>
       )}
       {contacts.length === 0 ? (
-        <button onClick={() => setIsModified(true)}>Ajouter le contact</button>
+        <button className="primary" onClick={() => setIsModified(true)}>
+          Ajouter le contact
+        </button>
       ) : (
-        <button onClick={() => setIsModified(true)}>Modifier le contact</button>
+        <button className="tertiary" onClick={() => setIsModified(true)}>
+          Modifier le contact
+        </button>
       )}
       {isModified && (
         <form onSubmit={handleSubmit}>
@@ -130,6 +135,7 @@ export default function AssociationContactManagement({
           </div>
           <div className={styles.nextPrevButton}>
             <button
+              className="secondary"
               onClick={() => {
                 setIsModified(false);
                 setFormData({
@@ -140,7 +146,9 @@ export default function AssociationContactManagement({
             >
               Annuler
             </button>
-            <button onClick={sendData}>Enregistrer</button>
+            <button className="primary" onClick={sendData}>
+              Enregistrer
+            </button>
           </div>
         </form>
       )}

@@ -15,8 +15,7 @@
 
 .headerButton {
   background-color: $primary-color;
-  width: 3rem;
-  height: 3rem;
+  padding: .75rem 1rem;
   border-radius: 1rem;
   transition: 0.5s;
   &:hover {
