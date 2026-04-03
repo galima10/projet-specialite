@@ -53,7 +53,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     object: "",
     km: 0,
     transportCost: 0,
-    otherCost: 0,
+    othersCost: 0,
     documents: null,
   });
   const [currentDocuments, setCurrentDocuments] = useState<
@@ -100,19 +100,19 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       0,
     );
 
-    const totalOtherCost = formData.expensesList.reduce(
-      (sum, item) => sum + Number(item.otherCost || 0),
+    const totalOthersCost = formData.expensesList.reduce(
+      (sum, item) => sum + Number(item.othersCost || 0),
       0,
     );
 
-    const totalAll = totalKmAmount + totalTransportCost + totalOtherCost;
+    const totalAll = totalKmAmount + totalTransportCost + totalOthersCost;
 
     return {
       totalAll,
       totalKm,
       totalKmAmount,
       totalTransportCost,
-      totalOtherCost,
+      totalOthersCost,
     };
   }
 
@@ -229,7 +229,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
 
     dispatch(createExpensesReportThunk({ data: request, userId: userId }));
 
-    console.log(request);
   }
 
   const {
@@ -237,7 +236,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     totalKm,
     totalKmAmount,
     totalTransportCost,
-    totalOtherCost,
+    totalOthersCost,
   } = calculateTotals();
 
   function generateHtmlPages() {
@@ -277,7 +276,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.km).toFixed(2)}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.transportCost).toFixed(2)} €</td>
-        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.otherCost).toFixed(2)} €</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.othersCost).toFixed(2)} €</td>
       </tr>
     `,
         )
@@ -324,7 +323,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
               <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Totaux par catégorie :</td>
               <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalKmAmount && totalKmAmount > 0 ? totalKmAmount.toFixed(2) : 0} €</td>
               <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalTransportCost) > 0 ? parseFloat(totalTransportCost).toFixed(2) : 0} €</td>
-              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalOtherCost) > 0 ? parseFloat(totalOtherCost).toFixed(2) : 0} €</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalOthersCost) > 0 ? parseFloat(totalOthersCost).toFixed(2) : 0} €</td>
             </tr>
           </tbody>
         </table>
@@ -450,9 +449,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         ? parseFloat(currentExpense.transportCost) || 0
         : currentExpense.transportCost || 0;
     const other =
-      typeof currentExpense.otherCost === "string"
-        ? parseFloat(currentExpense.otherCost) || 0
-        : currentExpense.otherCost || 0;
+      typeof currentExpense.othersCost === "string"
+        ? parseFloat(currentExpense.othersCost) || 0
+        : currentExpense.othersCost || 0;
 
     if (
       currentExpense.date === "" ||
@@ -483,7 +482,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       object: "",
       km: 0,
       transportCost: 0,
-      otherCost: 0,
+      othersCost: 0,
       documents: [],
     });
     setCurrentDocuments([]);
@@ -497,7 +496,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     const report: ReportFile = expensesReports
       .find((e) => e.userId === user.id).reports.find(r => r.reason === formData.reason).reportDocumentFile
       ;
-    console.log(report, formData.reason)
     const res = await fetch(
       `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
       {

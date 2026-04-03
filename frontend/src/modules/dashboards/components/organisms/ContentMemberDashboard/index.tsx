@@ -42,7 +42,7 @@ export default function ContentMemberDashboard() {
                 return (
                   <li key={`report-${index}`} className={styles.report}>
                     <p>
-                      n°{index + 1} - {report.createdAt.split("T")[0]}
+                      n°{index + 1} - {report.createdAt.split("T")[0]} - {report.reason}
                     </p>
                     <div>
                       <button

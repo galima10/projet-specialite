@@ -101,7 +101,8 @@ export default function UserProfile({
                   return (
                     <li key={`report-${index}`}>
                       <p>
-                        n°{index + 1} - {report.createdAt.split("T")[0]}
+                        n°{index + 1} - {report.createdAt.split("T")[0]} -{" "}
+                        {report.reason}
                       </p>
                       <div>
                         <button

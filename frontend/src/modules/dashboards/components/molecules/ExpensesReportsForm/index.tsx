@@ -40,7 +40,7 @@ export default function ExpensesReportsForm({
     totalKm,
     totalKmAmount,
     totalTransportCost,
-    totalOtherCost,
+    totalOthersCost,
   } = calculateTotals();
   const {
     hasKm,
@@ -285,7 +285,7 @@ export default function ExpensesReportsForm({
                     type="number"
                     step="0.01"
                     placeholder="Entrez le coût ici"
-                    name="otherCost"
+                    name="othersCost"
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d*([.,]\d{0,2})?$/.test(value) || value === "") {
@@ -376,8 +376,8 @@ export default function ExpensesReportsForm({
               </li>
             )}
 
-            {totalOtherCost > 0 && (
-              <li>Total des autres frais : {totalOtherCost.toFixed(2)} €</li>
+            {totalOthersCost > 0 && (
+              <li>Total des autres frais : {totalOthersCost.toFixed(2)} €</li>
             )}
           </ul>
           {formData.expensesList.some((item) => item.km && item.km > 0) && (

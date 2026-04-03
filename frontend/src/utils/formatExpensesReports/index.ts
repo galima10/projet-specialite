@@ -40,27 +40,53 @@ export function formatExpensesReports(
         reportDocumentFile: reportFile,
         expensesList: [],
       };
+      console.log(report);
+      console.log("rawRequests", rawRequests);
+      console.log(
+        "rawRequests length",
+        rawListItems.filter((li) => {
+          console.log("li", li);
+          return Number(li.infosRequestId) === Number(request.id);
+        }),
+      );
 
-      const expensesListItems: WithRequiredId<ExpensesListItem>[] = rawListItems
-        .filter((li) => li.infosRequestId === request.id)
-        .map((eli) => {
-          const documents: ExpensesDocument[] = rawDocuments
-            .filter((d) => d.expensesListId === eli.id)
-            .map((d) => ({
-              id: d.id,
-              name: d.name,
-              pathFile: d.pathFile,
-            }));
-          return {
-            id: eli.id,
-            date: eli.date,
-            object: eli.object,
-            km: parseFloat(eli.km),
-            transportCost: parseFloat(eli.transportCost),
-            othersCost: parseFloat(eli.othersCost),
-            documents,
-          };
-        });
+      const filtered = rawListItems.filter((li) => {
+        console.log("li", li);
+        return Number(li.infosRequestId) === Number(request.id);
+      });
+
+      console.log("filtered", filtered);
+
+      const expensesListItems = filtered.map((eli) => {
+        console.log("INSIDE MAP", eli);
+        console.log("rawDocuments", rawDocuments);
+        console.log(
+          "values",
+          Object.values(rawDocuments).map((d) => console.log(d)),
+        );
+
+        const documentsTreated = Object.values(rawDocuments);
+
+        const documents = documentsTreated
+          .filter((d) => Number(d.expensesListId) === Number(eli.id))
+          .map((d) => ({
+            id: d.id,
+            name: d.name,
+            pathFile: d.pathFile,
+          }));
+
+        return {
+          id: eli.id,
+          date: eli.date,
+          object: eli.object,
+          km: eli.km ? parseFloat(eli.km) : null,
+          transportCost: eli.transportCost
+            ? parseFloat(eli.transportCost)
+            : null,
+          othersCost: eli.othersCost ? parseFloat(eli.othersCost) : null,
+          documents,
+        };
+      });
 
       report.expensesList.push(...expensesListItems);
       return report;

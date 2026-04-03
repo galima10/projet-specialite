@@ -16,6 +16,7 @@ export const fetchExpensesReportsThunk = createAsyncThunk<UserReport[], void>(
   async () => {
     const { documents, reportsFiles, requests, listsItems } =
       await FetchExpensesReportsService();
+
     return formatExpensesReports(requests, documents, listsItems, reportsFiles);
   },
 );
