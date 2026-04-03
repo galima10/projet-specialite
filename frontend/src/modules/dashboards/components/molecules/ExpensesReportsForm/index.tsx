@@ -131,8 +131,7 @@ export default function ExpensesReportsForm({
                   <ul>
                     <li>
                       <strong>
-                        n°{indexItem + 1} - {item.date}
-                        {item.object}
+                        n°{indexItem + 1} - {item.date} - {item.object}
                       </strong>
                     </li>
                     <li>
@@ -286,7 +285,7 @@ export default function ExpensesReportsForm({
                     type="number"
                     step="0.01"
                     placeholder="Entrez le coût ici"
-                    name="othersCost"
+                    name="otherCost"
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d*([.,]\d{0,2})?$/.test(value) || value === "") {
@@ -441,7 +440,7 @@ export default function ExpensesReportsForm({
                       />
                     </div>
                     <div className={styles.input}>
-                      <label htmlFor="waiverMileageRate">Votre condition</label>
+                      <label htmlFor="waiverMileageRate">Votre condition d'abandon</label>
                       <select
                         name="waiverMileageRate"
                         id="waiverMileageRate"
@@ -477,7 +476,7 @@ export default function ExpensesReportsForm({
 
                         return (
                           <p>
-                            Après déduction d'impôts, le montant réel dépensé
+                            Après déduction d'impôts (de 66%), le montant réel dépensé
                             sera de : {realAmount.toFixed(2)} €
                           </p>
                         );
@@ -491,7 +490,7 @@ export default function ExpensesReportsForm({
           <h5 style={{ marginTop: "2rem" }}>Remboursement</h5>
           <p>
             Je souhaite que le CST me rembourse :{" "}
-            {(totalAll.toFixed(2) - Number(formData.amountWaiver || 0)).toFixed(
+            {(totalAll - Number(formData.amountWaiver || 0)).toFixed(
               2,
             )}
           </p>

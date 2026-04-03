@@ -12,6 +12,12 @@
   }
 }
 
+.reports {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .report {
   display: flex;
   border: 0.1rem solid $secondary-color;
