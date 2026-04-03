@@ -113,7 +113,6 @@ class InfosRequestsService
       'reason' => $request->getReason(),
       'budget' => $request->getBudget(),
       'amountWaiver' => $request->getAmountWaiver(),
-      'userId' => $request->getUserId(),
       'waiverMileageRateId' => $request->getWaiverMileageRateId(),
       'kmMileageRateId' => $request->getKmMileageRateId(),
     ];

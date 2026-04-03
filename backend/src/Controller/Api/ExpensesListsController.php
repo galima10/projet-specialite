@@ -20,15 +20,6 @@ final class ExpensesListsController extends AbstractController
     return $this->json($lists, 200);
   }
 
-  #[Route('/{id}', name: 'list_get', requirements: ['id' => '\d+'], methods: ['GET'])]
-  public function list_get(ExpensesListsService $expensesListsService, $id): JsonResponse
-  {
-    $currentUser = $this->getUser();
-    $list = $expensesListsService->getList($id, $currentUser);
-    if (!$list) return $this->json(['error' => 'List not found'], 404);
-    return $this->json($list, 200);
-  }
-
   #[Route('', name: 'list_create', methods: ['POST'])]
   public function list_create(Request $request, ExpensesListsService $expensesListsService): JsonResponse
   {
@@ -39,17 +30,6 @@ final class ExpensesListsController extends AbstractController
     if ($list === 'Forbidden') return $this->json(['error' => 'Create forbidden'], 403);
     if ($list === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
     return $this->json($list, 201);
-  }
-
-  #[Route('/{id}', name: 'list_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
-  public function list_update(Request $request, ExpensesListsService $expensesListsService, $id): JsonResponse
-  {
-    $currentUser = $this->getUser();
-    $data = json_decode($request->getContent(), true);
-    $list = $expensesListsService->setList($data, $id, $currentUser);
-    if (!$list) return $this->json(['error' => 'List not found']);
-    if ($list === 'Missing') return $this->json(['error' => 'Bad request: missing fields'], 400);
-    return $this->json($list, 200);
   }
 
   #[Route('/{id}', name: 'list_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]

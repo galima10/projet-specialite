@@ -8,6 +8,7 @@ use App\Entity\ExpensesDocuments;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\InfosRequestsRepository;
 use App\Entity\Users;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ExpensesDocumentsService
 {
@@ -75,17 +76,20 @@ class ExpensesDocumentsService
     ];
   }
 
+  
+
   public function addDocument(array $data, $currentUser): array|string|null
   {
-    $file = $_FILES['file'] ?? null;
-    if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+    /** @var UploadedFile|null $file */
+    $file = $data['file'] ?? null;
+
+    if (!$file || !$file->isValid()) {
       return 'Missing or invalid file';
     }
 
-    $expensesListId = $_POST['expensesListId'] ?? null;
-    $name = $_POST['name'] ?? null;
+    $expensesListId = $data['expensesListId'] ?? null;
 
-    if (!$expensesListId || !$name) {
+    if (!$expensesListId) {
       return 'Missing data';
     }
 
@@ -100,21 +104,27 @@ class ExpensesDocumentsService
       return 'Forbidden';
     }
 
-    // Déplacer le fichier
+    // Upload
     $uploadDir = dirname(__DIR__, 3) . '/public/uploads/expenses-documents/';
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-    $destination = $uploadDir . basename($file['name']);
-    move_uploaded_file($file['tmp_name'], $destination);
+    if (!is_dir($uploadDir)) {
+      mkdir($uploadDir, 0755, true);
+    }
 
-    
+    $fileName = uniqid() . '_' . $file->getClientOriginalName();
 
-    // Créer l’entité
+    try {
+      $file->move($uploadDir, $fileName);
+    } catch (\Exception $e) {
+      return 'Upload failed';
+    }
+
+    $publicPath = '/uploads/expenses-documents/' . $fileName;
+
+    // Entity
     $document = new ExpensesDocuments();
-    $document->setName($name);
-    $publicPath = '/uploads/expenses-documents/' . basename($file['name']);
+    $document->setName($file->getClientOriginalName());
     $document->setPathFile($publicPath);
     $document->setExpensesList($expensesList);
-
 
     $this->entityManager->persist($document);
     $this->entityManager->flush();
@@ -123,7 +133,6 @@ class ExpensesDocumentsService
       'id' => $document->getId(),
       'name' => $document->getName(),
       'pathFile' => $publicPath,
-      'expensesListId' => $expensesList->getId(),
     ];
   }
 

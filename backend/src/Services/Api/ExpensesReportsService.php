@@ -7,6 +7,9 @@ use App\Entity\ExpensesReports;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\InfosRequestsRepository;
 use App\Entity\Users;
+use App\Entity\InfosRequests;
+use App\Entity\ExpensesDocuments;
+use App\Entity\ExpensesLists;
 
 class ExpensesReportsService
 {
@@ -16,18 +19,83 @@ class ExpensesReportsService
     private InfosRequestsRepository $infos_requests_repository,
   ) {}
 
-  private function getUserReportsById(int $id, Users $user): ?ExpensesReports
+  public function getUserReports(array $requests, array $lists, array $documents, array $reportsFiles)
   {
-    $infosRequests = $this->infos_requests_repository->findBy(['user' => $user]);
-    foreach ($infosRequests as $request) {
-      foreach ($request->getExpensesReports() as $report) {
-        if ($report->getId() === $id) {
-          return $report;
+    if (empty($requests) || empty($lists) || empty($documents) || empty($reportsFiles)) return null;
+    $reports = [];
+    foreach ($requests as $request) {
+      $filteredReports = array_filter($reportsFiles, function (array $reportFile) use ($request) {
+        return $reportFile['infosRequestId'] === $request['id'];
+      });
+      $filteredJsonReport = reset($filteredReports);
+      $reportDocumentFile = [
+        'id' => $filteredJsonReport['id'],
+        'name' => $filteredJsonReport['name'],
+        'pathFile' => $filteredJsonReport['pathFile'],
+      ];
+      $expensesLists = array_map(function (array $list) use ($documents) {
+        $filteredExpensesDocuments = array_filter($documents, function ($expensesDocument) use ($list) {
+          return $expensesDocument['expensesListId'] === $list['id'];
+        });
+        $expensesDocuments = array_map(fn($d) => [
+          'id' => $d['id'],
+          'name' => $d['name'],
+          'pathFile' => $d['pathFile'],
+        ], $filteredExpensesDocuments);
+        $expensesDocuments = array_values($expensesDocuments);
+        return [
+          'id' => $list['id'],
+          'date' => $list['date'],
+          'object' => $list['object'],
+          'km' => $list['km'],
+          'transportCost' => $list['transportCost'],
+          'othersCost' => $list['othersCost'],
+          'documents' => $expensesDocuments
+        ];
+      }, array_filter($lists, function (array $list) use ($request) {
+        return $list['infosRequestId'] === $request['id'];
+      }));
+      $expensesLists = array_values($expensesLists);
+      $existingIndex = null;
+      foreach ($reports as $i => $r) {
+        if ($r['userId'] === $request['userId']) {
+          $existingIndex = $i;
+          break;
         }
       }
+      if ($existingIndex !== null) {
+        $reports[$existingIndex]['reports'][] = [
+          'createdAt' => $request['createdAt'],
+          'reason' => $request['reason'],
+          'budget' => $request['budget'],
+          'amountWaiver' => $request['amountWaiver'],
+          'waiverMileageRateId' => $request['waiverMileageRateId'],
+          'kmMileageRateId' => $request['kmMileageRateId'],
+          'reportDocumentFile' => $reportDocumentFile,
+          'expensesList' => $expensesLists,
+        ];
+      } else {
+        $reports[] = [
+          'userId' => $request['userId'],
+          'reports' => [
+            [
+              'createdAt' => $request['createdAt'],
+              'reason' => $request['reason'],
+              'budget' => $request['budget'],
+              'amountWaiver' => $request['amountWaiver'],
+              'waiverMileageRateId' => $request['waiverMileageRateId'],
+              'kmMileageRateId' => $request['kmMileageRateId'],
+              'reportDocumentFile' => $reportDocumentFile,
+              'expensesList' => $expensesLists,
+            ]
+          ]
+        ];
+      }
     }
-    return null;
+    return $reports;
   }
+
+
 
   public function getReports(Users $currentUser): ?array
   {
@@ -51,38 +119,23 @@ class ExpensesReportsService
     ], $reports);
   }
 
-  public function getReport(int $id, Users $currentUser): ?array
-  {
-    $report = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      ? $this->expenses_reports_repository->find($id)
-      : $this->getUserReportsById($id, $currentUser);
-    if (!$report) return null;
-    return [
-      'id' => $report->getId(),
-      'name' => $report->getName(),
-      'pathFile' => $report->getPathFile(),
-      'infosRequestId' => $report->getInfosRequestId(),
-    ];
-  }
-
   public function addReport(array $data, Users $currentUser): array|string|null
   {
-    $file = $_FILES['file'] ?? null;
-    if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-      return 'Missing or invalid file';
-    }
 
-    $infosRequestId = $_POST['infosRequestId'] ?? null;
-    $name = $_POST['name'] ?? null;
+    /** @var UploadedFile|null $file */
+    $file = $data['file'] ?? null;
 
-    if (!$infosRequestId || !$name) {
-      return 'Missing';
-    }
+    if (!$file || !$file->isValid()) return 'Missing or invalid file';
+
+    $infosRequestId = $data['infosRequestId'] ?? null;
+
+    if (!$infosRequestId) return 'Missing';
+
+    $name = $data['name'] ?? $file->getClientOriginalName();
 
     $infosRequest = $this->infos_requests_repository->find($infosRequestId);
     if (!$infosRequest) return null;
 
-    // Vérification droits
     if (
       !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) &&
       $infosRequest->getUser()->getId() !== $currentUser->getId()
@@ -90,16 +143,16 @@ class ExpensesReportsService
       return 'Forbidden';
     }
 
-    // Upload
     $uploadDir = dirname(__DIR__, 3) . '/public/uploads/reports/';
     if (!is_dir($uploadDir)) {
       mkdir($uploadDir, 0755, true);
     }
 
-    $fileName = uniqid() . '_' . basename($file['name']);
-    $destination = $uploadDir . $fileName;
+    $fileName = uniqid() . '_' . $file->getClientOriginalName();
 
-    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+    try {
+      $file->move($uploadDir, $fileName);
+    } catch (\Exception $e) {
       return 'Upload failed';
     }
 
@@ -118,46 +171,15 @@ class ExpensesReportsService
       'id' => $report->getId(),
       'name' => $report->getName(),
       'pathFile' => $report->getPathFile(),
-      'infosRequestId' => $infosRequest->getId(),
     ];
   }
 
-  public function setReport(array $data, int $id, Users $currentUser): array|string|null
+  public function deleteReport(int $id, Users $currentUser): bool|string|null
   {
-    $report = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      ? $this->expenses_reports_repository->find($id)
-      : $this->getUserReportsById($id, $currentUser);
-    if (!$report) return null;
-    if (empty($data['name']) || empty($data['pathFile']) || empty($data['infosRequestId'])) {
-      return 'Missing';
-    }
-    $report->setName($data['name']);
-    $report->setPathFile($data['pathFile']);
-    $infosRequest = $this->infos_requests_repository->find($data['infosRequestId']);
-    if (!$infosRequest) return null;
-    if (
-      !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      && $infosRequest->getUser()->getId() !== $currentUser->getId()
-    ) {
-      return 'Forbidden';
-    }
-    $report->setInfosRequest($infosRequest);
-    $this->entityManager->flush();
-    return [
-      'id' => $report->getId(),
-      'name' => $report->getName(),
-      'pathFile' => $report->getPathFile(),
-      'infosRequestId' => $report->getInfosRequestId(),
-    ];
-  }
-
-  public function deleteReport(int $id, Users $currentUser): ?bool
-  {
-    $report = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
-      ? $this->expenses_reports_repository->find($id)
-      : $this->getUserReportsById($id, $currentUser);
-    if (!$report) return null;
-    $this->entityManager->remove($report);
+    $request = $this->infos_requests_repository->find($id);
+    if (!$request) return null;
+    if (!in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER']) && $currentUser->getId() !== $request->getUserId()) return 'Forbidden';
+    $this->entityManager->remove($request);
     $this->entityManager->flush();
     return true;
   }

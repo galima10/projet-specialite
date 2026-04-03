@@ -167,7 +167,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     event.preventDefault();
   }
   function sendData(userSelected: Users | null = null) {
-    console.log(formData);
+    // console.log(formData);
     if (
       formData.reason.trim() === "" ||
       formData.budget.trim() === "" ||

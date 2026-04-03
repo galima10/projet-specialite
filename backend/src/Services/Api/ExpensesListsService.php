@@ -117,7 +117,6 @@ class ExpensesListsService
       'km' => $list->getKilometers(),
       'transportCost' => $list->getTransportMiscCost(),
       'othersCost' => $list->getOthersCost(),
-      'infosRequestId' => $list->getInfosRequestId(),
     ];
   }
 
