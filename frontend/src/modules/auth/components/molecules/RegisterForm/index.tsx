@@ -116,8 +116,11 @@ export default function RegisterForm() {
       </div>
 
       <div className={styles.nextPrevButton}>
-        <button onClick={sendData}>Créer un compte</button>
+        <button className="primary" onClick={sendData}>
+          Créer un compte
+        </button>
         <button
+          className="tertiary"
           onClick={() => {
             navigate(ROUTES.LOGIN.route);
           }}

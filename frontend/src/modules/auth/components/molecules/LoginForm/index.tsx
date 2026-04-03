@@ -97,8 +97,8 @@ export default function LoginForm() {
         />
       </div>
       <div className={styles.nextPrevButton}>
-        <button onClick={sendData}>Se connecter</button>
-        <button
+        <button className="primary" onClick={sendData}>Se connecter</button>
+        <button className="tertiary"
           onClick={() => {
             navigate(ROUTES.REGISTER.route);
             console.log("register");

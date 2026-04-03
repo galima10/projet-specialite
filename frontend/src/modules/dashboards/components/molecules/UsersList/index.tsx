@@ -1,5 +1,7 @@
 import { Users } from "@stores/features/users";
 import { Dispatch, SetStateAction } from "react";
+import styles from "./UserList.module.scss";
+import { roles } from "../UserForm";
 
 export default function UsersList({
   users,
@@ -27,9 +29,10 @@ export default function UsersList({
   currentUser?: Users;
 }) {
   return (
-    <div>
+    <div className={styles.userList}>
       {currentUser && currentUser.role === "ROLE_ADMIN" && (
         <button
+          className="primary"
           onClick={() => {
             setFormType({
               type: "create",
@@ -40,10 +43,10 @@ export default function UsersList({
           Ajouter un nouvel utilisateur
         </button>
       )}
-      <button onClick={() => setTab("association")}>
+      <button className="primary" onClick={() => setTab("association")}>
         Voir le contact de l'association
       </button>
-      <ul>
+      <ul className={styles.users}>
         {users.map((user) => {
           return (
             <li key={user.id}>
@@ -53,7 +56,11 @@ export default function UsersList({
                   setTab("viewProfile");
                 }}
               >
-                {user.name}
+                <span>Nom : {user.name} </span>
+                <span>
+                  Role :{" "}
+                  {roles.find((r) => r.value === user.role).name.toLowerCase()}
+                </span>
               </button>
             </li>
           );

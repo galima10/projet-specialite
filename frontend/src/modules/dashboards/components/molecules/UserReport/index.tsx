@@ -1,6 +1,7 @@
 import { ExpensesReport } from "@stores/features/expensesReports";
 const API_URL = import.meta.env.VITE_API_URL;
 import { Dispatch, SetStateAction } from "react";
+import styles from "./UserReport.module.scss";
 export default function UserReport({
   report,
   setTab,
@@ -9,25 +10,21 @@ export default function UserReport({
   setTab: Dispatch<SetStateAction<"home" | "addReport" | "viewReport">>;
 }) {
   return (
-    <div>
+    <div className={styles.userReports}>
       <h4>Justificatifs de dépenses</h4>
-      <button onClick={() => setTab("home")}>Retour</button>
+      <button className="secondary" onClick={() => setTab("home")}>
+        Retour
+      </button>
       {report?.expensesList.map((expense, indexExp) => {
         let counter = 0;
         return expense.documents.map((document, indexDoc) => {
           counter++;
           return (
-            <div key={`doc-${indexExp}-${indexDoc}`}>
-              <p>n°{counter}</p>
-              <p>Dépense : {expense.object}</p>
-              <img
-                src={
-                  document.pathFile &&
-                  "pathFile" in report.reportDocumentFile &&
-                  `${API_URL}/${document.pathFile}`
-                }
-                alt={`Justificatif-${counter}`}
-              />
+            <div className={styles.report} key={`doc-${indexExp}-${indexDoc}`}>
+              <div>
+                <p>n°{counter}</p>
+                <p>Dépense : {expense.object}</p>
+              </div>
               <div>
                 <button
                   onClick={() => {
