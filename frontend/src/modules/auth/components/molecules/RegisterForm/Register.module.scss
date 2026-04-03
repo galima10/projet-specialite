@@ -10,13 +10,14 @@
 .labelRole {
   margin-top: 1rem;
   font-weight: $bold;
-  margin-bottom: 1.5rem;
+  margin-bottom: .5rem;
 }
 
 .role {
   padding: 1rem;
   border: 0.15rem solid $secondary-color;
   border-radius: 1rem;
+  margin-bottom: 1rem;
 }
 
 .nextPrevButton {
