@@ -45,7 +45,8 @@ export default function ContentAdminDashboard() {
     <div>
       {tab === "home" ? (
         <>
-          <button onClick={() => setTab("mileagesManagement")}>
+          <h1>Dashboard admin</h1>
+          <button className="primary" onClick={() => setTab("mileagesManagement")}>
             Voir les barèmes
           </button>
           <UsersList
@@ -78,7 +79,9 @@ export default function ContentAdminDashboard() {
         <MileagesManagement setTab={setTab} />
       ) : tab === "viewReport" ? (
         <UserReport report={selectedReport} setTab={setTab} />
-      ) : <AssociationContactManagement setTab={setTab} />}
+      ) : (
+        <AssociationContactManagement setTab={setTab} />
+      )}
     </div>
   );
 }

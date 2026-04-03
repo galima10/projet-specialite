@@ -36,13 +36,16 @@ export default function ContentTreasurerDashboard() {
   return (
     <div>
       {tab === "home" ? (
-        <UsersList
-          users={users}
-          setSelectedUser={setSelectedUser}
-          setTab={setTab}
-          setFormType={setFormType}
-          currentUser={currentUser}
-        />
+        <>
+          <h1 style={{ marginBottom: "1rem" }}>Bienvenu {currentUser.name}</h1>
+          <UsersList
+            users={users}
+            setSelectedUser={setSelectedUser}
+            setTab={setTab}
+            setFormType={setFormType}
+            currentUser={currentUser}
+          />
+        </>
       ) : tab === "viewProfile" ? (
         <UserProfile
           user={selectedUser}

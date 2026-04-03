@@ -4,7 +4,7 @@ import styles from "./UserForm.module.scss";
 import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { Users } from "@stores/features/users";
 
-const roles = [
+export const roles = [
   {
     name: "MEMBRE",
     value: "ROLE_MEMBER",

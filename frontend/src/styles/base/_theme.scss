@@ -82,3 +82,15 @@ select {
 label {
   font-weight: $bold;
 }
+
+button {
+  &.primary {
+    @include button-base("primary");
+  }
+  &.secondary {
+    @include button-base("secondary");
+  }
+  &.tertiary {
+    @include button-base("tertiary");
+  }
+}

@@ -3,14 +3,21 @@
 @use "@styles/abstracts/functions" as *;
 @use "@styles/abstracts/placeholders" as *;
 
-.input {
-  @extend %input;
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 5rem;
+    padding: 0 5rem;
+  }
 }
 
-.nextPrevButton {
-  margin-top: 3rem;
+.buttons {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
 }

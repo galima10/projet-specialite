@@ -5,8 +5,39 @@
 
 .input {
   @extend %input;
+  img {
+    width: 5rem;
+  }
 }
 
 .checkbox {
   @extend %checkbox;
+}
+
+.nextPrevButton {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.addExpense {
+  margin: 0 auto;
+}
+.expenses {
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  li {
+    padding: 1rem;
+    border: 0.15rem solid $secondary-color;
+    border-radius: 1rem;
+  }
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

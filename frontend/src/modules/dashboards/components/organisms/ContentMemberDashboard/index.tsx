@@ -8,6 +8,7 @@ import {
 const API_URL = import.meta.env.VITE_API_URL;
 import UserReport from "../../molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
+import styles from "./ContentMemberDashboard.module.scss";
 
 export default function ContentMemberDashboard() {
   const [tab, setTab] = useState<"home" | "addReport" | "viewReport">("home");
@@ -26,64 +27,61 @@ export default function ContentMemberDashboard() {
     (report) => report.userId === currentUser.id,
   );
   return (
-    <div>
+    <div className={styles.dashboard}>
       {tab === "home" ? (
-        <div>
-          <button onClick={() => setTab("addReport")}>
+        <div className={styles.home}>
+          <h1>Votre tableau de bord</h1>
+          <button className="primary" onClick={() => setTab("addReport")}>
             Ajouter une note de frais
           </button>
-          <ul>
+          <ul className={styles.reports}>
             {userReports?.reports
               ?.slice()
               .reverse()
               .map((report, index) => {
                 return (
-                  <li key={`report-${index}`}>
+                  <li key={`report-${index}`} className={styles.report}>
                     <p>
                       n°{index + 1} - {report.createdAt.split("T")[0]}
                     </p>
-                    <p>
+                    <div>
+                      <button
+                        onClick={() => {
+                          setTab("viewReport");
+                          setSelectedReport(report);
+                        }}
+                      >
+                        Voir les détails
+                      </button>
+                      <button
+                        onClick={() => {
+                          dispatch(
+                            deleteExepensesReportThunk({
+                              expensesReportId: report.id,
+                              userId: currentUser.id,
+                            }),
+                          );
+                        }}
+                      >
+                        Supprimer
+                      </button>
                       {report.reportDocumentFile &&
-                      "pathFile" in report.reportDocumentFile
-                        ? report.reportDocumentFile.pathFile
-                        : "Pas de fichier"}
-                    </p>
-                    <button
-                      onClick={() => {
-                        setTab("viewReport");
-                        setSelectedReport(report);
-                      }}
-                    >
-                      Voir les détails
-                    </button>
-                    <button
-                      onClick={() => {
-                        dispatch(
-                          deleteExepensesReportThunk({
-                            expensesReportId: report.id,
-                            userId: currentUser.id,
-                          }),
-                        );
-                      }}
-                    >
-                      Supprimer
-                    </button>
-                    {report.reportDocumentFile &&
-                      "pathFile" in report.reportDocumentFile && (
-                        <button
-                          onClick={() => {
-                            if (
-                              report.reportDocumentFile &&
-                              "pathFile" in report.reportDocumentFile
-                            ) {
-                              const fileUrl = `${API_URL}/${report.reportDocumentFile.pathFile}`;
-                              window.open(fileUrl, "_blank");
-                            }
-                          }}
-                        >
-                          Voir le pdf
-                        </button>
-                      )}
+                        "pathFile" in report.reportDocumentFile && (
+                          <button
+                            onClick={() => {
+                              if (
+                                report.reportDocumentFile &&
+                                "pathFile" in report.reportDocumentFile
+                              ) {
+                                const fileUrl = `${API_URL}/${report.reportDocumentFile.pathFile}`;
+                                window.open(fileUrl, "_blank");
+                              }
+                            }}
+                          >
+                            Voir le pdf
+                          </button>
+                        )}
+                    </div>
                   </li>
                 );
               }) || <li>Aucune note de frais</li>}

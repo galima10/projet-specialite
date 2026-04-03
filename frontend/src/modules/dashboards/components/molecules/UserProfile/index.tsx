@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/route";
 import { ExpensesReport } from "@stores/features/expensesReports";
 import { deleteExepensesReportThunk } from "@stores/thunks/expensesReports";
+import styles from "./UserProfile.module.scss";
+import { roles } from "../UserForm";
 
 export default function UserProfile({
   user,
@@ -22,7 +24,12 @@ export default function UserProfile({
   currentUser: Users;
   setTab: Dispatch<
     SetStateAction<
-      "home" | "viewProfile" | "addReport" | "setUser" | "viewReport" | "association"
+      | "home"
+      | "viewProfile"
+      | "addReport"
+      | "setUser"
+      | "viewReport"
+      | "association"
     >
   >;
   expensesReports: UserReport[];
@@ -48,12 +55,15 @@ export default function UserProfile({
   }
 
   return (
-    <div>
-      <button onClick={() => setTab("home")}>Retour</button>
+    <div className={styles.userProfile}>
+      <button className="secondary" onClick={() => setTab("home")}>
+        Retour
+      </button>
       {((currentUser && currentUser.id === user.id) ||
         currentUser.role === "ROLE_ADMIN") && (
-        <>
+        <div className={styles.buttons}>
           <button
+            className="tertiary"
             onClick={() => {
               setFormType({
                 type: "update",
@@ -64,76 +74,78 @@ export default function UserProfile({
           >
             Modifier le compte
           </button>
-          <button onClick={() => deleteAccount(user.id)}>
+          <button className="tertiary" onClick={() => deleteAccount(user.id)}>
             Supprimer le compte
           </button>
-        </>
+        </div>
       )}
-      <p>{user.name}</p>
-      <p>{user.email}</p>
-      <p>{user.role}</p>
+      <div className={styles.infos}>
+        <p>Nom d'utilisateur : {user.name}</p>
+        <p>Adresse mail : {user.email}</p>
+        <p>
+          Rôle : {roles.find((r) => r.value === user.role).name.toLowerCase()}
+        </p>
+      </div>
       {user.role === "ROLE_MEMBER" && (
         <>
-          <button onClick={() => setTab("addReport")}>
+          <button className="primary" onClick={() => setTab("addReport")}>
             Ajouter une note de frais à cet utilisateur
           </button>
-          <h3>Liste des notes de frais</h3>
-          <ul>
-            {userReports?.reports
-              ?.slice()
-              .reverse()
-              .map((report, index) => {
-                return (
-                  <li key={`report-${index}`}>
-                    <p>
-                      n°{index + 1} - {report.createdAt.split("T")[0]}
-                    </p>
-                    <p>
-                      {report.reportDocumentFile &&
-                      "pathFile" in report.reportDocumentFile
-                        ? report.reportDocumentFile.pathFile
-                        : "Pas de fichier"}
-                    </p>
-                    <button
-                      onClick={() => {
-                        setTab("viewReport");
-                        setSelectedReport(report);
-                      }}
-                    >
-                      Voir les détails
-                    </button>
-                    <button
-                      onClick={() => {
-                        dispatch(
-                          deleteExepensesReportThunk({
-                            expensesReportId: report.id,
-                            userId: user.id,
-                          }),
-                        );
-                      }}
-                    >
-                      Supprimer
-                    </button>
-                    {report.reportDocumentFile &&
-                      "pathFile" in report.reportDocumentFile && (
+          <div className={styles.reports}>
+            <h3>Liste des notes de frais</h3>
+            <ul>
+              {userReports?.reports
+                ?.slice()
+                .reverse()
+                .map((report, index) => {
+                  return (
+                    <li key={`report-${index}`}>
+                      <p>
+                        n°{index + 1} - {report.createdAt.split("T")[0]}
+                      </p>
+                      <div>
                         <button
                           onClick={() => {
-                            if (
-                              report.reportDocumentFile &&
-                              "pathFile" in report.reportDocumentFile
-                            ) {
-                              const fileUrl = `${API_URL}/${report.reportDocumentFile.pathFile}`;
-                              window.open(fileUrl, "_blank");
-                            }
+                            setTab("viewReport");
+                            setSelectedReport(report);
                           }}
                         >
-                          Voir le pdf
+                          Voir les détails
                         </button>
-                      )}
-                  </li>
-                );
-              }) || <li>Aucune note de frais</li>}
-          </ul>
+                        <button
+                          onClick={() => {
+                            dispatch(
+                              deleteExepensesReportThunk({
+                                expensesReportId: report.id,
+                                userId: user.id,
+                              }),
+                            );
+                          }}
+                        >
+                          Supprimer
+                        </button>
+                        {report.reportDocumentFile &&
+                          "pathFile" in report.reportDocumentFile && (
+                            <button
+                              onClick={() => {
+                                if (
+                                  report.reportDocumentFile &&
+                                  "pathFile" in report.reportDocumentFile
+                                ) {
+                                  const fileUrl = `${API_URL}/${report.reportDocumentFile.pathFile}`;
+                                  window.open(fileUrl, "_blank");
+                                }
+                              }}
+                            >
+                              Voir le pdf
+                            </button>
+                          )}
+                      </div>
+                    </li>
+                  );
+                }) || <li>Aucune note de frais</li>}
+            </ul>
+          </div>
         </>
       )}
     </div>

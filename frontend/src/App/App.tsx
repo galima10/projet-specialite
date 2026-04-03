@@ -2,7 +2,6 @@ import "@styles/main.scss";
 import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 
 import Header from "@modules/shared/components/Header";
-import Footer from "@modules/shared/components/Footer";
 
 import HomePage from "@App/pages/Home";
 import AdminDashboard from "@App/pages/Dashboards/AdminDashboard";
@@ -91,7 +90,6 @@ export default function App() {
       <main id="main-content">
         {currentUser ? <AuthenticatedRoutes /> : <PublicRoutes />}
       </main>
-      <Footer />
     </BrowserRouter>
   );
 }

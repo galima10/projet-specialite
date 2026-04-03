@@ -103,13 +103,18 @@ export default function ExpensesReportsForm({
             </select>
           </div>
           <div className={styles.nextPrevButton}>
-            <button onClick={() => setTab("home")}>Annuler</button>
-            <button onClick={handleValidateInfos}>Suivant</button>
+            <button className="secondary" onClick={() => setTab("home")}>
+              Annuler
+            </button>
+            <button className="primary" onClick={handleValidateInfos}>
+              Suivant
+            </button>
           </div>
         </>
       ) : step === 2 ? (
         <>
           <button
+            className={`primary ${styles.addExpense}`}
             onClick={() => {
               setHasKm(false);
               setHasTransport(false);
@@ -119,27 +124,38 @@ export default function ExpensesReportsForm({
           >
             Ajouter une dépense
           </button>
-          <ul>
+          <ul className={styles.expenses}>
             {formData.expensesList.map((item, indexItem) => {
               return (
                 <li key={`listItem${indexItem}`}>
                   <ul>
-                    <li>{item.date}</li>
-                    <li>{item.object}</li>
-                    <li>{item.km}</li>
-                    <li>{item.transportCost}</li>
-                    <li>{item.othersCost}</li>
+                    <li>
+                      <strong>
+                        n°{indexItem} - {item.date}
+                        {item.object}
+                      </strong>
+                    </li>
+                    <li>
+                      Km : {item.km} - Frais de transport : {item.transportCost}{" "}
+                      - Autres frais : {item.othersCost}
+                    </li>
+                    <button
+                      className="tertiary"
+                      onClick={() => removeExpense(indexItem)}
+                    >
+                      Supprimer la dépense
+                    </button>
                   </ul>
-                  <button onClick={() => removeExpense(indexItem)}>
-                    Supprimer la dépense
-                  </button>
                 </li>
               );
             })}
           </ul>
           <div className={styles.nextPrevButton}>
-            <button onClick={() => setStep(1)}>Retour</button>
+            <button className="secondary" onClick={() => setStep(1)}>
+              Retour
+            </button>
             <button
+              className="primary"
               onClick={() => {
                 if (formData.expensesList.length === 0) {
                   console.log("Il n'y a encore aucune dépense d'entrée");
@@ -154,14 +170,6 @@ export default function ExpensesReportsForm({
         </>
       ) : step === 2.5 ? (
         <>
-          <button
-            onClick={() => {
-              setStep(2);
-              setCurrentDocuments([]);
-            }}
-          >
-            Retour
-          </button>
           <div className={styles.input}>
             <label htmlFor="expenseDate">Date de la dépense</label>
             <input
@@ -183,7 +191,7 @@ export default function ExpensesReportsForm({
             />
           </div>
           <div>
-            <p>Ajouter :</p>
+            <h5 style={{ marginTop: "2rem" }}>Ajouter :</h5>
             <div className={styles.checkboxContainer}>
               <div className={styles.checkbox}>
                 <label htmlFor="expenseHasKm">des kilomètres ?</label>
@@ -301,8 +309,11 @@ export default function ExpensesReportsForm({
               {currentDocuments.map((doc, index) => (
                 <div key={index} className={styles.input}>
                   <img src={doc.preview ?? ""} alt={doc.name} />
-                  <p>{doc.name}</p>
+                  <p>
+                    <strong>{doc.name}</strong>
+                  </p>
                   <button
+                    className="tertiary"
                     type="button"
                     onClick={() =>
                       setCurrentDocuments((prev) =>
@@ -328,7 +339,20 @@ export default function ExpensesReportsForm({
               </div>
             </div>
             <div className={styles.nextPrevButton}>
-              <button type="button" onClick={handleAddExpense}>
+              <button
+                className="secondary"
+                onClick={() => {
+                  setStep(2);
+                  setCurrentDocuments([]);
+                }}
+              >
+                Retour
+              </button>
+              <button
+                className="primary"
+                type="button"
+                onClick={handleAddExpense}
+              >
                 Ajouter la dépense
               </button>
             </div>
@@ -374,7 +398,7 @@ export default function ExpensesReportsForm({
                   ))}
                 </select>
               </div>
-              <p>Abandon de frais</p>
+              <h5 style={{ marginTop: "2rem" }}>Abandon de frais</h5>
               <div className={styles.inputContainer}>
                 <div className={styles.checkbox}>
                   <label htmlFor="expenseHasWaiver">
@@ -464,7 +488,7 @@ export default function ExpensesReportsForm({
             </>
           )}
 
-          <p>Remboursement</p>
+          <h5 style={{ marginTop: "2rem" }}>Remboursement</h5>
           <p>
             Je souhaite que le CST me rembourse :{" "}
             {(totalAll.toFixed(2) - Number(formData.amountWaiver || 0)).toFixed(
@@ -495,8 +519,11 @@ export default function ExpensesReportsForm({
             </div>
           </div>
           <div className={styles.nextPrevButton}>
-            <button onClick={() => setStep(2)}>Retour</button>
+            <button className="secondary" onClick={() => setStep(2)}>
+              Retour
+            </button>
             <button
+              className="primary"
               onClick={async () => {
                 await handleGeneratePdf();
 
@@ -514,10 +541,11 @@ export default function ExpensesReportsForm({
             mail suivante : {contact.label} - {contact.email}
           </p>
           <div className={styles.nextPrevButton}>
-            <button type="button" onClick={handleSendPdf}>
+            <button className="secondary" type="button" onClick={handleSendPdf}>
               Envoyer
             </button>
             <button
+              className="primary"
               onClick={() => {
                 setTab("home");
                 setStep(1);

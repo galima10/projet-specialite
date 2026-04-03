@@ -6,6 +6,12 @@
   gap: 0.5rem;
   width: 100%;
   padding: 1rem 0;
+  input,
+  select {
+    padding: 1rem;
+    border: 0.15rem solid $secondary-color;
+    border-radius: 1rem;
+  }
 }
 
 %checkbox {
@@ -15,4 +21,14 @@
   input {
     width: fit-content;
   }
+}
+
+%button-base {
+  padding: 0.65rem 1rem;
+  border-radius: 1rem;
+  border: 0.15rem solid;
+  transition:
+    background-color 0.5s,
+    border-color 0.5s,
+    color 0.5s;
 }
