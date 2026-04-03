@@ -75,7 +75,13 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit}>
       {countUsers === 0 && (
-        <h5 style={{ textAlign: "center" }}>
+        <h5
+          style={{
+            textAlign: "center",
+            marginTop: "3rem",
+            marginBottom: "4rem",
+          }}
+        >
           Vous êtes le premier utilisateur de la plate-forme ! <br /> Vous avez
           automatiquement le rôle ADMIN
         </h5>
