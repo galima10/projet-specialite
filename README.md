@@ -2,15 +2,15 @@
 Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les associations pour effectuer des activités, en leur facilitant la mise en œuvre de leur notes de frais à transmettre aux associations (trésoriers plus précisément).
 
 ## Table des matières
-[Technologies utilisées](#technologies-utilisées)
-[Fonctionnalités](#fonctionnalités)
-[Architecture / Structure](#architecture--structure)
-[Installation](#installation)
-[Configuration .env](#configuration-env)
-[Utilisation / Mode d'emploi](#utilisation--mode-demploi)
-[Auteure](#auteure)
-[Futur / Roadmap](#futur--roadmap)
-[Déploiement](#déploiement)
+[Technologies utilisées](#technologies-utilisées)<br />
+[Fonctionnalités](#fonctionnalités)<br />
+[Architecture / Structure](#architecture--structure)<br />
+[Installation](#installation)<br />
+[Configuration .env](#configuration-env)<br />
+[Utilisation / Mode d'emploi](#utilisation--mode-demploi)<br />
+[Auteure](#auteure)<br />
+[Futur / Roadmap](#futur--roadmap)<br />
+[Déploiement](#déploiement)<br />
 
 ## Technologies utilisées
 - **Back-end** :<br />
