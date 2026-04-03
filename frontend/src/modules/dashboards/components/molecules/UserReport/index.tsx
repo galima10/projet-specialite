@@ -43,15 +43,6 @@ export default function UserReport({
                   >
                     Voir le justificatif
                   </button>
-                  {document.pathFile &&
-                    "pathFile" in report.reportDocumentFile && (
-                      <a
-                        href={`${API_URL}/${document.pathFile}`}
-                        download={document.name || `Justificatif-${counter}`}
-                      >
-                        <button>Télécharger le justificatif</button>
-                      </a>
-                    )}
                 </div>
               </div>
             );
