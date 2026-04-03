@@ -46,11 +46,10 @@ export default function UserProfile({
 
   async function deleteAccount(userId: number) {
     if (userId === currentUser.id) {
-      dispatch(logoutThunk());
-      dispatch(deleteUserThunk(currentUser.id));
-      navigate(ROUTES.LOGIN.route);
+      await dispatch(logoutThunk()).unwrap();
+      await dispatch(deleteUserThunk(currentUser.id)).unwrap();
     } else {
-      dispatch(deleteUserThunk(user.id));
+      await dispatch(deleteUserThunk(userId)).unwrap();
     }
   }
 
