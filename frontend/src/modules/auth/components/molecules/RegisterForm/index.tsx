@@ -116,7 +116,7 @@ export default function RegisterForm() {
           onChange={handleInputChange}
         />
       </div>
-      <div className={styles.input}>
+      <div className="disabled">
         <p className={styles.labelRole}>Rôle</p>
         <p className={styles.role}>{countUsers > 0 ? "MEMBRE" : "ADMIN"}</p>
       </div>
