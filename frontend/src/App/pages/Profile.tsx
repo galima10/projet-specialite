@@ -13,6 +13,15 @@ export default function ProfilePage() {
     dispatch(logoutThunk());
     navigate(ROUTES.PROFILE.route);
   }
+  function handleDashboard() {
+    if (currentUser.role === "ROLE_ADMIN") {
+      navigate(ROUTES.DASHBOARDS.ADMIN.route);
+    } else if (currentUser.role === "ROLE_TREASURER") {
+      navigate(ROUTES.DASHBOARDS.TREASURER.route);
+    } else if (currentUser.role === "ROLE_MEMBER") {
+      navigate(ROUTES.DASHBOARDS.MEMBER.route);
+    }
+  }
   return (
     <div className={styles.profilePage}>
       <h1>Votre profil</h1>
@@ -25,7 +34,7 @@ export default function ProfilePage() {
         </p>
       </div>
       <div className={styles.buttons}>
-        <button className="secondary" onClick={handleLogout}>
+        <button className="secondary" onClick={() => handleDashboard()}>
           Retour
         </button>
         <button className="tertiary" onClick={handleLogout}>
