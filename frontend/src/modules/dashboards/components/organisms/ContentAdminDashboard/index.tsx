@@ -47,7 +47,7 @@ export default function ContentAdminDashboard() {
         <>
           <h1 style={{ marginBottom: "2rem" }}>Dashboard admin</h1>
           <button
-            className="primary"
+            className="secondary"
             onClick={() => setTab("mileagesManagement")}
           >
             Voir les barèmes
