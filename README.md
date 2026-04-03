@@ -73,8 +73,6 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
  ┣ 📂Entity                                       # Entités : Structure des tables à envoyer avec Doctrine
  ┃ ┗ 📜.gitignore
  ┣ 📂Enum                                         # Enum : Typage des ENUM pour les champs de la base de données
- ┃ ┣ 📜Budget.php
- ┃ ┗ 📜Role.php
  ┣ 📂EventListener                                # Listener du status de déconnexion
  ┃ ┗ 📜LogoutListener.php
  ┣ 📂Repository                                   # Repository : Accès aux données de la base de données via Doctrine
@@ -90,32 +88,18 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
 📦src
  ┣ 📂App                                            # L'application
  ┃ ┣ 📂pages                                        # Les différentes pages
- ┃ ┃ ┣ 📂Auth                                       # Pages d'authentification
- ┃ ┃ ┣ 📂Dashboards                                 # Dashboards en fonction des rôles
- ┃ ┃ ┣ 📜Home.tsx                                   # Page d'accueil
- ┃ ┃ ┗ 📜Profile.tsx
  ┃ ┗ 📜App.tsx                                      # Composant principal de l'app (gère les routes, les connexions, etc...)
- ┣ 📂assets
- ┃ ┗ 📂images
  ┣ 📂constants                                      # Référencement des routes de l'application et des routes des APIs
- ┃ ┣ 📜apiroute.ts
- ┃ ┗ 📜route.ts
- ┗ 📂modules                                        # Modules : Blocs composants React avec ou sans hook personnalisé, classés par page
- ┗ 📂services                      # Services frontend pour effectuer des actions APIs complexes
+ ┣ 📂modules                                        # Modules : Blocs composants React avec ou sans hook personnalisé, classés par page
+ ┣ 📂services                      # Services frontend pour effectuer des actions APIs complexes
  ┣ 📂stores                         # Redux Toolkit : store global pour stocker l'arrivée des données de la base de données
  ┃ ┣ 📂features                     # Slices du store global
  ┃ ┣ 📂thunks                     # Thunks : actions asynchrones en charge de modifier le store en fonction de l'évolution de la base de données
  ┃ ┗ 📜index.ts                     # Store
  ┣ 📂styles                         # Sass Styles
- ┃ ┣ 📂abstracts                    # Abstracts Sass : partials des fonctions Sass, mixins, placeholders et variables
- ┃ ┣ 📂base                         # Styles de base
- ┃ ┗ 📜main.scss
  ┣ 📂types                          # Types et interfaces personnalisés pour TypeScript
  ┣ 📂utils                          # Fonctions utilitaires (ex : Restructuration de données)
- ┣ 📜env.d.ts                       # Typage globaux pour TypeScript
- ┣ 📜global.d.ts                    
  ┣ 📜main.tsx                       # Entrée de l'application
- ┗ 📜window.d.ts
 📜.env                              # Variables d'environnement pour Vite
 ```
 
@@ -220,15 +204,3 @@ npm run dev
 - **LinkedInd** : https://www.linkedin.com/in/mai-magali/
 - **Github** : https://github.com/galima10/
 - **Site** : https://magalimai.fr/
-
-## Futur / Roadmap
-- Envoi des notes par mail (la table des adresses mail avec ajout, modification et suppression avec leurs actions sont déjà en place)
-- Dashboard statistique avancé
-- Version mobile responsive
-- Design frontend UI attrayant
-
-## Déploiement
-- Docker / Docker Compose pour backend + frontend
-- Hébergement backend : Symfony Flex / VPS / Cloud (ex : Render, AWS, OVH)
-- Hébergement frontend : Vite build → dist/ → Netlify / Vercel
-- Config SSL / SMTP réel en production
