@@ -14,21 +14,27 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
 
 ## Technologies utilisées
 - **Back-end** :<br />
-> Symfony 8 ![Symfony](https://img.shields.io/badge/Symfony-FFFFFF?style=for-the-badge&logo=symfony&logoColor=black)<br />
-> PHP 8.5.4 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)<br />
-> Doctrine ORM<br />
+![Symfony](https://img.shields.io/badge/Symfony-FFFFFF?style=for-the-badge&logo=symfony&logoColor=black)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+> Symfony 8 <br />
+> PHP 8.5.4 <br />
+> Doctrine ORM<br /><br />
 
 - **Front-end** :<br />
-> React 19.2.4 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)<br />
-> TypeScript 5.9.3 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)<br />
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+> React 19.2.4 <br />
+> TypeScript 5.9.3 <br />
 > Redux Toolkit (state global)<br />
-> Sass ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)<br />
+> Sass <br /><br />
 
 - **Base de données** : <br />
-> MySQL ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)<br />
+> MySQL <br />
 
 - **PDF** : <br />
-> html2pdf.js<br />
+> html2pdf.js<br /><br />
 
 - **Authentification** : <br />
 > Symfony Security<br />
@@ -47,8 +53,9 @@ Cette plate-forme a pour but d'aider les bénévoles qui interviennent dans les 
 - Gestion des utilisateurs (Admin)
 
 ## Architecture / Structure
+/
 `
-/backend                                        # Symfony backend
+/backend                                        # Symfony Backend
 📦config                                        # Config
  ┣ 📂packages
  ┃ ┣ 📜framework.yaml                           # Gestion de la sécurité des cookies
