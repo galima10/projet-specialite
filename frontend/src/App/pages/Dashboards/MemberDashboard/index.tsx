@@ -66,15 +66,13 @@ export default function MemberDashboard() {
                       >
                         Supprimer
                       </button>
-                      {report.reportDocumentFile &&
-                        "pathFile" in report.reportDocumentFile && (
+                      {report.pathFile && (
                           <button
                             onClick={() => {
                               if (
-                                report.reportDocumentFile &&
-                                "pathFile" in report.reportDocumentFile
+                                report.pathFile
                               ) {
-                                const fileUrl = `${API_URL}/${report.reportDocumentFile.pathFile}`;
+                                const fileUrl = `${API_URL}/${report.pathFile}`;
                                 window.open(fileUrl, "_blank");
                               }
                             }}

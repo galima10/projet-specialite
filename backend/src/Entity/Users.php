@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\InfosRequests;
+use App\Entity\ExpensesReports;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -22,7 +23,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 191 , unique: true)]
+    #[ORM\Column(length: 191, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -31,12 +32,12 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(enumType: Role::class)]
     private ?Role $role = null;
 
-    #[ORM\OneToMany(mappedBy: "user", targetEntity: InfosRequests::class, cascade: ["remove"])]
-    private Collection $infosRequests;
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: ExpensesReports::class, cascade: ["remove"])]
+    private Collection $expensesReports;
 
     public function __construct()
     {
-        $this->infosRequests = new ArrayCollection();
+        $this->expensesReports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -79,10 +80,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-        // rien à faire pour l'instant
-    }
+    public function eraseCredentials(): void {}
 
     public function getUserIdentifier(): string
     {
@@ -106,8 +104,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getInfosRequests(): Collection
+    public function getExpensesReports(): Collection
     {
-        return $this->infosRequests;
+        return $this->expensesReports;
     }
 }

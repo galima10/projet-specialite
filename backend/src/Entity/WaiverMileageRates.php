@@ -7,7 +7,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\InfosRequests;
 use App\Enum\RateType;
 
 #[ORM\Entity(repositoryClass: WaiverMileageRatesRepository::class)]
@@ -26,9 +25,6 @@ class WaiverMileageRates
 
     #[ORM\Column(enumType: RateType::class)]
     private ?RateType $type = null;
-
-    #[ORM\OneToMany(mappedBy: "waiverMileageRate", targetEntity: InfosRequests::class, cascade: ["remove"])]
-    private Collection $infosRequests;
 
     public function getId(): ?int
     {
@@ -57,16 +53,6 @@ class WaiverMileageRates
         $this->amount_per_km = $amount_per_km;
 
         return $this;
-    }
-
-    public function __construct()
-    {
-        $this->infosRequests = new ArrayCollection();
-    }
-
-    public function getInfosRequests(): Collection
-    {
-        return $this->infosRequests;
     }
 
     public function getType(): ?RateType

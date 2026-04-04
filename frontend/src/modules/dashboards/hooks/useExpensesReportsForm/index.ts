@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import { fetchMileageRatesThunk } from "@stores/thunks/mileages";
 import { Users } from "@stores/features/users";
 import { createExpensesReportThunk } from "@stores/thunks/expensesReports";
-import { ExpensesReport, ReportFile } from "@stores/features/expensesReports";
+import { ExpensesReport } from "@stores/features/expensesReports";
 import { fetchAssociationContactsThunk } from "@stores/thunks/association";
 const API_URL = import.meta.env.VITE_API_URL;
 import { API_ROUTES } from "@constants/apiroute";
@@ -241,7 +241,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       return null;
     }
 
-    let userId: number, kmMileageRateId: number, waiverMileageRateId: number;
+    let userId: number;
     if (
       currentUser.role === "ROLE_ADMIN" ||
       currentUser.role === "ROLE_TREASURER"
@@ -252,27 +252,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       userId = currentUser.id;
     }
 
-    if (formData.kmMileageRate && kmMileageRates.length !== 0) {
-      kmMileageRateId = kmMileageRates.find(
-        (km) => km.label === formData.kmMileageRate,
-      ).id;
-    }
-
-    if (formData.waiverMileageRate && waiverMileageRates.length !== 0) {
-      waiverMileageRateId = waiverMileageRates.find(
-        (wv) => wv.label === formData.waiverMileageRate,
-      ).id;
-    }
-
     const request: ExpensesReport = {
-      createdAt: formData.createdAt,
       reason: formData.reason,
-      budget: formData.budget,
-      amountWaiver: formData.amountWaiver,
-      waiverMileageRateId: waiverMileageRateId,
-      kmMileageRateId: kmMileageRateId,
-      reportDocumentFile: pdfFile,
-      expensesList: formData.expensesList,
+      file: pdfFile,
     };
 
     dispatch(createExpensesReportThunk({ data: request, userId: userId }));
@@ -457,7 +439,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     };
 
     window.html2pdf().set(opt).from(element).save();
-    
+
     const pdfBlobRaw = await window
       .html2pdf()
       .set(opt)
@@ -576,23 +558,23 @@ export function useExpensesReportsForm(userSelected: Users | null) {
   }
 
   async function handleSendPdf() {
-    const user = userSelected
-      ? users.find((u) => u.id === userSelected.id)
-      : currentUser;
-    const report: ReportFile = expensesReports
-      .find((e) => e.userId === user.id)
-      .reports.find((r) => r.reason === formData.reason).reportDocumentFile;
-    const res = await fetch(
-      `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      },
-    );
-    if (!res.ok) throw new Error("Error create contact");
+    // const user = userSelected
+    //   ? users.find((u) => u.id === userSelected.id)
+    //   : currentUser;
+    // const report: File = expensesReports
+    //   .find((e) => e.userId === user.id)
+    //   .reports.find((r) => r.reason === formData.reason).file;
+    // const res = await fetch(
+    //   `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     credentials: "include",
+    //   },
+    // );
+    // if (!res.ok) throw new Error("Error create contact");
   }
 
   return {

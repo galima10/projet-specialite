@@ -25,40 +25,40 @@ export const createExpensesReportThunk = createAsyncThunk<
   { createdExpensesReport: ExpensesReport; userId: number },
   { data: ExpensesReport; userId: number }
 >("expensesReports/createExpensesReport", async ({ data, userId }) => {
-  console.log(data);
+  console.log(data, userId);
   const formData = new FormData();
 
   formData.append("reason", data.reason);
-  formData.append("budget", data.budget);
-  formData.append("amountWaiver", String(data.amountWaiver));
-  formData.append(
-    "waiverMileageRateId",
-    String(data.waiverMileageRateId ?? null),
-  );
-  formData.append("kmMileageRateId", String(data.kmMileageRateId ?? null));
+  // formData.append("budget", data.budget);
+  // formData.append("amountWaiver", String(data.amountWaiver));
+  // formData.append(
+  //   "waiverMileageRateId",
+  //   String(data.waiverMileageRateId ?? null),
+  // );
+  // formData.append("kmMileageRateId", String(data.kmMileageRateId ?? null));
 
-  if (data.reportDocumentFile instanceof File) {
-    formData.append("reportDocumentFile", data.reportDocumentFile);
+  if (data.file instanceof File) {
+    formData.append("reportDocumentFile", data.file);
   }
 
   formData.append("userId", String(userId));
 
-  data.expensesList.forEach((list, i) => {
-    formData.append(`expensesList[${i}][date]`, list.date);
-    formData.append(`expensesList[${i}][object]`, list.object);
-    formData.append(`expensesList[${i}][km]`, String(list.km));
-    formData.append(
-      `expensesList[${i}][transportCost]`,
-      String(list.transportCost),
-    );
-    formData.append(`expensesList[${i}][othersCost]`, String(list.othersCost));
+  // data.expensesList.forEach((list, i) => {
+  //   formData.append(`expensesList[${i}][date]`, list.date);
+  //   formData.append(`expensesList[${i}][object]`, list.object);
+  //   formData.append(`expensesList[${i}][km]`, String(list.km));
+  //   formData.append(
+  //     `expensesList[${i}][transportCost]`,
+  //     String(list.transportCost),
+  //   );
+  //   formData.append(`expensesList[${i}][othersCost]`, String(list.othersCost));
 
-    list.documents.forEach((doc, j) => {
-      if (doc.file) {
-        formData.append(`expensesList[${i}][documents][${j}]`, doc.file);
-      }
-    });
-  });
+  //   list.documents.forEach((doc, j) => {
+  //     if (doc.file) {
+  //       formData.append(`expensesList[${i}][documents][${j}]`, doc.file);
+  //     }
+  //   });
+  // });
 
   const res = await fetch(`${API_URL}${API_ROUTES.EXPENSES_REPORTS}`, {
     method: "POST",

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ExpensesReportsRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\InfosRequests;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ExpensesReportsRepository::class)]
@@ -15,15 +15,21 @@ class ExpensesReports
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $reason = null;
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $pathFile = null;
 
-    #[ORM\ManyToOne(targetEntity: InfosRequests::class, inversedBy: "expensesReports")]
-    #[ORM\JoinColumn(name: "infos_request_id", referencedColumnName: "id", nullable: true, onDelete: "CASCADE")]
-    private ?InfosRequests $infosRequest = null;
+    #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: "expensesReports")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    private ?Users $user = null;
 
     public function getId(): ?int
     {
@@ -54,20 +60,45 @@ class ExpensesReports
         return $this;
     }
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getReason(): ?string
+    {
+        return $this->reason;
+    }
+
+    public function setReason(string $reason): static
+    {
+        $this->reason = $reason;
+
+        return $this;
+    }
+
     #[Groups(['documents:read'])]
-    public function getInfosRequestId(): ?int
+    public function getUserId(): ?int
     {
-        return $this->infosRequest?->getId();
+        return $this->user->getId();
     }
 
-    public function getInfosRequest(): ?InfosRequests
+    public function getUser(): ?Users
     {
-        return $this->infosRequest;
+        return $this->user;
     }
 
-    public function setInfosRequest(InfosRequests $infosRequest): static
+    public function setUser(Users $user): static
     {
-        $this->infosRequest = $infosRequest;
+        $this->user = $user;
         return $this;
     }
 }

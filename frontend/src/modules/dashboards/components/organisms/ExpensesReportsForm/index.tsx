@@ -438,7 +438,9 @@ export default function ExpensesReportsForm({
                             if (!isNaN(numeric)) {
                               const clamped = Math.min(
                                 numeric,
-                                (Math.round(totalAll * 100) / 100).toFixed(2),
+                                parseFloat(
+                                  (Math.round(totalAll * 100) / 100).toFixed(2),
+                                ),
                               );
 
                               handleInputChange({

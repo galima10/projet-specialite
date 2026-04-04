@@ -9,42 +9,14 @@ export interface ExpensesReport {
   id?: number;
   createdAt?: string;
   reason: string;
-  budget: string;
-  amountWaiver: number;
-  waiverMileageRateId: number | null;
-  kmMileageRateId: number | null;
-  reportDocumentFile: File | ReportFile | null;
-  expensesList: ExpensesListItem[];
-}
-
-export interface UserReport {
-  userId: number;
-  reports: ExpensesReport[];
-}
-
-export interface ReportFile {
-  id?: number;
   file?: File;
   name?: string;
   pathFile?: string;
 }
 
-export interface ExpensesListItem {
-  id?: number;
-  date: string;
-  object: string;
-  km: number;
-  transportCost: number;
-  othersCost: number;
-  documents: ExpensesDocument[];
-}
-
-export interface ExpensesDocument {
-  id?: number;
-  name: string;
-  preview?: string;
-  file?: File;
-  pathFile?: string;
+export interface UserReport {
+  userId: number;
+  reports: ExpensesReport[];
 }
 
 const initialState = {
