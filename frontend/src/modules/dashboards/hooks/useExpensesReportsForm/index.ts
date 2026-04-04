@@ -250,6 +250,124 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     totalOthersCost,
   } = calculateTotals();
 
+  // function generateHtmlPages() {
+  //   const budgetFound = budget.find((b) => b.value === formData.budget).name;
+  //   const wvRate = waiverMileageRates.find(
+  //     (r) => r.label === formData.waiverMileageRate,
+  //   );
+  //   const kmRate = kmMileageRates.find(
+  //     (r) => r.label === formData.kmMileageRate,
+  //   );
+
+  //   const totalAmountWaiver = wvRate ? totalKm * wvRate.amountPerKm : 0;
+  //   const effectiveAmountWaiver = Math.min(
+  //     totalAmountWaiver,
+  //     formData.amountWaiver,
+  //   );
+  //   const realAmountWaiver = effectiveAmountWaiver * (1 - 0.66);
+  //   const pages: string[] = [];
+
+  //   // Découpe les dépenses par lot si nécessaire
+  //   const expensesPerPage = 15;
+  //   const totalPages = Math.ceil(
+  //     formData.expensesList.length / expensesPerPage,
+  //   );
+
+  //   for (let i = 0; i < totalPages; i++) {
+  //     const slice = formData.expensesList.slice(
+  //       i * expensesPerPage,
+  //       (i + 1) * expensesPerPage,
+  //     );
+
+  //     const rows = slice
+  //       .map(
+  //         (exp) => `
+  //     <tr>
+  //       <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.date}</td>
+  //       <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
+  //       <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.km).toFixed(2)}</td>
+  //       <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.transportCost).toFixed(2)} €</td>
+  //       <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.othersCost).toFixed(2)} €</td>
+  //     </tr>
+  //   `,
+  //       )
+  //       .join("");
+
+  //     pages.push(`
+  //     <div style="position: absolute; top:0; left: 0;max-width: 100%; max-height: 100%;padding: 0; width: 100%; min-height: 297mm; box-sizing: border-box; font-family: Arial">
+  //       <h1 style="font-size: 2.35rem; text-align: center; margin-bottom: 2rem">Note de frais</h1>
+  //       <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Informations</h3>
+  //       <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Nom du demandeur :</strong> ${formData.userName}</p>
+  //       <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Date de la demande demande :</strong> ${formData.createdAt.split("T")[0]}</p>
+  //       <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Raison de la dépense :</strong> ${formData.reason}</p>
+  //       <p style="font-size: 0.85rem"><strong>Budget :</strong> ${budgetFound}</p>
+
+  //       <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Dépenses</h3>
+  //       <table cellspacing="0" cellpadding="5" width="100%">
+  //         <thead>
+  //           <tr>
+  //             <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Date<br/><small style="font-size: 0.75rem;">de la dépense</small></th>
+  //             <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Objet de la dépense</th>
+  //             <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Km<br/><small style="font-size: 0.75rem;">effectués</small></th>
+  //             <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Péages,<br/>autres transports</th>
+  //             <th style="font-size: 0.85rem; border: 1px solid black; background-color: #EBEFF2; padding: .35rem">Autres</th>
+  //           </tr>
+  //         </thead>
+  //         <tbody>
+  //           ${rows}
+  //           <tr>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //             <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Total de km :</td>
+  //             <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalKm) > 0 ? parseFloat(totalKm).toFixed(2) : 0} km</td>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //           </tr>
+  //           <tr>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //             <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Barème kilométrique :</td>
+  //             <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${formData.kmMileageRate ? kmRate.amountPerKm.toFixed(3) : 0}/km</td>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //           </tr>
+  //           <tr>
+  //             <td style="font-size: 0.85rem; padding: .35rem"></td>
+  //             <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Totaux par catégorie :</td>
+  //             <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalKmAmount && totalKmAmount > 0 ? totalKmAmount.toFixed(2) : 0} €</td>
+  //             <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalTransportCost) > 0 ? parseFloat(totalTransportCost).toFixed(2) : 0} €</td>
+  //             <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalOthersCost) > 0 ? parseFloat(totalOthersCost).toFixed(2) : 0} €</td>
+  //           </tr>
+  //         </tbody>
+  //       </table>
+  //       <p style="margin-top: .65rem"><strong style="font-size: 0.85rem">Total des frais : ${parseFloat(totalAll) > 0 ? parseFloat(totalAll).toFixed(2) : 0} €</strong></p>
+  //       ${
+  //         formData.waiverMileageRate
+  //           ? `
+  //         <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Abandon de frais</h3>
+  //         <p style="font-size: 0.75rem; margin-bottom: .75rem">
+  //           Il vous est possible de faire don au CST du total ou d'une partie de cette somme.
+  //           Dans ce cas, conformément à l’article 41 de la loi 2000 627 du 6 juillet 2000 modifiant la loi du 16 juillet 1984 relative à l’organisation et la promotion des activités physiques et sportives, vous bénéficierez d’une réduction d’impôts égale à 66 % de la somme concernée (dans la limite de 20 % du revenu imposable). Un reçu fiscal vous sera envoyé.
+  //           Attention le barême kilomètrique est différent dans ce cas.
+  //         </p>
+  //         <p><strong style="font-size: 0.85rem">J'abandonne le remboursement de la somme de : ${formData.amountWaiver > 0 ? formData.amountWaiver : 0} €</strong></p>
+  //         <p><em style="font-size: 0.65rem; opacity: .75">Barème d'abandon de frais : ${formData.waiverMileageRate ? wvRate.amountPerKm.toFixed(3) : 0}/km</em></p>
+  //         <p><small style="font-size: 0.75rem">Après déduction d'impôts, le montant réel dépensé sera de : ${realAmountWaiver.toFixed(2)} €</small></p>
+  //       `
+  //           : ""
+  //       }
+  //       <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Remboursement</h3>
+  //       <p><strong style="font-size: 0.85rem">Je souhaite que le CST me rembourse : ${totalAll.toFixed(2) - Number(formData.amountWaiver || 0)} €</strong></p>
+  //       <p style="font-size: 0.85rem; text-decoration: underline; margin-top: 0.5rem; margin-bottom: .5rem">Sur le compte : </p>
+  //       <p><strong style="font-size: 0.85rem">IBAN :</strong> ${formData.userIBAN}</p>
+  //       <p><strong style="font-size: 0.85rem">BIC :</strong> ${formData.userBIC}</p>
+
+  //       <div style="page-break-after: always;"></div>
+  //     </div>
+  //   `);
+  //   }
+
+  //   return pages.join("");
+  // }
+
   function generateHtmlPages() {
     const budgetFound = budget.find((b) => b.value === formData.budget).name;
     const wvRate = waiverMileageRates.find(
@@ -267,7 +385,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     const realAmountWaiver = effectiveAmountWaiver * (1 - 0.66);
     const pages: string[] = [];
 
-    // Découpe les dépenses par lot si nécessaire
     const expensesPerPage = 15;
     const totalPages = Math.ceil(
       formData.expensesList.length / expensesPerPage,
@@ -294,7 +411,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         .join("");
 
       pages.push(`
-      <div style="position: absolute; top:0; left: 0;max-width: 100%; max-height: 100%;padding: 0; width: 100%; min-height: 297mm; box-sizing: border-box; font-family: Arial">
+      <div style="max-width: 100%; padding: 0; width: 100%; height: 100%; box-sizing: border-box; font-family: Arial; margin-bottom: .1rem">
         <h1 style="font-size: 2.35rem; text-align: center; margin-bottom: 2rem">Note de frais</h1>
         <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Informations</h3>
         <p style="font-size: 0.85rem; margin-bottom: .35rem"><strong>Nom du demandeur :</strong> ${formData.userName}</p>
@@ -344,8 +461,8 @@ export function useExpensesReportsForm(userSelected: Users | null) {
             ? `
           <h3 style="font-size: 1.5rem; margin-bottom: .5rem; margin-top: .85rem">Abandon de frais</h3>
           <p style="font-size: 0.75rem; margin-bottom: .75rem">
-            Il vous est possible de faire don au CST du total ou d'une partie de cette somme. 
-            Dans ce cas, conformément à l’article 41 de la loi 2000 627 du 6 juillet 2000 modifiant la loi du 16 juillet 1984 relative à l’organisation et la promotion des activités physiques et sportives, vous bénéficierez d’une réduction d’impôts égale à 66 % de la somme concernée (dans la limite de 20 % du revenu imposable). Un reçu fiscal vous sera envoyé. 
+            Il vous est possible de faire don au CST du total ou d'une partie de cette somme.
+            Dans ce cas, conformément à l’article 41 de la loi 2000 627 du 6 juillet 2000 modifiant la loi du 16 juillet 1984 relative à l’organisation et la promotion des activités physiques et sportives, vous bénéficierez d’une réduction d’impôts égale à 66 % de la somme concernée (dans la limite de 20 % du revenu imposable). Un reçu fiscal vous sera envoyé.
             Attention le barême kilomètrique est différent dans ce cas.
           </p>
           <p><strong style="font-size: 0.85rem">J'abandonne le remboursement de la somme de : ${formData.amountWaiver > 0 ? formData.amountWaiver : 0} €</strong></p>
@@ -365,7 +482,56 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     `);
     }
 
+    formData.expensesList.forEach((exp) => {
+      (exp.documents || []).forEach((doc: { preview: string }) => {
+        pages.push(`
+      <div style="max-width: 100%; height: 100%; padding: 0; width: 100%; box-sizing: border-box; font-family: Arial; display: flex; flex-direction: column; align-item: center; margin-bottom: .2rem">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; text-align:center;">Document justificatif pour ${exp.object}</h3>
+        <img src="${doc.preview}" style="width: 90%; height: 175mm; object-fit: fill; page-break-inside: avoid;"/>
+        <div style="page-break-after: always;"></div>
+      </div>
+    `);
+      });
+    });
+
     return pages.join("");
+  }
+
+  async function generatePdf() {
+    const element = document.createElement("div");
+    element.style.width = "100%";
+    element.style.minHeight = "297mm";
+    element.style.margin = "0";
+    element.style.padding = "0";
+    element.style.display = "block";
+    element.style.boxSizing = "border-box";
+    element.style.position = "relative";
+    element.innerHTML = generateHtmlPages();
+
+    const opt = {
+      margin: 10,
+      filename: "note-de-frais.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    const pdfBlob = await window
+      .html2pdf()
+      .set(opt)
+      .from(element)
+      .outputPdf("blob");
+
+    const pdfFile = new File([pdfBlob], "note-de-frais.pdf", {
+      type: "application/pdf",
+    });
+
+    formData.reportDocumentFile = pdfFile;
+
+    window.html2pdf().set(opt).from(element).save();
   }
 
   async function handleGeneratePdf() {
@@ -398,44 +564,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     await generatePdf();
 
     setStep(4);
-  }
-
-  async function generatePdf() {
-    const element = document.createElement("div");
-    element.style.width = "100%";
-    element.style.minHeight = "297mm";
-    element.style.margin = "0";
-    element.style.padding = "0";
-    element.style.display = "block";
-    element.style.boxSizing = "border-box";
-    element.style.position = "relative";
-    element.innerHTML = generateHtmlPages();
-
-    const opt = {
-      margin: 10,
-      filename: "note-de-frais.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        scrollY: -5,
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
-
-    const pdfBlob = await window
-      .html2pdf()
-      .set(opt)
-      .from(element)
-      .outputPdf("blob");
-
-    const pdfFile = new File([pdfBlob], "note-de-frais.pdf", {
-      type: "application/pdf",
-    });
-
-    formData.reportDocumentFile = pdfFile;
-
-    window.html2pdf().set(opt).from(element).save();
   }
 
   function handleValidateInfos() {
@@ -545,7 +673,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     handleSendPdf,
     rateTypeSelected,
     setRateTypeSelected,
-    filteredWaiverMileageRates
+    filteredWaiverMileageRates,
   };
 }
 
