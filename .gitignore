@@ -17,8 +17,8 @@
 
 ###> symfony/asset-mapper ###
 /backend/public/assets/
-# /backend/public/uploads/reports/
-# /backend/public/uploads/expenses-documents/
+/backend/public/uploads/reports/
+/backend/public/uploads/expenses-documents/
 /backend/assets/vendor/
 ###< symfony/asset-mapper ###
 
