@@ -97,46 +97,34 @@ class ExpensesReportsService
 
   public function getReports(Users $currentUser): ?array
   {
-    if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-      $reports = $this->expenses_reports_repository->findAll();
-    } else {
-      $reports = $this->expenses_reports_repository->findBy(['user_id' => $currentUser->getId()]);
-    }
+    $reports = in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])
+      ? $this->expenses_reports_repository->findAll()
+      : $this->expenses_reports_repository->findBy(['user' => $currentUser]);
+
     if (!$reports) return null;
+
     $userReports = [];
+
     foreach ($reports as $report) {
-      $existingIndex = null;
-      foreach ($userReports as $i => $r) {
-        if ($r['userId'] === $report->getUserId()) {
-          $existingIndex = $i;
-          break;
-        }
+      $userId = $report->getUserId();
+      if (!$userId) return null;
+
+      if (!isset($userReports[$userId])) {
+        $userReports[$userId] = [
+          'userId' => $userId,
+          'reports' => []
+        ];
       }
 
-      if ($existingIndex !== null) {
-        $userReports[$existingIndex]['reports'][] = [
-          'id' => $report->getId(),
-          'createdAt' => $report->getCreatedAt(),
-          'reason' => $report->getReason(),
-          'name' => $report->getName(),
-          'pathFile' => $report->getPathFile(),
-        ];
-      } else {
-        $userReports[] = [
-          'userId' => $report->getUserId(),
-          'reports' => [
-            [
-              'id' => $report->getId(),
-              'createdAt' => $report->getCreatedAt(),
-              'reason' => $report->getReason(),
-              'name' => $report->getName(),
-              'pathFile' => $report->getPathFile(),
-            ]
-          ]
-        ];
-      }
+      $userReports[$userId]['reports'][] = [
+        'id' => $report->getId(),
+        'createdAt' => $report->getCreatedAt(),
+        'reason' => $report->getReason(),
+        'name' => $report->getName(),
+        'pathFile' => $report->getPathFile(),
+      ];
     }
-    return $userReports;
+    return array_values($userReports);
   }
 
 

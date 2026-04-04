@@ -16,16 +16,6 @@ final class ExpensesReportsController extends AbstractController
   public function reports_get(ExpensesReportsService $expensesReportsService): JsonResponse
   {
     $currentUser = $this->getUser();
-    // $requests = $infosRequestsService->getRequests($currentUser);
-    // if (!$requests) return $this->json(['error' => 'Requests not found'], 404);
-    // if ($requests === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
-    // $lists = $expensesListsService->getLists($currentUser);
-    // if (!$lists) return $this->json(['error' => 'Lists not found'], 404);
-    // $documents = $expensesDocumentsService->getDocuments($currentUser);
-    // if (!$documents) return $this->json(['error' => 'Documents not found'], 404);
-    // $reportsFiles = $expensesReportsService->getReports($currentUser);
-    // if (!$reportsFiles) return $this->json(['error' => 'Reports files not found'], 404);
-    // $userReports = $expensesReportsService->getUserReports($requests, $lists, $documents, $reportsFiles);
     $userReports = $expensesReportsService->getReports($currentUser);
 
     if (!$userReports) return $this->json(['error' => 'Reports not found'], 404);
