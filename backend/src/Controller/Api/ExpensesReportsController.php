@@ -39,10 +39,6 @@ final class ExpensesReportsController extends AbstractController
       'userId' => $request->request->get('userId'),
     ];
 
-    print_r($rawReportFile);
-    
-    print_r($currentUser->getRole());
-
     $report = $expensesReportsService->addReport($rawReportFile, $currentUser);
 
     if (is_string($report)) {

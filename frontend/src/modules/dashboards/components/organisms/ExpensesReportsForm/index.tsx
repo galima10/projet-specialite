@@ -2,7 +2,6 @@ import styles from "./ExpensesReportForm.module.scss";
 import { Dispatch, SetStateAction } from "react";
 import {
   useExpensesReportsForm,
-  useExportsFormHasFields,
   budget,
 } from "@modules/dashboards/hooks/useExpensesReportsForm";
 import type { Users } from "@stores/features/users";
@@ -17,6 +16,7 @@ export default function ExpensesReportsForm({
 }) {
   const {
     formData,
+    setCurrentExpense,
     setFormData,
     currentDocuments,
     contact,
@@ -37,15 +37,6 @@ export default function ExpensesReportsForm({
     handleSendPdf,
     filteredWaiverMileageRates,
     handleSignatureChange,
-  } = useExpensesReportsForm(userSelected);
-  const {
-    totalAll,
-    totalKm,
-    totalKmAmount,
-    totalTransportCost,
-    totalOthersCost,
-  } = calculateTotals();
-  const {
     hasKm,
     hasOther,
     hasTransport,
@@ -54,7 +45,14 @@ export default function ExpensesReportsForm({
     setHasOther,
     setHasTransport,
     setHasWaiver,
-  } = useExportsFormHasFields();
+  } = useExpensesReportsForm(userSelected);
+  const {
+    totalAll,
+    totalKm,
+    totalKmAmount,
+    totalTransportCost,
+    totalOthersCost,
+  } = calculateTotals();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -201,7 +199,16 @@ export default function ExpensesReportsForm({
                   id="expenseHasKm"
                   type="checkbox"
                   checked={hasKm}
-                  onChange={(e) => setHasKm(e.target.checked)}
+                  onChange={(e) => {
+                    setHasKm(e.target.checked);
+                    !hasKm &&
+                      setCurrentExpense((prev) => {
+                        return {
+                          ...prev,
+                          km: 0,
+                        };
+                      });
+                  }}
                 />
               </div>
               {hasKm && (
@@ -240,7 +247,16 @@ export default function ExpensesReportsForm({
                   id="expenseHasTransport"
                   type="checkbox"
                   checked={hasTransport}
-                  onChange={(e) => setHasTransport(e.target.checked)}
+                  onChange={(e) => {
+                    setHasTransport(e.target.checked);
+                    !hasTransport &&
+                      setCurrentExpense((prev) => {
+                        return {
+                          ...prev,
+                          transportCost: 0,
+                        };
+                      });
+                  }}
                 />
               </div>
               {hasTransport && (
@@ -277,7 +293,16 @@ export default function ExpensesReportsForm({
                   id="expenseHasOther"
                   type="checkbox"
                   checked={hasOther}
-                  onChange={(e) => setHasOther(e.target.checked)}
+                  onChange={(e) => {
+                    setHasOther(e.target.checked);
+                    !hasOther &&
+                      setCurrentExpense((prev) => {
+                        return {
+                          ...prev,
+                          othersCost: 0,
+                        };
+                      });
+                  }}
                 />
               </div>
               {hasOther && (
@@ -425,7 +450,6 @@ export default function ExpensesReportsForm({
                         name="amountWaiver"
                         value={formData.amountWaiver}
                         placeholder="Entrez la somme abandonnée ici"
-                        max={totalAll}
                         onChange={(e) => {
                           const value = e.target.value;
 

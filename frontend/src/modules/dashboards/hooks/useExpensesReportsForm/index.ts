@@ -14,8 +14,8 @@ interface FormData {
   reason: string;
   budget: string;
   amountWaiver: number;
-  waiverMileageRate: string | null;
-  kmMileageRate: string | null;
+  waiverMileageRate: string;
+  kmMileageRate: string;
   reportDocumentFile: File | null;
   expensesList: {
     date: string;
@@ -54,6 +54,10 @@ export const budget = [
 ];
 
 export function useExpensesReportsForm(userSelected: Users | null) {
+  const [hasKm, setHasKm] = useState(false);
+  const [hasTransport, setHasTransport] = useState(false);
+  const [hasOther, setHasOther] = useState(false);
+  const [hasWaiver, setHasWaiver] = useState(false);
   const dispatch = useAppDispatch();
   const { currentUser, users } = useAppSelector((state) => state.user);
   const { waiverMileageRates, kmMileageRates } = useAppSelector(
@@ -90,8 +94,8 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     reason: "",
     budget: "",
     amountWaiver: 0,
-    waiverMileageRate: null,
-    kmMileageRate: null,
+    waiverMileageRate: "",
+    kmMileageRate: "",
     reportDocumentFile: null,
     expensesList: [],
     userIBAN: "",
@@ -227,14 +231,14 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     }
 
     const hasKm = formData.expensesList.some((item) => item.km > 0);
-    if (hasKm && formData.kmMileageRate === null) {
+    if (hasKm && formData.kmMileageRate === "") {
       console.log(
         "Il faut sélectionner un kmMileageRate pour les dépenses avec km",
       );
       return null;
     }
 
-    if (formData.amountWaiver > 0 && formData.waiverMileageRate === null) {
+    if (formData.amountWaiver > 0 && formData.waiverMileageRate === "") {
       console.log(
         "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
       );
@@ -482,7 +486,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       return null;
     }
 
-    if (formData.amountWaiver > 0 && !formData.waiverMileageRate) {
+    if (formData.amountWaiver > 0 && formData.waiverMileageRate === "") {
       console.log(
         "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
       );
@@ -509,17 +513,18 @@ export function useExpensesReportsForm(userSelected: Users | null) {
 
   function handleAddExpense() {
     const km =
-      typeof currentExpense.km === "string"
-        ? parseFloat(currentExpense.km) || 0
-        : currentExpense.km || 0;
+      hasKm && currentExpense.km
+        ? parseFloat(String(currentExpense.km) as string) || 0
+        : 0;
     const transport =
-      typeof currentExpense.transportCost === "string"
-        ? parseFloat(currentExpense.transportCost) || 0
-        : currentExpense.transportCost || 0;
+      hasTransport && currentExpense.transportCost
+        ? parseFloat(String(currentExpense.transportCost) as string) || 0
+        : 0;
+
     const other =
-      typeof currentExpense.othersCost === "string"
-        ? parseFloat(currentExpense.othersCost) || 0
-        : currentExpense.othersCost || 0;
+      hasOther && currentExpense.othersCost
+        ? parseFloat(String(currentExpense.othersCost) as string) || 0
+        : 0;
 
     if (
       currentExpense.date === "" ||
@@ -530,21 +535,23 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       console.log("Il manque des champs");
       return null;
     }
+
     const finalExpense = {
       ...currentExpense,
+      km, // tu peux forcer la valeur correcte
       documents: currentDocuments,
     };
-    setCurrentExpense((prev) => {
-      return {
-        ...prev,
-        documents: currentDocuments,
-      };
-    });
+
+    setCurrentExpense((prev) => ({
+      ...prev,
+      documents: currentDocuments,
+    }));
 
     setFormData((prev) => ({
       ...prev,
       expensesList: [...prev.expensesList, finalExpense],
     }));
+
     setCurrentExpense({
       date: "",
       object: "",
@@ -553,6 +560,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       othersCost: 0,
       documents: [],
     });
+
     setCurrentDocuments([]);
     setStep(2);
   }
@@ -604,15 +612,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     setRateTypeSelected,
     filteredWaiverMileageRates,
     handleSignatureChange,
-  };
-}
-
-export function useExportsFormHasFields() {
-  const [hasKm, setHasKm] = useState(false);
-  const [hasTransport, setHasTransport] = useState(false);
-  const [hasOther, setHasOther] = useState(false);
-  const [hasWaiver, setHasWaiver] = useState(false);
-  return {
     hasKm,
     setHasKm,
     hasOther,
