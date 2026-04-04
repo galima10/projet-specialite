@@ -43,9 +43,13 @@ export default function SignatureField({
   const stopDrawing = () => {
     setIsDrawing(false);
     const canvas = canvasRef.current;
-    if (canvas) {
+    if (!canvas) return;
+
+    if (isCanvasEmpty()) {
+      onChange("");
+    } else {
       const dataUrl = canvas.toDataURL("image/png");
-      onChange(dataUrl); // récupère la signature en image
+      onChange(dataUrl);
     }
   };
 
@@ -70,6 +74,19 @@ export default function SignatureField({
     if (!ctx) return;
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
     onChange(""); // réinitialise la signature
+  };
+
+  const isCanvasEmpty = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return true;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return true;
+
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    // si un pixel n'est pas transparent => signature présente
+    return !pixels.some((value) => value !== 0);
   };
 
   return (

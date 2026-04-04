@@ -423,20 +423,32 @@ export default function ExpensesReportsForm({
                         type="number"
                         step="0.01"
                         name="amountWaiver"
+                        value={formData.amountWaiver}
                         placeholder="Entrez la somme abandonnée ici"
+                        max={totalAll}
                         onChange={(e) => {
                           const value = e.target.value;
+
                           if (
                             /^\d*([.,]\d{0,2})?$/.test(value) ||
                             value === ""
                           ) {
-                            handleInputChange(e, false);
-                          }
-                        }}
-                        onBlur={(e) => {
-                          const value = parseFloat(e.target.value);
-                          if (!isNaN(value)) {
-                            e.target.value = value.toFixed(2);
+                            const numeric = parseFloat(value.replace(",", "."));
+
+                            if (!isNaN(numeric)) {
+                              const clamped = Math.min(numeric, totalAll);
+
+                              handleInputChange({
+                                ...e,
+                                target: {
+                                  ...e.target,
+                                  name: "amountWaiver",
+                                  value: clamped.toString(),
+                                },
+                              } as React.ChangeEvent<HTMLInputElement>);
+                            } else {
+                              handleInputChange(e, false);
+                            }
                           }
                         }}
                         defaultValue={0}
@@ -497,31 +509,38 @@ export default function ExpensesReportsForm({
           <h5 style={{ marginTop: "2rem" }}>Remboursement</h5>
           <p>
             Je souhaite que le CST me rembourse :{" "}
-            {(totalAll - Number(formData.amountWaiver || 0)).toFixed(2)}
+            {(
+              Math.round((totalAll - (formData.amountWaiver ?? 0)) * 100) / 100
+            ).toFixed(2)}
           </p>
-          <p>Sur le compte</p>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              <label htmlFor="userIBAN">IBAN :</label>
-              <input
-                id="userIBAN"
-                type="string"
-                placeholder="Entrez votre IBAN"
-                name="userIBAN"
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.input}>
-              <label htmlFor="userBIC">BIC :</label>
-              <input
-                id="userBIC"
-                type="string"
-                placeholder="Entrez votre BIC"
-                name="userBIC"
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
+          {Math.round((totalAll - (formData.amountWaiver ?? 0)) * 100) / 100 >
+            0 && (
+            <>
+              <p>Sur le compte</p>
+              <div className={styles.inputContainer}>
+                <div className={styles.input}>
+                  <label htmlFor="userIBAN">IBAN :</label>
+                  <input
+                    id="userIBAN"
+                    type="string"
+                    placeholder="Entrez votre IBAN"
+                    name="userIBAN"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className={styles.input}>
+                  <label htmlFor="userBIC">BIC :</label>
+                  <input
+                    id="userBIC"
+                    type="string"
+                    placeholder="Entrez votre BIC"
+                    name="userBIC"
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </>
+          )}
           <div className={styles.input}>
             <label htmlFor="userBIC">Signature :</label>
             <SignatureField onChange={handleSignatureChange} />
@@ -534,8 +553,6 @@ export default function ExpensesReportsForm({
               className="primary"
               onClick={async () => {
                 await handleGeneratePdf();
-
-                sendData(userSelected);
               }}
             >
               Générer le PDF
