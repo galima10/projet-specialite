@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@modules/shared/hooks/redux";
 import { logoutThunk } from "@stores/thunks/users";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@constants/route";
-import styles from "./Profile.module.scss";
+import styles from "./ProfilePage.module.scss";
 import { roles } from "@modules/dashboards/components/molecules/UserForm";
 
 export default function ProfilePage() {

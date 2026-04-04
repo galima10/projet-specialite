@@ -1,4 +1,4 @@
-import ExpensesReportsForm from "../../molecules/ExpensesReportsForm";
+import ExpensesReportsForm from "@modules/dashboards/components/molecules/ExpensesReportsForm";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import {
@@ -6,11 +6,11 @@ import {
   deleteExepensesReportThunk,
 } from "@stores/thunks/expensesReports";
 const API_URL = import.meta.env.VITE_API_URL;
-import UserReport from "../../molecules/UserReport";
+import UserReport from "@modules/dashboards/components/molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
-import styles from "./ContentMemberDashboard.module.scss";
+import styles from "./MemberDashboard.module.scss";
 
-export default function ContentMemberDashboard() {
+export default function MemberDashboard() {
   const [tab, setTab] = useState<"home" | "addReport" | "viewReport">("home");
   const dispatch = useAppDispatch();
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
@@ -42,7 +42,8 @@ export default function ContentMemberDashboard() {
                 return (
                   <li key={`report-${index}`} className={styles.report}>
                     <p>
-                      n°{index + 1} - {report.createdAt.split("T")[0]} - {report.reason}
+                      n°{index + 1} - {report.createdAt.split("T")[0]} -{" "}
+                      {report.reason}
                     </p>
                     <div>
                       <button

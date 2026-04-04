@@ -3,11 +3,11 @@ import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 
 import Header from "@modules/shared/components/Header";
 
-import HomePage from "@App/pages/Home";
+import HomePage from "@App/pages/HomePage";
 import AdminDashboard from "@App/pages/Dashboards/AdminDashboard";
 import TreasurerDashboard from "@App/pages/Dashboards/TreasurerDashboard";
 import MemberDashboard from "@App/pages/Dashboards/MemberDashboard";
-import ProfilePage from "@App/pages/Profile";
+import ProfilePage from "@App/pages/ProfilePage/ProfilePage";
 import LoginPage from "@App/pages/Auth/LoginPage";
 import RegisterPage from "@App/pages/Auth/RegisterPage";
 

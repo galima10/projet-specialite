@@ -1,38 +1,30 @@
 import { useState, useEffect } from "react";
-import UsersList from "../../molecules/UsersList";
-import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
-import { fetchUsersThunk } from "@stores/thunks/users";
+import ExpensesReportsForm from "@modules/dashboards/components/molecules/ExpensesReportsForm";
+import UserProfile from "@modules/dashboards/components/molecules/UserProfile";
 import { Users } from "@stores/features/users";
-import UserProfile from "../../molecules/UserProfile";
-import ExpensesReportsForm from "../../molecules/ExpensesReportsForm";
+import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
+import UsersList from "@modules/dashboards/components/molecules/UsersList";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
-import UserForm from "../../molecules/UserForm";
-import MileagesManagement from "../../molecules/MileagesManagement";
-import UserReport from "../../molecules/UserReport";
+import { fetchUsersThunk } from "@stores/thunks/users";
+import UserReport from "@modules/dashboards/components/molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
-import AssociationContactManagement from "../../molecules/AssociationContactManagement";
+import AssociationContactManagement from "@modules/dashboards/components/molecules/AssociationContactManagement";
 
-export default function ContentAdminDashboard() {
+export default function TreasurerDashboard() {
   const [tab, setTab] = useState<
-    | "home"
-    | "viewProfile"
-    | "addReport"
-    | "setUser"
-    | "mileagesManagement"
-    | "viewReport"
-    | "association"
+    "home" | "viewProfile" | "addReport" | "viewReport" | "association"
   >("home");
+  const [selectedUser, setSelectedUser] = useState<Users>(null);
+  const dispatch = useAppDispatch();
   const [formType, setFormType] = useState<{
     type: "create" | "update";
     userId?: number;
   } | null>(null);
-  const [selectedUser, setSelectedUser] = useState<Users>(null);
-  const dispatch = useAppDispatch();
   const { users, currentUser } = useAppSelector((state) => state.user);
-  const { expensesReports } = useAppSelector((state) => state.expensesReport);
   const [selectedReport, setSelectedReport] = useState<ExpensesReport | null>(
     null,
   );
+  const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (!users || users.length === 0) {
       dispatch(fetchUsersThunk());
@@ -45,18 +37,13 @@ export default function ContentAdminDashboard() {
     <div>
       {tab === "home" ? (
         <>
-          <h1 style={{ marginBottom: "2rem" }}>Dashboard admin</h1>
-          <button
-            className="secondary"
-            onClick={() => setTab("mileagesManagement")}
-          >
-            Voir les barèmes
-          </button>
+          <h1 style={{ marginBottom: "1rem" }}>Bienvenu {currentUser.name}</h1>
           <UsersList
             users={users}
             setSelectedUser={setSelectedUser}
             setTab={setTab}
             setFormType={setFormType}
+            currentUser={currentUser}
           />
         </>
       ) : tab === "viewProfile" ? (
@@ -70,16 +57,6 @@ export default function ContentAdminDashboard() {
         />
       ) : tab === "addReport" ? (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
-      ) : tab === "setUser" ? (
-        <UserForm
-          type={formType.type}
-          setTab={setTab}
-          users={users}
-          userId={formType.userId}
-          currentUser={currentUser}
-        />
-      ) : tab === "mileagesManagement" ? (
-        <MileagesManagement setTab={setTab} />
       ) : tab === "viewReport" ? (
         <UserReport report={selectedReport} setTab={setTab} />
       ) : (
