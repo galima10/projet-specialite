@@ -75,6 +75,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     expensesList: [],
     userIBAN: "",
     userBIC: "",
+    signature: "",
   });
 
   function removeExpense(indexToRemove: number) {
@@ -158,6 +159,13 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         [name]: type === "checkbox" ? checked : value,
       }));
     }
+  }
+  function handleSignatureChange(dataUrl: string) {
+    console.log(formData);
+    setFormData((prev) => ({
+      ...prev,
+      signature: dataUrl, // même clé que tu utiliseras pour le PDF
+    }));
   }
   const filteredWaiverMileageRates = waiverMileageRates.filter(
     (rate) => rate.type === rateTypeSelected,
@@ -477,6 +485,15 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         <p><strong style="font-size: 0.85rem">IBAN :</strong> ${formData.userIBAN}</p>
         <p><strong style="font-size: 0.85rem">BIC :</strong> ${formData.userBIC}</p>
 
+        ${
+          formData.signature
+            ? `
+  <h4 style="font-size: 0.8rem; margin-top: 1rem; margin-bottom: .5rem; text-align: right;">Signature :</h4>
+  <img src="${formData.signature}" style="width: 10rem; height: auto; display: block; margin-left: auto; margin-top: 0.5rem;"/>
+`
+            : ""
+        }
+
         <div style="page-break-after: always;"></div>
       </div>
     `);
@@ -541,7 +558,8 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       formData.amountWaiver === null ||
       formData.expensesList.length === 0 ||
       formData.userBIC === "" ||
-      formData.userIBAN === ""
+      formData.userIBAN === "" ||
+      formData.signature === ""
     ) {
       console.log("manque de champs");
       return null;
@@ -674,6 +692,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     rateTypeSelected,
     setRateTypeSelected,
     filteredWaiverMileageRates,
+    handleSignatureChange,
   };
 }
 

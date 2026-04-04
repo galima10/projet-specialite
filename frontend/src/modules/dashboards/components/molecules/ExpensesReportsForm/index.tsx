@@ -6,6 +6,7 @@ import {
   budget,
 } from "@modules/dashboards/hooks/useExpensesReportsForm";
 import type { Users } from "@stores/features/users";
+import SignatureField from "../../atoms/SignatureField";
 
 export default function ExpensesReportsForm({
   setTab,
@@ -34,7 +35,8 @@ export default function ExpensesReportsForm({
     handleAddExpense,
     handleValidateInfos,
     handleSendPdf,
-    filteredWaiverMileageRates
+    filteredWaiverMileageRates,
+    handleSignatureChange,
   } = useExpensesReportsForm(userSelected);
   const {
     totalAll,
@@ -442,7 +444,9 @@ export default function ExpensesReportsForm({
                       />
                     </div>
                     <div className={styles.input}>
-                      <label htmlFor="waiverMileageRate">Votre condition d'abandon</label>
+                      <label htmlFor="waiverMileageRate">
+                        Votre condition d'abandon
+                      </label>
                       <select
                         name="waiverMileageRate"
                         id="waiverMileageRate"
@@ -479,8 +483,8 @@ export default function ExpensesReportsForm({
 
                         return (
                           <p>
-                            Après déduction d'impôts (de 66%), le montant réel dépensé
-                            sera de : {realAmount.toFixed(2)} €
+                            Après déduction d'impôts (de 66%), le montant réel
+                            dépensé sera de : {realAmount.toFixed(2)} €
                           </p>
                         );
                       })()}
@@ -493,9 +497,7 @@ export default function ExpensesReportsForm({
           <h5 style={{ marginTop: "2rem" }}>Remboursement</h5>
           <p>
             Je souhaite que le CST me rembourse :{" "}
-            {(totalAll - Number(formData.amountWaiver || 0)).toFixed(
-              2,
-            )}
+            {(totalAll - Number(formData.amountWaiver || 0)).toFixed(2)}
           </p>
           <p>Sur le compte</p>
           <div className={styles.inputContainer}>
@@ -519,6 +521,10 @@ export default function ExpensesReportsForm({
                 onChange={handleInputChange}
               />
             </div>
+          </div>
+          <div className={styles.input}>
+            <label htmlFor="userBIC">Signature :</label>
+            <SignatureField onChange={handleSignatureChange} />
           </div>
           <div className={styles.nextPrevButton}>
             <button className="secondary" onClick={() => setStep(2)}>
@@ -564,6 +570,7 @@ export default function ExpensesReportsForm({
                   expensesList: [],
                   userIBAN: "",
                   userBIC: "",
+                  signature: "",
                 });
               }}
             >
