@@ -29,14 +29,6 @@ final class AssociationContactsController extends AbstractController
     return $this->json($contact, 200);
   }
 
-  #[Route('/{id}', name: 'contact_get', requirements: ['id' => '\d+'], methods: ['GET'])]
-  public function contact_get(AssociationContactsService $associationContactsService, $id): JsonResponse
-  {
-    $contact = $associationContactsService->getContacts($id);
-    if (!$contact) return $this->json(['error' => 'Contact not found'], 404);
-    return $this->json($contact, 200);
-  }
-
   #[Route('', name: 'contact_create', methods: ['POST'])]
   public function contact_create(Request $request, AssociationContactsService $associationContactsService): JsonResponse
   {

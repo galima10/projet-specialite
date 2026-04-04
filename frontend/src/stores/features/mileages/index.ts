@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchMileageRatesThunk,
   createMileageRateThunk,
-  updateMileageRateThunk,
   deleteMileageRateThunk,
 } from "@stores/thunks/mileages";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
@@ -11,6 +10,7 @@ export interface MileageRate {
   id?: number;
   label: string;
   amountPerKm: number;
+  type: string;
 }
 
 const initialState = {
@@ -98,45 +98,6 @@ export const mileageSlice = createSlice({
       .addCase(
         createMileageRateThunk.rejected,
         (state, action: ReturnType<typeof createMileageRateThunk.rejected>) => {
-          state.loading = false;
-          state.error = action.error.message ?? "Erreur inconnue";
-        },
-      );
-
-    // updateMileageRateThunk
-    builder
-      .addCase(updateMileageRateThunk.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        updateMileageRateThunk.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            data: WithRequiredId<MileageRate>;
-            type: "KM" | "WAIVER";
-          }>,
-        ) => {
-          state.loading = false;
-          const { data, type } = action.payload;
-          const rateId = data.id;
-          if (type === "KM") {
-            const index = state.kmMileageRates.findIndex(
-              (item) => item.id === rateId,
-            );
-            if (index !== -1) state.kmMileageRates[index] = data;
-          } else {
-            const index = state.waiverMileageRates.findIndex(
-              (item) => item.id === rateId,
-            );
-            if (index !== -1) state.waiverMileageRates[index] = data;
-          }
-        },
-      )
-      .addCase(
-        updateMileageRateThunk.rejected,
-        (state, action: ReturnType<typeof updateMileageRateThunk.rejected>) => {
           state.loading = false;
           state.error = action.error.message ?? "Erreur inconnue";
         },

@@ -21,16 +21,6 @@ final class UsersController extends AbstractController
     return $this->json($users, 200);
   }
 
-  #[Route('/{id}', name: 'user_get', requirements: ['id' => '\d+'], methods: ['GET'])]
-  public function user_get(UsersService $usersService, $id): JsonResponse
-  {
-    $currentUser = $this->getUser();
-    $user = $usersService->getUser($id, $currentUser);
-    if ($user === 'Forbidden') return $this->json(['error' => 'Get forbidden'], 403);
-    if (!$user) return $this->json(['error' => 'User not found'], 404);
-    return $this->json($user, 200);
-  }
-
   #[Route('', name: 'user_create', methods: ['POST'])]
   public function user_create(Request $request, UsersService $usersService): JsonResponse
   {

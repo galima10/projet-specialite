@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\InfosRequests;
+use App\Enum\RateType;
 
 #[ORM\Entity(repositoryClass: KmMileageRatesRepository::class)]
 class KmMileageRates
@@ -22,6 +23,9 @@ class KmMileageRates
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 3)]
     private ?string $amountPerKm = null;
+
+    #[ORM\Column(enumType: RateType::class)]
+    private ?RateType $type = null;
 
     #[ORM\OneToMany(mappedBy: "kmMileageRate", targetEntity: InfosRequests::class, cascade: ["remove"])]
     private Collection $infosRequests;
@@ -63,5 +67,17 @@ class KmMileageRates
     public function getInfosRequests(): Collection
     {
         return $this->infosRequests;
+    }
+
+    public function getType(): ?RateType
+    {
+        return $this->type;
+    }
+
+    public function setType(RateType $type): static
+    {
+        $this->type = $type;
+
+        return $this;
     }
 }

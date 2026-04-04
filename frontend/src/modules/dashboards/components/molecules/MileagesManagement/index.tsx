@@ -8,6 +8,17 @@ import {
 } from "@stores/thunks/mileages";
 import { MileageRate } from "@stores/features/mileages";
 
+const rateType = [
+  {
+    name: "Voiture",
+    value: "CAR",
+  },
+  {
+    name: "Moto",
+    value: "MOTORCYCLE",
+  },
+];
+
 export default function MileagesManagement({
   setTab,
 }: {
@@ -18,6 +29,7 @@ export default function MileagesManagement({
   const [formData, setFormData] = useState({
     label: "",
     amountPerKm: 0,
+    type: "",
   });
   const dispatch = useAppDispatch();
   const { waiverMileageRates, kmMileageRates } = useAppSelector(
@@ -45,7 +57,11 @@ export default function MileagesManagement({
 
   function sendData() {
     console.log(formData);
-    if (formData.label === "" || formData.amountPerKm === 0) {
+    if (
+      formData.label === "" ||
+      formData.amountPerKm === 0 ||
+      formData.type === ""
+    ) {
       console.log("manque de champs");
       return null;
     }
@@ -53,6 +69,7 @@ export default function MileagesManagement({
     const newMileage: MileageRate = {
       label: formData.label,
       amountPerKm: Number(formData.amountPerKm),
+      type: formData.type,
     };
 
     if (formType === "km")
@@ -62,6 +79,7 @@ export default function MileagesManagement({
     setFormData({
       label: "",
       amountPerKm: 0,
+      type: "",
     });
     setMileagesTab("list");
   }
@@ -99,7 +117,7 @@ export default function MileagesManagement({
               return (
                 <li key={`km-${index}`}>
                   <p>
-                    {item.label} - {item.amountPerKm}/km
+                    {item.label} - {item.amountPerKm}/km - Type : {item.type}
                   </p>
                   <button
                     className="tertiary"
@@ -132,7 +150,7 @@ export default function MileagesManagement({
               return (
                 <li key={`km-${index}`}>
                   <p>
-                    {item.label} - {item.amountPerKm}/km
+                    {item.label} - {item.amountPerKm}/km - Type : {item.type}
                   </p>
                   <button
                     className="tertiary"
@@ -186,6 +204,19 @@ export default function MileagesManagement({
               }}
             />
           </div>
+          <div className={styles.input}>
+            <label htmlFor="type">Type</label>
+            <select name="type" id="type" onChange={handleInputChange}>
+              <option value="">--Choisissez une option--</option>
+              {rateType.map((item, index) => {
+                return (
+                  <option key={`type-${index}`} value={item.value}>
+                    {item.name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
           <div className={styles.nextPrevButton}>
             <button
               className="secondary"
@@ -194,6 +225,7 @@ export default function MileagesManagement({
                 setFormData({
                   label: "",
                   amountPerKm: 0,
+                  type: "",
                 });
               }}
             >

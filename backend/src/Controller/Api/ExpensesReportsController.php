@@ -123,4 +123,14 @@ final class ExpensesReportsController extends AbstractController
 
     return $this->json($infosRequest, 201);
   }
+
+  #[Route('/{id}', name: 'request_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+  public function request_delete(InfosRequestsService $infosRequestsService, $id): JsonResponse
+  {
+    $currentUser = $this->getUser();
+    $deleted = $infosRequestsService->deleteRequest($id, $currentUser);
+    if ($deleted === 'Forbidden') return $this->json(['error' => 'Delete forbidden'], 403);
+    if (!$deleted) return $this->json(['error' => 'Rate not found'], 404);
+    return $this->json(null, 204);
+  }
 }

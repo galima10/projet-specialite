@@ -1,10 +1,6 @@
 export const API_ROUTES = {
-  EXPENSES_DOCUMENTS: "/api/expenses-documents",
-  EXPENSES_LISTS: "/api/expenses-lists",
   EXPENSES_REPORTS: "/api/expenses-reports",
-  INFOS_REQUESTS: "/api/infos-requests",
-  KM_MILEAGE_RATES: "/api/km-mileage-rates",
-  WAIVER_MILEAGE_RATES: "/api/waiver-mileage-rates",
+  MILEAGE_RATES: "/api/mileage-rates",
   ASSOCIATION_CONTACTS: "/api/association-contacts",
   USERS: "/api/users",
   LOGIN: "/api/login",
