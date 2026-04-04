@@ -73,7 +73,7 @@ class InfosRequestsService
       return 'Missing';
     }
     if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-      if (!isset($data['userId'])) return 'Missing';
+      if (!isset($data['userId'])) return 'Missing userId';
       if ($currentUser->getId() !== (int)$data['userId'] && !in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
         return 'Forbidden';
       }

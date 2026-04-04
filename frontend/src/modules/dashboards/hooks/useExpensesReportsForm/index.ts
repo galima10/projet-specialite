@@ -46,6 +46,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       dispatch(fetchAssociationContactsThunk());
     }
   }, []);
+  const [rateTypeSelected, setRateTypeSelected] = useState<
+    "CAR" | "MOTORCYCLE"
+  >(null);
 
   const [step, setStep] = useState<number>(1);
   const [currentExpense, setCurrentExpense] = useState({
@@ -130,8 +133,19 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     const checked =
       type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
 
-    const files =
-      type === "file" ? (target as HTMLInputElement).files : undefined;
+    if (!isExpense && name === "kmMileageRate") {
+      const selectedRate = kmMileageRates.find((rate) => rate.label === value);
+
+      setRateTypeSelected(selectedRate?.type as "CAR" | "MOTORCYCLE");
+
+      setFormData((prev) => ({
+        ...prev,
+        kmMileageRate: value,
+        waiverMileageRate: "",
+      }));
+
+      return;
+    }
 
     if (isExpense) {
       setCurrentExpense((prev) => ({
@@ -145,6 +159,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       }));
     }
   }
+  const filteredWaiverMileageRates = waiverMileageRates.filter(
+    (rate) => rate.type === rateTypeSelected,
+  );
   function handleDocumentChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -158,11 +175,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       },
     ]);
   }
-  useEffect(() => {
-    if (currentDocuments.length > 0) {
-      console.log("Documents prêts :", currentDocuments);
-    }
-  }, [currentDocuments]);
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
   }
@@ -228,7 +240,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     };
 
     dispatch(createExpensesReportThunk({ data: request, userId: userId }));
-
   }
 
   const {
@@ -494,8 +505,8 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       ? users.find((u) => u.id === userSelected.id)
       : currentUser;
     const report: ReportFile = expensesReports
-      .find((e) => e.userId === user.id).reports.find(r => r.reason === formData.reason).reportDocumentFile
-      ;
+      .find((e) => e.userId === user.id)
+      .reports.find((r) => r.reason === formData.reason).reportDocumentFile;
     const res = await fetch(
       `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
       {
@@ -532,6 +543,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     handleValidateInfos,
     contact: contacts[0],
     handleSendPdf,
+    rateTypeSelected,
+    setRateTypeSelected,
+    filteredWaiverMileageRates
   };
 }
 

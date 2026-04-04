@@ -34,6 +34,7 @@ export default function ExpensesReportsForm({
     handleAddExpense,
     handleValidateInfos,
     handleSendPdf,
+    filteredWaiverMileageRates
   } = useExpensesReportsForm(userSelected);
   const {
     totalAll,
@@ -388,6 +389,7 @@ export default function ExpensesReportsForm({
                   name="kmMileageRate"
                   id="kmMileageRate"
                   onChange={handleInputChange}
+                  value={formData.kmMileageRate || ""}
                 >
                   <option value="">--Choisissez une option--</option>
                   {kmMileageRates.map((item, index) => (
@@ -445,9 +447,10 @@ export default function ExpensesReportsForm({
                         name="waiverMileageRate"
                         id="waiverMileageRate"
                         onChange={handleInputChange}
+                        value={formData.waiverMileageRate || ""}
                       >
                         <option value="">--Choisissez une option--</option>
-                        {waiverMileageRates.map((item, index) => {
+                        {filteredWaiverMileageRates.map((item, index) => {
                           return (
                             <option key={`wvRate-${index}`} value={item.label}>
                               {item.label}

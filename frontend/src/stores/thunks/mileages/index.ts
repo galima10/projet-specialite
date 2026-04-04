@@ -4,7 +4,6 @@ import { API_ROUTES } from "@constants/apiroute";
 import type { WithRequiredId } from "@app-types/WithRequiredId";
 
 import type { MileageRate } from "@stores/features/mileages";
-import { ROUTES } from "@constants/route";
 
 export const fetchMileageRatesThunk = createAsyncThunk<
   {

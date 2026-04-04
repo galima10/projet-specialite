@@ -45,12 +45,12 @@ final class ExpensesReportsController extends AbstractController
     $currentUser = $this->getUser();
 
     $rawRequest = [
-      'createdAt' => $request->request->get('createdAt'),
       'reason' => $request->request->get('reason'),
       'budget' => $request->request->get('budget'),
       'amountWaiver' => $request->request->get('amountWaiver'),
       'waiverMileageRateId' => $request->request->get('waiverMileageRateId'),
       'kmMileageRateId' => $request->request->get('kmMileageRateId'),
+      'userId' => $request->request->get('userId'),
     ];
 
     $infosRequest = $infosRequestsService->addRequest($rawRequest, $currentUser);
@@ -58,6 +58,7 @@ final class ExpensesReportsController extends AbstractController
     if (!$infosRequest) return $this->json(['error' => 'Rate not found']);
     if ($infosRequest === 'Forbidden') return $this->json(['error' => 'Update forbidden'], 403);
     if ($infosRequest === 'Missing') return $this->json(['error' => 'Bad request for Infos Request: missing fields'], 400);
+    if ($infosRequest === 'Missing userId') return $this->json(['error' => 'Bad request for Infos Request: missing userId'], 400);
 
     // FILE principal
     $reportFile = $request->files->get('reportDocumentFile');

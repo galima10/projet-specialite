@@ -65,6 +65,7 @@ class ExpensesReportsService
       }
       if ($existingIndex !== null) {
         $reports[$existingIndex]['reports'][] = [
+          'id' => $request['id'],
           'createdAt' => $request['createdAt'],
           'reason' => $request['reason'],
           'budget' => $request['budget'],
@@ -79,6 +80,7 @@ class ExpensesReportsService
           'userId' => $request['userId'],
           'reports' => [
             [
+              'id' => $request['id'],
               'createdAt' => $request['createdAt'],
               'reason' => $request['reason'],
               'budget' => $request['budget'],

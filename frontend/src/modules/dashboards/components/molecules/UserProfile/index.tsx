@@ -111,6 +111,7 @@ export default function UserProfile({
                         </button>
                         <button
                           onClick={() => {
+                            console.log(report.id);
                             dispatch(
                               deleteExepensesReportThunk({
                                 expensesReportId: report.id,

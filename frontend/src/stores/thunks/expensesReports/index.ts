@@ -28,7 +28,6 @@ export const createExpensesReportThunk = createAsyncThunk<
   console.log(data);
   const formData = new FormData();
 
-  formData.append("createdAt", data.createdAt ?? "");
   formData.append("reason", data.reason);
   formData.append("budget", data.budget);
   formData.append("amountWaiver", String(data.amountWaiver));
@@ -41,6 +40,8 @@ export const createExpensesReportThunk = createAsyncThunk<
   if (data.reportDocumentFile instanceof File) {
     formData.append("reportDocumentFile", data.reportDocumentFile);
   }
+
+  formData.append("userId", String(userId));
 
   data.expensesList.forEach((list, i) => {
     formData.append(`expensesList[${i}][date]`, list.date);

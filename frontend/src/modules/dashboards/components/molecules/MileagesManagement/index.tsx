@@ -117,7 +117,7 @@ export default function MileagesManagement({
               return (
                 <li key={`km-${index}`}>
                   <p>
-                    {item.label} - {item.amountPerKm}/km - Type : {item.type}
+                    {item.label} - {item.amountPerKm}/km - Type : {rateType.find(rt => rt.value === item.type).name}
                   </p>
                   <button
                     className="tertiary"
@@ -150,7 +150,7 @@ export default function MileagesManagement({
               return (
                 <li key={`km-${index}`}>
                   <p>
-                    {item.label} - {item.amountPerKm}/km - Type : {item.type}
+                    {item.label} - {item.amountPerKm}/km - Type : {rateType.find(rt => rt.value === item.type).name}
                   </p>
                   <button
                     className="tertiary"

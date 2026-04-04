@@ -16,9 +16,10 @@ final class MileageRatesController extends AbstractController
   public function rates_get(KmMileageRatesService $kmMileageRatesService, WaiverMileageRatesService $waiverMileageRatesService): JsonResponse
   {
     $kmRates = $kmMileageRatesService->getRates();
-    if (!$kmRates) return $this->json(['error' => 'Rates not found'], 404);
     $wvRates = $waiverMileageRatesService->getRates();
-    if (!$wvRates) return $this->json(['error' => 'Rates not found'], 404);
+    if (!$kmRates && !$wvRates) return $this->json(['error' => 'Rates not found'], 404);
+    if (!$wvRates) $wvRates = [];
+    if (!$kmRates) $kmRates = [];
     $rates = [
       'kmMileageRates' => $kmRates,
       'waiverMileageRates' => $wvRates
