@@ -8,6 +8,28 @@ import { fetchAssociationContactsThunk } from "@stores/thunks/association";
 const API_URL = import.meta.env.VITE_API_URL;
 import { API_ROUTES } from "@constants/apiroute";
 
+interface FormData {
+  userName: string;
+  createdAt: string;
+  reason: string;
+  budget: string;
+  amountWaiver: number;
+  waiverMileageRate: string | null;
+  kmMileageRate: string | null;
+  reportDocumentFile: File | null;
+  expensesList: {
+    date: string;
+    object: string;
+    km: number;
+    transportCost: number;
+    othersCost: number;
+    documents: { name: string; preview: string; file: File }[] | null;
+  }[];
+  userIBAN: string;
+  userBIC: string;
+  signature: string;
+}
+
 export const budget = [
   {
     name: "Administratif",
@@ -62,8 +84,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
   const [currentDocuments, setCurrentDocuments] = useState<
     { name: string; preview: string; file: File }[]
   >([]);
-  const [formData, setFormData] = useState({
-    dateRequest: "",
+  const [formData, setFormData] = useState<FormData>({
     userName: "",
     createdAt: new Date().toISOString(),
     reason: "",
@@ -194,7 +215,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
   }
-  async function sendData(userSelected: Users | null = null) {
+  async function sendData(userSelected: Users | null = null, pdfFile: File) {
     if (
       formData.reason.trim() === "" ||
       formData.budget.trim() === "" ||
@@ -250,7 +271,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       amountWaiver: formData.amountWaiver,
       waiverMileageRateId: waiverMileageRateId,
       kmMileageRateId: kmMileageRateId,
-      reportDocumentFile: formData.reportDocumentFile,
+      reportDocumentFile: pdfFile,
       expensesList: formData.expensesList,
     };
 
@@ -299,9 +320,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       <tr>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.date}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
-        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.km).toFixed(2)}</td>
-        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.transportCost).toFixed(2)} €</td>
-        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(exp.othersCost).toFixed(2)} €</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.km).toFixed(2)}</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.transportCost).toFixed(2)} €</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.othersCost).toFixed(2)} €</td>
       </tr>
     `,
         )
@@ -332,7 +353,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
             <tr>
               <td style="font-size: 0.85rem; padding: .35rem"></td>
               <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Total de km :</td>
-              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalKm) > 0 ? parseFloat(totalKm).toFixed(2) : 0} km</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalKm > 0 ? totalKm.toFixed(2) : 0} km</td>
               <td style="font-size: 0.85rem; padding: .35rem"></td>
               <td style="font-size: 0.85rem; padding: .35rem"></td>
             </tr>
@@ -347,12 +368,12 @@ export function useExpensesReportsForm(userSelected: Users | null) {
               <td style="font-size: 0.85rem; padding: .35rem"></td>
               <td style="font-size: 0.65rem; opacity: .75; font-style: italic; text-align: end; padding: .35rem">Totaux par catégorie :</td>
               <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalKmAmount && totalKmAmount > 0 ? totalKmAmount.toFixed(2) : 0} €</td>
-              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalTransportCost) > 0 ? parseFloat(totalTransportCost).toFixed(2) : 0} €</td>
-              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${parseFloat(totalOthersCost) > 0 ? parseFloat(totalOthersCost).toFixed(2) : 0} €</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalTransportCost > 0 ? totalTransportCost.toFixed(2) : 0} €</td>
+              <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${totalOthersCost > 0 ? totalOthersCost.toFixed(2) : 0} €</td>
             </tr>
           </tbody>
         </table>
-        <p style="margin-top: .65rem"><strong style="font-size: 0.85rem">Total des frais : ${parseFloat(totalAll) > 0 ? parseFloat(totalAll).toFixed(2) : 0} €</strong></p>
+        <p style="margin-top: .65rem"><strong style="font-size: 0.85rem">Total des frais : ${totalAll > 0 ? totalAll.toFixed(2) : 0} €</strong></p>
         ${
           formData.waiverMileageRate
             ? `
@@ -426,29 +447,30 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     const opt = {
       margin: 10,
       filename: "note-de-frais.pdf",
-      image: { type: "jpeg", quality: 0.98 },
+      image: { type: "jpeg", quality: 1 },
       html2canvas: {
         scale: 2,
         useCORS: true,
+        scrollY: -5,
       },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
-    const pdfBlob = await window
+    window.html2pdf().set(opt).from(element).save();
+    
+    const pdfBlobRaw = await window
       .html2pdf()
       .set(opt)
       .from(element)
       .outputPdf("blob");
 
+    const pdfBlob = new Blob([pdfBlobRaw], { type: "application/pdf" });
+
     const pdfFile = new File([pdfBlob], "note-de-frais.pdf", {
       type: "application/pdf",
     });
 
-    formData.reportDocumentFile = pdfFile;
-
-    window.html2pdf().set(opt).from(element).save();
-
-    await sendData(userSelected);
+    return pdfFile;
   }
 
   async function handleGeneratePdf() {
@@ -484,7 +506,9 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       );
       return null;
     }
-    await generatePdf();
+
+    const pdfFile = await generatePdf();
+    await sendData(userSelected, pdfFile);
 
     setStep(4);
   }

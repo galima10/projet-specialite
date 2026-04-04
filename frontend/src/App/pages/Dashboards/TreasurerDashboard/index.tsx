@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import ExpensesReportsForm from "@modules/dashboards/components/molecules/ExpensesReportsForm";
-import UserProfile from "@modules/dashboards/components/molecules/UserProfile";
+import ExpensesReportsForm from "@modules/dashboards/components/organisms/ExpensesReportsForm";
+import UserProfile from "@modules/dashboards/components/organisms/UserProfile";
 import { Users } from "@stores/features/users";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
-import UsersList from "@modules/dashboards/components/molecules/UsersList";
+import UsersList from "@modules/dashboards/components/organisms/UsersList";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import { fetchUsersThunk } from "@stores/thunks/users";
 import UserReport from "@modules/dashboards/components/molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
-import AssociationContactManagement from "@modules/dashboards/components/molecules/AssociationContactManagement";
+import AssociationContactManagement from "@modules/dashboards/components/organisms/AssociationContactManagement";
 
 export default function TreasurerDashboard() {
   const [tab, setTab] = useState<

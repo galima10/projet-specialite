@@ -436,7 +436,10 @@ export default function ExpensesReportsForm({
                             const numeric = parseFloat(value.replace(",", "."));
 
                             if (!isNaN(numeric)) {
-                              const clamped = Math.min(numeric, totalAll);
+                              const clamped = Math.min(
+                                numeric,
+                                (Math.round(totalAll * 100) / 100).toFixed(2),
+                              );
 
                               handleInputChange({
                                 ...e,
@@ -451,7 +454,6 @@ export default function ExpensesReportsForm({
                             }
                           }
                         }}
-                        defaultValue={0}
                         min={0}
                       />
                     </div>
@@ -575,7 +577,6 @@ export default function ExpensesReportsForm({
                 setTab("home");
                 setStep(1);
                 setFormData({
-                  dateRequest: "",
                   userName: "",
                   createdAt: new Date().toISOString(),
                   reason: "",

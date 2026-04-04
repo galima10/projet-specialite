@@ -10,7 +10,7 @@ import { ROUTES } from "@constants/route";
 import { ExpensesReport } from "@stores/features/expensesReports";
 import { deleteExepensesReportThunk } from "@stores/thunks/expensesReports";
 import styles from "./UserProfile.module.scss";
-import { roles } from "../UserForm";
+import { roles } from "../../molecules/UserForm";
 
 export default function UserProfile({
   user,

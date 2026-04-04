@@ -1,7 +1,7 @@
 import { Users } from "@stores/features/users";
 import { Dispatch, SetStateAction } from "react";
 import styles from "./UserList.module.scss";
-import { roles } from "../UserForm";
+import { roles } from "../../molecules/UserForm";
 import { useEffect } from "react";
 
 export default function UsersList({

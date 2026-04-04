@@ -1,4 +1,4 @@
-import ExpensesReportsForm from "@modules/dashboards/components/molecules/ExpensesReportsForm";
+import ExpensesReportsForm from "@modules/dashboards/components/organisms/ExpensesReportsForm";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import {

@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import UsersList from "@modules/dashboards/components/molecules/UsersList";
+import UsersList from "@modules/dashboards/components/organisms/UsersList";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import { fetchUsersThunk } from "@stores/thunks/users";
 import { Users } from "@stores/features/users";
-import UserProfile from "@modules/dashboards/components/molecules/UserProfile";
-import ExpensesReportsForm from "@modules/dashboards/components/molecules/ExpensesReportsForm";
+import UserProfile from "@modules/dashboards/components/organisms/UserProfile";
+import ExpensesReportsForm from "@modules/dashboards/components/organisms/ExpensesReportsForm";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import UserForm from "@modules/dashboards/components/molecules/UserForm";
-import MileagesManagement from "@modules/dashboards/components/molecules/MileagesManagement";
+import MileagesManagement from "@modules/dashboards/components/organisms/MileagesManagement";
 import UserReport from "@modules/dashboards/components/molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
-import AssociationContactManagement from "@modules/dashboards/components/molecules/AssociationContactManagement";
+import AssociationContactManagement from "@modules/dashboards/components/organisms/AssociationContactManagement";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<
