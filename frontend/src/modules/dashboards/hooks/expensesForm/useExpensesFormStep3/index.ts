@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@modules/shared/hooks/redux";
 import { createExpensesReportThunk } from "@stores/thunks/expensesReports";
 import { pdfHtmlTemplate } from "@utils/pdfHtmlTemplate";
 import { Dispatch, SetStateAction } from "react";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 export function useExpensesFormStep3(
   formData: FormData,
@@ -16,6 +17,7 @@ export function useExpensesFormStep3(
   totalAll: number,
   setStep: Dispatch<SetStateAction<number>>,
   setFormData: Dispatch<SetStateAction<FormData>>,
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>,
 ) {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.user);
@@ -130,10 +132,80 @@ export function useExpensesFormStep3(
     return pdfFile;
   }
   async function handleGeneratePdf() {
+    if (formData.signature === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          signature: "Veuillez effectuer une signature",
+        };
+      });
+    }
+    if (
+      parseFloat(
+        (
+          Math.round((totalAll - (formData.amountWaiver ?? 0)) * 100) / 100
+        ).toFixed(2),
+      ) > 0
+    ) {
+      if (formData.userBIC === "") {
+        setFieldErrors((prev) => {
+          return {
+            ...prev,
+            userBIC: "Veuillez effectuer un BIC",
+          };
+        });
+      }
+      if (formData.userIBAN === "") {
+        setFieldErrors((prev) => {
+          return {
+            ...prev,
+            userIBAN: "Veuillez effectuer un IBAN",
+          };
+        });
+      }
+    }
+    if (
+      formData.amountWaiver === 0 &&
+      formData.waiverMileageRate !== "" &&
+      formData.kmMileageRate !== ""
+    ) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          amountWaiver: "Veuillez entrer un montant à abandonner",
+        };
+      });
+    }
+
+    const hasKm = formData.expensesList.some((item) => item.km > 0);
+
+    if (hasKm && formData.kmMileageRate === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          kmMileageRate: "Veuillez sélectionner un barème kilométrique",
+        };
+      });
+    }
+
+    if (
+      formData.amountWaiver > 0 &&
+      formData.waiverMileageRate === "" &&
+      formData.kmMileageRate !== "" &&
+      hasKm
+    ) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          waiverMileageRate:
+            "Veuillez sélectionner un barème d'abandon de frais",
+        };
+      });
+    }
+
     if (
       formData.reason.trim() === "" ||
       formData.budget.trim() === "" ||
-      formData.amountWaiver === null ||
       formData.expensesList.length === 0 ||
       formData.signature === "" ||
       (parseFloat(
@@ -141,29 +213,26 @@ export function useExpensesFormStep3(
           Math.round((totalAll - (formData.amountWaiver ?? 0)) * 100) / 100
         ).toFixed(2),
       ) > 0 &&
-        (formData.userBIC === "" || formData.userIBAN === ""))
+        (formData.userBIC === "" || formData.userIBAN === "")) ||
+      (hasKm && !formData.kmMileageRate) ||
+      (formData.amountWaiver > 0 && formData.waiverMileageRate === "")
     ) {
       console.log("manque de champs");
       return null;
     }
 
-    const hasKm = formData.expensesList.some((item) => item.km > 0);
-    if (hasKm && !formData.kmMileageRate) {
-      console.log(
-        "Il faut sélectionner un kmMileageRate pour les dépenses avec km",
-      );
-      return null;
-    }
-
-    if (formData.amountWaiver > 0 && formData.waiverMileageRate === "") {
-      console.log(
-        "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
-      );
-      return null;
-    }
-
     const pdfFile = await generatePdf();
     await sendData(userSelected, pdfFile);
+    setFieldErrors((prev) => {
+      return {
+        ...prev,
+        signature: null,
+        userBIC: null,
+        userIBAN: null,
+        kmMileageRate: null,
+        waiverMileageRate: null,
+      };
+    });
 
     setStep(4);
   }
@@ -173,11 +242,20 @@ export function useExpensesFormStep3(
       ...prev,
       signature: dataUrl,
     }));
+
+    if (formData.signature !== "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          signature: null,
+        };
+      });
+    }
   }
   return {
     handleGeneratePdf,
     kmMileageRates,
     handleSignatureChange,
-    calculateTaxDeduction
+    calculateTaxDeduction,
   };
 }

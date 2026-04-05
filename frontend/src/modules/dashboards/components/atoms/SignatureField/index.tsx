@@ -1,13 +1,35 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import styles from "./SignatureField.module.scss";
 
 export default function SignatureField({
   onChange,
+  error,
+  value,
 }: {
   onChange: (dataUrl: string) => void;
+  error: string;
+  value: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  const signatureDataUrl = value;
+
+  useEffect(() => {
+    if (!canvasRef.current || !signatureDataUrl) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.src = signatureDataUrl;
+
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+  }, [signatureDataUrl]);
 
   const startDrawing = (
     e:
@@ -91,7 +113,9 @@ export default function SignatureField({
 
   return (
     <div className={styles.inputContainer}>
+      <label htmlFor="signature">Signature :</label>
       <canvas
+        id="signature"
         ref={canvasRef}
         width={400}
         height={150}
@@ -115,6 +139,11 @@ export default function SignatureField({
       >
         Effacer
       </button>
+      {error && (
+        <p className="error">
+          <small>{error}</small>
+        </p>
+      )}
     </div>
   );
 }

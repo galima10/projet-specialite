@@ -38,6 +38,8 @@ export default function ExpensesReportsForm({
     setHasOther,
     setHasTransport,
     setHasWaiver,
+    fieldErrors,
+    setFieldErrors,
   } = useExpensesReportsForm(userSelected);
   const {
     totalAll,
@@ -55,6 +57,8 @@ export default function ExpensesReportsForm({
           setStep={setStep}
           setTab={setTab}
           formData={formData}
+          setFieldErrors={setFieldErrors}
+          fieldErrors={fieldErrors}
         />
       ) : step === 2 ? (
         <ExpensesFormStep2
@@ -64,6 +68,8 @@ export default function ExpensesReportsForm({
           setStep={setStep}
           formData={formData}
           removeExpense={removeExpense}
+          setFieldErrors={setFieldErrors}
+          fieldErrors={fieldErrors}
         />
       ) : step === 2.5 ? (
         <ExpensesFormStep2bis
@@ -81,6 +87,8 @@ export default function ExpensesReportsForm({
           handleInputChange={handleInputChange}
           currentDocuments={currentDocuments}
           currentExpense={currentExpense}
+          setFieldErrors={setFieldErrors}
+          fieldErrors={fieldErrors}
         />
       ) : step === 3 ? (
         <ExpensesFormStep3
@@ -98,6 +106,8 @@ export default function ExpensesReportsForm({
           rateTypeSelected={rateTypeSelected}
           hasWaiver={hasWaiver}
           filteredWaiverMileageRates={filteredWaiverMileageRates}
+          setFieldErrors={setFieldErrors}
+          fieldErrors={fieldErrors}
         />
       ) : (
         step === 4 && (

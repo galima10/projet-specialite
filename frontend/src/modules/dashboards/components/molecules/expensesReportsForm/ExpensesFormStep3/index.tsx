@@ -9,6 +9,7 @@ import type { MileageRate } from "@stores/features/mileages";
 import InputField from "@modules/dashboards/components/atoms/InputField";
 import SelectField from "@modules/dashboards/components/atoms/SelectField";
 import CheckboxField from "@modules/dashboards/components/atoms/CheckboxField";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 interface ExpensesFormStep3Props {
   totalAll: number;
@@ -28,6 +29,8 @@ interface ExpensesFormStep3Props {
   setFormData: Dispatch<SetStateAction<FormData>>;
   rateTypeSelected: "CAR" | "MOTORCYCLE";
   filteredWaiverMileageRates: WithRequiredId<MileageRate>[];
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>;
+  fieldErrors: FieldErrors;
 }
 
 export default function ExpensesFormStep3({
@@ -44,6 +47,8 @@ export default function ExpensesFormStep3({
   setHasWaiver,
   setFormData,
   filteredWaiverMileageRates,
+  fieldErrors,
+  setFieldErrors,
 }: ExpensesFormStep3Props) {
   const {
     kmMileageRates,
@@ -60,6 +65,7 @@ export default function ExpensesFormStep3({
     totalAll,
     setStep,
     setFormData,
+    setFieldErrors,
   );
   return (
     <div>
@@ -98,11 +104,30 @@ export default function ExpensesFormStep3({
               };
             })}
             value={formData.kmMileageRate || ""}
+            error={fieldErrors.kmMileageRate}
           />
           <h5 style={{ marginTop: "2rem" }}>Abandon de frais</h5>
           <div className={styles.inputContainer}>
             <CheckboxField
-              handleInputChange={(e) => setHasWaiver(e.target.checked)}
+              handleInputChange={(e) => {
+                setHasWaiver(e.target.checked);
+                if (!hasWaiver) {
+                  setFormData((prev) => {
+                    return {
+                      ...prev,
+                      amountWaiver: 0,
+                      waiverMileageRate: "",
+                    };
+                  });
+                  setFieldErrors((prev) => {
+                    return {
+                      ...prev,
+                      amountWaiver: null,
+                      waiverMileageRate: null,
+                    };
+                  });
+                }
+              }}
               label="Je souhaite faire un abandon de frais"
               id="expenseHasWaiver"
               checked={hasWaiver}
@@ -144,6 +169,7 @@ export default function ExpensesFormStep3({
                   placeholder="Entrez la somme abandonnée ici"
                   value={formData.amountWaiver}
                   min={0}
+                  error={fieldErrors.amountWaiver}
                 />
                 <SelectField
                   handleInputChange={handleInputChange}
@@ -157,6 +183,7 @@ export default function ExpensesFormStep3({
                     };
                   })}
                   value={formData.waiverMileageRate || ""}
+                  error={fieldErrors.waiverMileageRate}
                 />
                 {formData.waiverMileageRate && formData.amountWaiver > 0 && (
                   <p>
@@ -188,21 +215,24 @@ export default function ExpensesFormStep3({
               name="userIBAN"
               type="text"
               placeholder="Entrez votre IBAN"
+              error={fieldErrors.userIBAN}
+              value={formData.userIBAN || ""}
             />
             <InputField
               handleInputChange={handleInputChange}
-              label=">BIC :"
+              label="BIC :"
               id="userBIC"
               name="userBIC"
               type="text"
               placeholder="Entrez votre BIC"
+              error={fieldErrors.userBIC}
+              value={formData.userBIC || ""}
             />
           </div>
         </>
       )}
       <div className={styles.input}>
-        <label htmlFor="userBIC">Signature :</label>
-        <SignatureField onChange={handleSignatureChange} />
+        <SignatureField onChange={handleSignatureChange} error={fieldErrors.signature} value={formData.signature || ""} />
       </div>
       <div className={styles.nextPrevButton}>
         <button className="secondary" onClick={() => setStep(2)}>

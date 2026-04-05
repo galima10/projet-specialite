@@ -14,6 +14,7 @@ interface SelectFieldProps {
     value: string;
   }[];
   value?: string;
+  error?: string | null;
 }
 
 export default function SelectField({
@@ -23,6 +24,7 @@ export default function SelectField({
   name,
   options,
   value,
+  error,
 }: SelectFieldProps) {
   return (
     <div className={styles.input}>
@@ -37,6 +39,11 @@ export default function SelectField({
           );
         })}
       </select>
+      {error && (
+        <p className="error">
+          <small>{error}</small>
+        </p>
+      )}
     </div>
   );
 }

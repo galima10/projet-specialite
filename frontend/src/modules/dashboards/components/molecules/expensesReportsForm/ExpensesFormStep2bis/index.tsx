@@ -6,6 +6,7 @@ import InputField from "@modules/dashboards/components/atoms/InputField";
 import CheckboxField from "@modules/dashboards/components/atoms/CheckboxField";
 import FilePreview from "@modules/dashboards/components/atoms/FilePreview";
 import FileField from "@modules/dashboards/components/atoms/FileField";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 interface ExpensesFormStep2bisProps {
   handleInputChange: (
@@ -53,6 +54,8 @@ interface ExpensesFormStep2bisProps {
     documents: any;
   };
   setFormData: Dispatch<SetStateAction<FormData>>;
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>;
+  fieldErrors: FieldErrors;
 }
 
 export default function ExpensesFormStep2bis({
@@ -70,6 +73,8 @@ export default function ExpensesFormStep2bis({
   setStep,
   currentExpense,
   setFormData,
+  fieldErrors,
+  setFieldErrors,
 }: ExpensesFormStep2bisProps) {
   const { handleAddExpense } = useExpensesFormStep2bis(
     hasKm,
@@ -81,6 +86,7 @@ export default function ExpensesFormStep2bis({
     setFormData,
     setCurrentDocuments,
     setStep,
+    setFieldErrors,
   );
   return (
     <div>
@@ -91,6 +97,7 @@ export default function ExpensesFormStep2bis({
         name="expenseDate"
         type="date"
         placeholder="Choisissez une date"
+        error={fieldErrors.expenseDate}
       />
       <InputField
         handleInputChange={(e) => handleInputChange(e, true)}
@@ -99,6 +106,7 @@ export default function ExpensesFormStep2bis({
         name="object"
         type="text"
         placeholder="Entrez l'objet de la dépense"
+        error={fieldErrors.object}
       />
       <div>
         <h5 style={{ marginTop: "2rem" }}>Ajouter :</h5>
@@ -106,18 +114,33 @@ export default function ExpensesFormStep2bis({
           <CheckboxField
             handleInputChange={(e) => {
               setHasKm(e.target.checked);
-              !hasKm &&
+              if (!hasKm) {
                 setCurrentExpense((prev) => {
                   return {
                     ...prev,
                     km: 0,
                   };
                 });
+              } else {
+                setFieldErrors((prev) => {
+                  return {
+                    ...prev,
+                    km: null,
+                    othersCost: null,
+                    transportCost: null,
+                  };
+                });
+              }
             }}
             label="des kilomètres ?"
             id="expenseHasKm"
             checked={hasKm}
           />
+          {fieldErrors.km && (
+            <p className="error">
+              <small>{fieldErrors.km}</small>
+            </p>
+          )}
           {hasKm && (
             <InputField
               handleInputChange={(e) => {
@@ -142,23 +165,38 @@ export default function ExpensesFormStep2bis({
               min={0}
             />
           )}
-          <div className={styles.checkboxContainer}>
-            <CheckboxField
-              handleInputChange={(e) => {
-                setHasTransport(e.target.checked);
-                !hasTransport &&
-                  setCurrentExpense((prev) => {
-                    return {
-                      ...prev,
-                      transportCost: 0,
-                    };
-                  });
-              }}
-              label="des coûts de péages ou autres transports ?"
-              id="expenseHasTransport"
-              checked={hasTransport}
-            />
-          </div>
+        </div>
+        <div className={styles.checkboxContainer}>
+          <CheckboxField
+            handleInputChange={(e) => {
+              setHasTransport(e.target.checked);
+              if (!hasTransport) {
+                setCurrentExpense((prev) => {
+                  return {
+                    ...prev,
+                    transportCost: 0,
+                  };
+                });
+              } else {
+                setFieldErrors((prev) => {
+                  return {
+                    ...prev,
+                    km: null,
+                    othersCost: null,
+                    transportCost: null,
+                  };
+                });
+              }
+            }}
+            label="des coûts de péages ou autres transports ?"
+            id="expenseHasTransport"
+            checked={hasTransport}
+          />
+          {fieldErrors.transportCost && (
+            <p className="error">
+              <small>{fieldErrors.transportCost}</small>
+            </p>
+          )}
           {hasTransport && (
             <InputField
               handleInputChange={(e) => {
@@ -188,18 +226,33 @@ export default function ExpensesFormStep2bis({
           <CheckboxField
             handleInputChange={(e) => {
               setHasOther(e.target.checked);
-              !hasOther &&
+              if (!hasOther) {
                 setCurrentExpense((prev) => {
                   return {
                     ...prev,
                     othersCost: 0,
                   };
                 });
+              } else {
+                setFieldErrors((prev) => {
+                  return {
+                    ...prev,
+                    km: null,
+                    othersCost: null,
+                    transportCost: null,
+                  };
+                });
+              }
             }}
             label="d'autres coûts ?"
             id="expenseHasOther"
             checked={hasOther}
           />
+          {fieldErrors.othersCost && (
+            <p className="error">
+              <small>{fieldErrors.othersCost}</small>
+            </p>
+          )}
           {hasOther && (
             <InputField
               handleInputChange={(e) => {
@@ -239,6 +292,11 @@ export default function ExpensesFormStep2bis({
             id="expenseDocument"
             handleDocumentChange={handleDocumentChange}
           />
+          {fieldErrors.documents && (
+            <p className="error">
+              <small>{fieldErrors.documents}</small>
+            </p>
+          )}
         </div>
         <div className={styles.nextPrevButton}>
           <button

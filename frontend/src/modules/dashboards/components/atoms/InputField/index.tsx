@@ -17,6 +17,7 @@ interface InputFieldProps {
   onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   min?: number;
   step?: string;
+  error?: string | null;
 }
 
 export default function InputField({
@@ -32,6 +33,7 @@ export default function InputField({
   min,
   step,
   value,
+  error
 }: InputFieldProps) {
   return (
     <div className={`${styles.input} ${disabled && "disabled"}`}>
@@ -48,6 +50,11 @@ export default function InputField({
         step={step}
         value={value}
       />
+      {error && (
+        <p className="error">
+          <small>{error}</small>
+        </p>
+      )}
     </div>
   );
 }

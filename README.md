@@ -179,10 +179,11 @@ VITE_BASE_URL=./                                      # Réglage des chemins rel
 **Lancer l'application** : 
 - Backend : 
 ```
+cd backend
+
 php bin/console make:migration                      # Créer une migration des entités Doctrine
 php bin/console doctrine:migrations:migrate         # Envoyer la migration vers la base de données
 
-cd backend
 php bin/console cache:clear                         # Vider le cache Symfony si nécessaire
 php bin/console cache:warmup                        # Faire chauffer le cache
 symfony serve --listen-ip=0.0.0.0 --port=8000       # <--- --listen-ip=0.0.0.0 --port=8000 pour exposer l'adresse IP ou juste symfony serve:start pour un environnement de développement local

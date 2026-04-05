@@ -5,6 +5,7 @@ import type { FormData } from "@app-types/FormData";
 import { budget } from "@constants/expensesForm";
 import InputField from "@modules/dashboards/components/atoms/InputField";
 import SelectField from "@modules/dashboards/components/atoms/SelectField";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 interface ExpensesFormStep1Props {
   handleInputChange: (
@@ -14,6 +15,8 @@ interface ExpensesFormStep1Props {
   formData: FormData;
   setStep: Dispatch<SetStateAction<number>>;
   setTab: Dispatch<SetStateAction<"home" | "addReport">>;
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>;
+  fieldErrors: FieldErrors;
 }
 
 export default function ExpensesFormStep1({
@@ -21,8 +24,10 @@ export default function ExpensesFormStep1({
   formData,
   setStep,
   setTab,
+  fieldErrors,
+  setFieldErrors,
 }: ExpensesFormStep1Props) {
-  const { handleValidateInfos } = useExpensesFormStep1(formData, setStep);
+  const { handleValidateInfos } = useExpensesFormStep1(formData, setStep, setFieldErrors);
   return (
     <div>
       <InputField
@@ -33,10 +38,11 @@ export default function ExpensesFormStep1({
         type="text"
         placeholder="ex : Jean Dupont"
         value={formData.userName}
+        error={fieldErrors.userName}
       />
       <InputField
         handleInputChange={handleInputChange}
-        label="Date de la demande<"
+        label="Date de la demande"
         id="dateRequest"
         type="text"
         defaultValue={formData.createdAt.split("T")[0]}
@@ -50,6 +56,7 @@ export default function ExpensesFormStep1({
         type="text"
         placeholder="ex : WE Ardèche 02/2022 etc"
         value={formData.reason}
+        error={fieldErrors.reason}
       />
       <SelectField
         handleInputChange={handleInputChange}
@@ -58,6 +65,7 @@ export default function ExpensesFormStep1({
         name="budget"
         options={budget}
         value={formData.budget}
+        error={fieldErrors.budget}
       />
       <div className={styles.nextPrevButton}>
         <button className="secondary" onClick={() => setTab("home")}>

@@ -1,6 +1,7 @@
 import type { FormData } from "@app-types/FormData";
 import styles from "@modules/dashboards/components/organisms/ExpensesReportsForm/ExpensesReportForm.module.scss";
 import { Dispatch, SetStateAction } from "react";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 interface ExpensesFormStep2Props {
   setHasKm: Dispatch<SetStateAction<boolean>>;
@@ -9,6 +10,8 @@ interface ExpensesFormStep2Props {
   setStep: Dispatch<SetStateAction<number>>;
   removeExpense: (indexToRemove: number) => void;
   formData: FormData;
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>;
+  fieldErrors: FieldErrors;
 }
 
 export default function ExpensesFormStep2({
@@ -18,6 +21,8 @@ export default function ExpensesFormStep2({
   setStep,
   formData,
   removeExpense,
+  setFieldErrors,
+  fieldErrors,
 }: ExpensesFormStep2Props) {
   return (
     <div>
@@ -66,8 +71,20 @@ export default function ExpensesFormStep2({
           onClick={() => {
             if (formData.expensesList.length === 0) {
               console.log("Il n'y a encore aucune dépense d'entrée");
+              setFieldErrors((prev) => {
+                return {
+                  ...prev,
+                  expensesList: "Veuillez ajouter une moins une dépense",
+                };
+              });
               return null;
             }
+            setFieldErrors((prev) => {
+              return {
+                ...prev,
+                expensesList: null,
+              };
+            });
             setStep(3);
           }}
         >

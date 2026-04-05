@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import type { FormData } from "@app-types/FormData";
+import type { FieldErrors } from "@app-types/FieldErrors";
 
 export function useExpensesFormStep2bis(
   hasKm: boolean,
@@ -39,6 +40,7 @@ export function useExpensesFormStep2bis(
     >
   >,
   setStep: Dispatch<SetStateAction<number>>,
+  setFieldErrors: Dispatch<SetStateAction<FieldErrors>>,
 ) {
   function handleAddExpense() {
     const km =
@@ -54,6 +56,41 @@ export function useExpensesFormStep2bis(
       hasOther && currentExpense.othersCost
         ? parseFloat(String(currentExpense.othersCost) as string) || 0
         : 0;
+
+    if (currentExpense.expenseDate === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          expenseDate: "Veuillez entrer une date",
+        };
+      });
+    }
+    if (currentExpense.object === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          object: "Veuillez entrer un objet",
+        };
+      });
+    }
+    if (km === 0 && transport === 0 && other === 0) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          km: "Veuillez entrer au moins un de ces 3 champs",
+          transportCost: "Veuillez entrer au moins un de ces 3 champs",
+          othersCost: "Veuillez entrer au moins un de ces 3 champs",
+        };
+      });
+    }
+    if (currentDocuments.length === 0) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          documents: "Veuillez sélectionner au moins un justificatif",
+        };
+      });
+    }
 
     if (
       currentExpense.expenseDate === "" ||
@@ -91,6 +128,17 @@ export function useExpensesFormStep2bis(
     });
 
     setCurrentDocuments([]);
+    setFieldErrors((prev) => {
+      return {
+        ...prev,
+        expenseDate: null,
+        object: null,
+        km: null,
+        transportCost: null,
+        othersCost: null,
+        documents: null,
+      };
+    });
     setStep(2);
   }
   return { handleAddExpense };
