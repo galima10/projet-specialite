@@ -5,7 +5,6 @@ namespace App\Services\Api;
 use App\Repository\ExpensesReportsRepository;
 use App\Entity\ExpensesReports;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\InfosRequestsRepository;
 use App\Entity\Users;
 use App\Repository\UsersRepository;
 
@@ -126,30 +125,6 @@ class ExpensesReportsService
     }
     return array_values($userReports);
   }
-
-
-
-  // public function getReports(Users $currentUser): ?array
-  // {
-  //   if (in_array($currentUser->getRole()->value, ['ROLE_ADMIN', 'ROLE_TREASURER'])) {
-  //     $reports = $this->expenses_reports_repository->findAll();
-  //   } else {
-  //     $infosRequests = $this->infos_requests_repository->findBy(['user' => $currentUser]);
-  //     if (!$infosRequests) return null;
-  //     $reports = [];
-  //     foreach ($infosRequests as $request) {
-  //       $reports = array_merge($reports, $request->getExpensesReports()->toArray());
-  //     }
-  //     $reports = array_unique($reports, SORT_REGULAR);
-  //   }
-  //   if (!$reports) return null;
-  //   return array_map(fn($r) => [
-  //     'id' => $r->getId(),
-  //     'name' => $r->getName(),
-  //     'pathFile' => $r->getPathFile(),
-  //     'infosRequestId' => $r->getInfosRequestId(),
-  //   ], $reports);
-  // }
 
   public function addReport(array $data, Users $currentUser): array|string|null
   {
