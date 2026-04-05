@@ -179,6 +179,9 @@ VITE_BASE_URL=./                                      # Réglage des chemins rel
 **Lancer l'application** : 
 - Backend : 
 ```
+php bin/console make:migration                      # Créer une migration des entités Doctrine
+php bin/console doctrine:migrations:migrate         # Envoyer la migration vers la base de données
+
 cd backend
 php bin/console cache:clear                         # Vider le cache Symfony si nécessaire
 php bin/console cache:warmup                        # Faire chauffer le cache
