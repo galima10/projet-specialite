@@ -92,6 +92,12 @@ export function useMileageForm(
       return null;
     }
 
+    setFieldErrors({
+      label: null,
+      amountPerKm: null,
+      type: null,
+    });
+
     const newMileage: MileageRate = {
       label: formData.label,
       amountPerKm: Number(formData.amountPerKm),
@@ -118,5 +124,6 @@ export function useMileageForm(
     handleSubmit,
     setFormData,
     fieldErrors,
+    setFieldErrors
   };
 }

@@ -3,7 +3,7 @@ import SelectField from "../../atoms/SelectField";
 import { rateType } from "@constants/mileageForm";
 import styles from "./MileageForm.module.scss";
 import { useMileageForm } from "@modules/dashboards/hooks/useMileageForm";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, lazy, SetStateAction } from "react";
 
 export default function MileageForm({
   setMileagesTab,
@@ -18,6 +18,7 @@ export default function MileageForm({
     sendData,
     setFormData,
     fieldErrors,
+    setFieldErrors
   } = useMileageForm(formType, setMileagesTab);
   return (
     <form onSubmit={handleSubmit}>
@@ -71,6 +72,11 @@ export default function MileageForm({
               amountPerKm: 0,
               type: "",
             });
+            setFieldErrors({
+              label: null,
+              amountPerKm: null,
+              type: null
+            })
           }}
         >
           Annuler

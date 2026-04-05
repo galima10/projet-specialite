@@ -131,6 +131,13 @@ export function useUserForm(
       return null;
     }
 
+    setFieldErrors({
+      name: null,
+      email: null,
+      password: null,
+      role: null,
+    });
+
     const newUser: Users = {
       name: formData.name,
       email: formData.email,
@@ -158,5 +165,6 @@ export function useUserForm(
     setFormData,
     sendData,
     fieldErrors,
+    setFieldErrors
   };
 }

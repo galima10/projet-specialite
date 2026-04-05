@@ -7,6 +7,8 @@ import {
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { Contact } from "@stores/features/association";
 import styles from "./AssociationContactManagement.module.scss";
+import { useAssociationContactManagement } from "@modules/dashboards/hooks/useAssociationContactManagement";
+import InputField from "../../atoms/InputField";
 
 export default function AssociationContactManagement({
   setTab,
@@ -23,62 +25,17 @@ export default function AssociationContactManagement({
     >
   >;
 }) {
-  const dispatch = useAppDispatch();
-  const { contacts } = useAppSelector((state) => state.association);
-  const [isModified, setIsModified] = useState(false);
-  useEffect(() => {
-    if (contacts.length === 0) {
-      dispatch(fetchAssociationContactsThunk());
-    }
-    setFormData({
-      label: "",
-      email: "",
-    });
-  }, []);
-  const [formData, setFormData] = useState<Contact>({
-    label: "",
-    email: "",
-  });
-
-  function handleInputChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) {
-    const target = e.target as
-      | HTMLInputElement
-      | HTMLTextAreaElement
-      | HTMLSelectElement;
-
-    const { name, value } = target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-  }
-
-  function sendData() {
-    console.log(formData);
-    if (formData.label === "" || formData.email === "") {
-      console.log("manque de champs");
-      return null;
-    }
-    if (contacts.length === 0)
-      dispatch(createAssociationContactThunk(formData));
-    else {
-      dispatch(deleteAssociationContact(contacts[0]?.id));
-      dispatch(createAssociationContactThunk(formData));
-    }
-
-    setFormData({
-      label: "",
-      email: "",
-    });
-    setIsModified(false);
-  }
+  const {
+    setIsModified,
+    setFormData,
+    contacts,
+    isModified,
+    handleSubmit,
+    handleInputChange,
+    sendData,
+    fieldErrors,
+    setFieldErrors,
+  } = useAssociationContactManagement();
 
   return (
     <div className={styles.association}>
@@ -91,6 +48,10 @@ export default function AssociationContactManagement({
           setFormData({
             label: "",
             email: "",
+          });
+          setFieldErrors({
+            label: null,
+            email: null,
           });
         }}
       >
@@ -112,27 +73,24 @@ export default function AssociationContactManagement({
       )}
       {isModified && (
         <form onSubmit={handleSubmit}>
-          <div className={styles.input}>
-            <label htmlFor="label">Label du contact</label>
-            <input
-              id="label"
-              type="text"
-              placeholder="Entrez un label..."
-              name="label"
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className={styles.input}>
-            <label htmlFor="email">Label du contact</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Entrez un email..."
-              name="email"
-              onChange={handleInputChange}
-            />
-          </div>
+          <InputField
+            handleInputChange={handleInputChange}
+            label="Label du contact"
+            id="label"
+            name="label"
+            type="text"
+            placeholder="Entrez un label..."
+            error={fieldErrors.label}
+          />
+          <InputField
+            handleInputChange={handleInputChange}
+            label="Email du contact"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Entrez une adresse mail..."
+            error={fieldErrors.email}
+          />
           <div className={styles.nextPrevButton}>
             <button
               className="secondary"
@@ -141,6 +99,10 @@ export default function AssociationContactManagement({
                 setFormData({
                   label: "",
                   email: "",
+                });
+                setFieldErrors({
+                  label: null,
+                  email: null,
                 });
               }}
             >

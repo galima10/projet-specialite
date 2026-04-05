@@ -215,15 +215,23 @@ export function useExpensesFormStep3(
 
     const pdfFile = await generatePdf();
     await sendData(userSelected, pdfFile);
-    setFieldErrors((prev) => {
-      return {
-        ...prev,
-        signature: null,
-        userBIC: null,
-        userIBAN: null,
-        kmMileageRate: null,
-        waiverMileageRate: null,
-      };
+    setFieldErrors({
+      userName: null,
+      reason: null,
+      budget: null,
+      amountWaiver: null,
+      waiverMileageRate: null,
+      kmMileageRate: null,
+      expensesList: null,
+      expenseDate: null,
+      object: null,
+      km: null,
+      transportCost: null,
+      othersCost: null,
+      documents: null,
+      userIBAN: null,
+      userBIC: null,
+      signature: null,
     });
 
     setStep(4);

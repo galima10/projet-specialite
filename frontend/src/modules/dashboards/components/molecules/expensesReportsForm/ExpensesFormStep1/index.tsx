@@ -27,7 +27,11 @@ export default function ExpensesFormStep1({
   fieldErrors,
   setFieldErrors,
 }: ExpensesFormStep1Props) {
-  const { handleValidateInfos } = useExpensesFormStep1(formData, setStep, setFieldErrors);
+  const { handleValidateInfos } = useExpensesFormStep1(
+    formData,
+    setStep,
+    setFieldErrors,
+  );
   return (
     <div>
       <InputField
@@ -68,7 +72,30 @@ export default function ExpensesFormStep1({
         error={fieldErrors.budget}
       />
       <div className={styles.nextPrevButton}>
-        <button className="secondary" onClick={() => setTab("home")}>
+        <button
+          className="secondary"
+          onClick={() => {
+            setTab("home");
+            setFieldErrors({
+              userName: null,
+              reason: null,
+              budget: null,
+              amountWaiver: null,
+              waiverMileageRate: null,
+              kmMileageRate: null,
+              expensesList: null,
+              expenseDate: null,
+              object: null,
+              km: null,
+              transportCost: null,
+              othersCost: null,
+              documents: null,
+              userIBAN: null,
+              userBIC: null,
+              signature: null,
+            });
+          }}
+        >
           Annuler
         </button>
         <button className="primary" onClick={handleValidateInfos}>

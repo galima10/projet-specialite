@@ -43,6 +43,7 @@ export default function UserForm({
     setFormData,
     sendData,
     fieldErrors,
+    setFieldErrors,
   } = useUserForm(users, userId, setTab, type);
 
   return (
@@ -73,7 +74,7 @@ export default function UserForm({
         id="password"
         name="password"
         type="text"
-        placeholder="Entrez un email..."
+        placeholder="Entrez un mot de passe..."
         error={fieldErrors.password}
       />
       <SelectField
@@ -100,6 +101,12 @@ export default function UserForm({
               email: "",
               role: "",
               password: "",
+            });
+            setFieldErrors({
+              name: null,
+              email: null,
+              role: null,
+              password: null,
             });
           }}
         >
