@@ -9,6 +9,7 @@ use App\Entity\Users;
 use App\Repository\ExpensesReportsRepository;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class AssociationContactsService
 {
@@ -17,45 +18,8 @@ class AssociationContactsService
     private AssociationContactsRepository $association_contacts_repository,
     private ExpensesReportsRepository $expenses_reports_repository,
     private MailerInterface $mailer,
+    private string $mailerFrom
   ) {}
-
-
-  public function sendMail(int $id): array|string|null
-  {
-    $contacts = $this->association_contacts_repository->findAll();
-    if (!$contacts) return null;
-
-    $contact = array_shift($contacts);
-
-    $report = $this->expenses_reports_repository->find($id);
-    if (!$report) return null;
-
-    $infosRequest = $report->getInfosRequest();
-    if (!$infosRequest) return ['error' => 'InfosRequest not found'];
-
-    $user = $infosRequest->getUser();
-    if (!$user) return ['error' => 'User not found'];
-
-    $from = $user->getEmail();
-
-    $publicPath = $report->getPathFile();
-    $filePath = dirname(__DIR__, 3) . '/public' . $publicPath;
-
-    if (!file_exists($filePath)) {
-      return ['error' => 'Fichier introuvable'];
-    }
-
-    $email = (new Email())
-      ->from($from)
-      ->to($contact->getContactEmail())
-      ->subject('Votre note de frais')
-      ->html('<p>Veuillez trouver votre note de frais en pièce jointe.</p>')
-      ->attachFromPath($filePath);
-
-    $this->mailer->send($email);
-
-    return ['message' => 'Mail envoyé', 'mail' => $contact];
-  }
 
   public function getContacts(): ?array
   {
@@ -66,17 +30,6 @@ class AssociationContactsService
       'label' => $c->getLabel(),
       'email' => $c->getContactEmail(),
     ], $contacts);
-  }
-
-  public function getContact(int $id): ?array
-  {
-    $contact = $this->association_contacts_repository->find($id);
-    if (!$contact) return null;
-    return [
-      'id' => $contact->getId(),
-      'label' => $contact->getLabel(),
-      'email' => $contact->getContactEmail(),
-    ];
   }
 
   public function addContact(array $data, Users $currentUser): array|string|null

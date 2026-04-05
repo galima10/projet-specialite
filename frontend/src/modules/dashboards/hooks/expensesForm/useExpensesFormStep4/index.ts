@@ -12,31 +12,39 @@ export function useExpensesFormStep4(
 ) {
   const dispatch = useAppDispatch();
   const { contacts } = useAppSelector((state) => state.association);
-  const { currentUser, users } = useAppSelector((state) => state.user);
+  const { currentUser } = useAppSelector((state) => state.user);
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (contacts.length === 0) {
       dispatch(fetchAssociationContactsThunk());
     }
   }, []);
-  const actualUser = userSelected ? userSelected : currentUser;
-  console.log(actualUser);
+
   async function handleSendPdf() {
-    console.log(expensesReports);
-    // const user = userSelected
-    //   ? users.find((u) => u.id === userSelected.id)
-    //   : currentUser;
-    // const res = await fetch(
-    //   `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     credentials: "include",
-    //   },
-    // );
-    // if (!res.ok) throw new Error("Error create contact");
+    const actualUser = userSelected ? userSelected : currentUser;
+    const userReports = expensesReports?.find(
+      (ex) => ex.userId === actualUser.id,
+    );
+    const actualReport = userReports?.reports.find((r) => r.reason === reason);
+    const actualFile = actualReport?.pathFile;
+
+    const pdfUrl = `${API_URL}/${actualFile}`;
+    const to = contacts[0].email;
+    const subject = encodeURIComponent(`Note de frais de ${actualUser.name}`);
+    const body = encodeURIComponent(
+      `Bonjour Member 2,\n\n` +
+        `Veuillez trouver la note de frais du membre ${actualUser.name} ici : ${pdfUrl}\n\n`
+    );
+
+    // Envoi via Gmail en ligne
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`;
+    window.open(gmailLink, "_blank");
+
+    // Envoi via une application
+    // const mailtoLink = `mailto:${to}?subject=${subject}&body=${body}`;
+    // window.location.href = mailtoLink;
+
   }
+
   return { contact: contacts[0], handleSendPdf };
 }

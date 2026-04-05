@@ -1,9 +1,7 @@
 import ExpensesReportsForm from "@modules/dashboards/components/organisms/ExpensesReportsForm";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
-import {
-  fetchExpensesReportsThunk,
-} from "@stores/thunks/expensesReports";
+import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import UserReports from "@modules/dashboards/components/molecules/UserReports";
 import styles from "./MemberDashboard.module.scss";
 
@@ -29,16 +27,24 @@ export default function MemberDashboard() {
             Ajouter une note de frais
           </button>
           <ul className={styles.reports}>
-            {userReports?.reports
-              ?.slice()
-              .reverse()
-              .map((report, index) => {
-                return (
-                  <li key={`report-${index}`} className={styles.report}>
-                    <UserReports user={currentUser} report={report} index={index} />
-                  </li>
-                );
-              }) || <li>Aucune note de frais</li>}
+            {userReports ? (
+              userReports?.reports
+                ?.slice()
+                .reverse()
+                .map((report, index) => {
+                  return (
+                    <li key={`report-${index}`} className={styles.report}>
+                      <UserReports
+                        user={currentUser}
+                        report={report}
+                        index={index}
+                      />
+                    </li>
+                  );
+                })
+            ) : (
+              <li>Aucune note de frais</li>
+            )}
           </ul>
         </div>
       ) : (
