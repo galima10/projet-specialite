@@ -1,57 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SubmitEvent } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import { fetchMileageRatesThunk } from "@stores/thunks/mileages";
-import { Users } from "@stores/features/users";
+import type { Users } from "@stores/features/users";
 import { createExpensesReportThunk } from "@stores/thunks/expensesReports";
-import { ExpensesReport } from "@stores/features/expensesReports";
+import type { ExpensesReport } from "@stores/features/expensesReports";
 import { fetchAssociationContactsThunk } from "@stores/thunks/association";
-const API_URL = import.meta.env.VITE_API_URL;
-import { API_ROUTES } from "@constants/apiroute";
-
-interface FormData {
-  userName: string;
-  createdAt: string;
-  reason: string;
-  budget: string;
-  amountWaiver: number;
-  waiverMileageRate: string;
-  kmMileageRate: string;
-  reportDocumentFile: File | null;
-  expensesList: {
-    date: string;
-    object: string;
-    km: number;
-    transportCost: number;
-    othersCost: number;
-    documents: { name: string; preview: string; file: File }[] | null;
-  }[];
-  userIBAN: string;
-  userBIC: string;
-  signature: string;
-}
-
-export const budget = [
-  {
-    name: "Administratif",
-    value: "ADMINISTRATIVE",
-  },
-  {
-    name: "Bibliothèque",
-    value: "LIBRARY",
-  },
-  {
-    name: "Matos Explo / Spéléo / Canyon",
-    value: "EXPEDITION_EQUIPEMENT",
-  },
-  {
-    name: "Matos autre",
-    value: "OTHER_EQUIPEMENT",
-  },
-  {
-    name: "Week-ends et sorties",
-    value: "WEEKENDS_OUTINGS",
-  },
-];
+import { budget } from "@constants/expensesForm";
+import type { FormData } from "@app-types/FormData";
 
 export function useExpensesReportsForm(userSelected: Users | null) {
   const [hasKm, setHasKm] = useState(false);
@@ -59,7 +14,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
   const [hasOther, setHasOther] = useState(false);
   const [hasWaiver, setHasWaiver] = useState(false);
   const dispatch = useAppDispatch();
-  const { currentUser, users } = useAppSelector((state) => state.user);
+  const { currentUser } = useAppSelector((state) => state.user);
   const { waiverMileageRates, kmMileageRates } = useAppSelector(
     (state) => state.mileage,
   );
@@ -78,7 +33,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
 
   const [step, setStep] = useState<number>(1);
   const [currentExpense, setCurrentExpense] = useState({
-    date: "",
+    expenseDate: "",
     object: "",
     km: 0,
     transportCost: 0,
@@ -193,8 +148,8 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       }));
     }
   }
+
   function handleSignatureChange(dataUrl: string) {
-    console.log(formData);
     setFormData((prev) => ({
       ...prev,
       signature: dataUrl,
@@ -216,7 +171,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
       },
     ]);
   }
-  function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.SubmitEvent) {
     event.preventDefault();
   }
   async function sendData(userSelected: Users | null = null, pdfFile: File) {
@@ -304,7 +259,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         .map(
           (exp) => `
       <tr>
-        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.date}</td>
+        <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.expenseDate}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.km).toFixed(2)}</td>
         <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.transportCost).toFixed(2)} €</td>
@@ -460,7 +415,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
   }
 
   async function handleGeneratePdf() {
-    console.log(formData);
     if (
       formData.reason.trim() === "" ||
       formData.budget.trim() === "" ||
@@ -527,7 +481,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
         : 0;
 
     if (
-      currentExpense.date === "" ||
+      currentExpense.expenseDate === "" ||
       currentExpense.object === "" ||
       (km === 0 && transport === 0 && other === 0) ||
       currentDocuments.length === 0
@@ -553,7 +507,7 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     }));
 
     setCurrentExpense({
-      date: "",
+      expenseDate: "",
       object: "",
       km: 0,
       transportCost: 0,
@@ -563,26 +517,6 @@ export function useExpensesReportsForm(userSelected: Users | null) {
 
     setCurrentDocuments([]);
     setStep(2);
-  }
-
-  async function handleSendPdf() {
-    // const user = userSelected
-    //   ? users.find((u) => u.id === userSelected.id)
-    //   : currentUser;
-    // const report: File = expensesReports
-    //   .find((e) => e.userId === user.id)
-    //   .reports.find((r) => r.reason === formData.reason).file;
-    // const res = await fetch(
-    //   `${API_URL}${API_ROUTES.ASSOCIATION_CONTACTS}/send/${report.id}`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     credentials: "include",
-    //   },
-    // );
-    // if (!res.ok) throw new Error("Error create contact");
   }
 
   return {
@@ -603,12 +537,11 @@ export function useExpensesReportsForm(userSelected: Users | null) {
     handleSubmit,
     sendData,
     step,
+    rateTypeSelected,
     setStep,
     handleAddExpense,
     handleValidateInfos,
     contact: contacts[0],
-    handleSendPdf,
-    rateTypeSelected,
     setRateTypeSelected,
     filteredWaiverMileageRates,
     handleSignatureChange,

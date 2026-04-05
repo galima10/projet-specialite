@@ -1,4 +1,6 @@
-export function useExpensesFormStep1(formData, setStep) {
+import type { FormData } from "@app-types/FormData";
+
+export function useExpensesFormStep1(formData: FormData, setStep) {
   function handleValidateInfos() {
     if (
       formData.reason === "" ||
@@ -10,5 +12,5 @@ export function useExpensesFormStep1(formData, setStep) {
     }
     setStep(2);
   }
-  return {};
+  return { handleValidateInfos };
 }
