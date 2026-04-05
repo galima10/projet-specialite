@@ -130,6 +130,7 @@ export function useExpensesFormStep2bis(
     setFieldErrors((prev) => {
       return {
         ...prev,
+        expensesList: null,
         expenseDate: null,
         object: null,
         km: null,

@@ -115,6 +115,9 @@ export default function ExpensesReportsForm({
             setFormData={setFormData}
             setStep={setStep}
             setTab={setTab}
+            file={formData.reportDocumentFile}
+            userSelected={userSelected}
+            reason={formData.reason}
           />
         )
       )}

@@ -1,0 +1,37 @@
+@use "@styles/abstracts/variables" as *;
+@use "@styles/abstracts/mixins" as *;
+@use "@styles/abstracts/functions" as *;
+@use "@styles/abstracts/placeholders" as *;
+
+.addExpense {
+  margin: 0 auto;
+}
+.expenses {
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  li {
+    padding: 1rem;
+    border: 0.15rem solid $secondary-color;
+    border-radius: 1rem;
+  }
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.nextPrevButton {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.error {
+  color: $error-color;
+  font-weight: $bold;
+}

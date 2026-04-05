@@ -2,15 +2,27 @@ import { useExpensesFormStep4 } from "@modules/dashboards/hooks/expensesForm/use
 import type { FormData } from "@app-types/FormData";
 import styles from "@modules/dashboards/components/organisms/ExpensesReportsForm/ExpensesReportForm.module.scss";
 import { Dispatch, SetStateAction } from "react";
+import type { Users } from "@stores/features/users";
+
 
 interface ExpensesFormStep4Props {
-  setTab: Dispatch<SetStateAction<FormData>>;
+  setFormData: Dispatch<SetStateAction<FormData>>;
   setStep: Dispatch<SetStateAction<number>>;
-  setFormData: Dispatch<SetStateAction<"home" | "addReport">>;
+  setTab: Dispatch<SetStateAction<"home" | "addReport">>;
+  file: File;
+  userSelected: Users | null;
+  reason: string
 }
 
-export default function ExpensesFormStep4({ setTab, setStep, setFormData }) {
-  const { contact, handleSendPdf } = useExpensesFormStep4();
+export default function ExpensesFormStep4({
+  setTab,
+  setStep,
+  setFormData,
+  file,
+  userSelected,
+  reason
+}: ExpensesFormStep4Props) {
+  const { contact, handleSendPdf } = useExpensesFormStep4(userSelected, file, reason);
   return (
     <div>
       <p>

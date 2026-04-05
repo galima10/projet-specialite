@@ -3,23 +3,9 @@
 @use "@styles/abstracts/functions" as *;
 @use "@styles/abstracts/placeholders" as *;
 
-.input {
-  @extend %input;
-  img {
-    width: 5rem;
-  }
-}
-
-.checkbox {
-  @extend %checkbox;
-}
-
-.nextPrevButton {
-  margin-top: 3rem;
+.report {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  width: 100%;
 }
-
-
