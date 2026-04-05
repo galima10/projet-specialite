@@ -11,6 +11,7 @@ import { ExpensesReport } from "@stores/features/expensesReports";
 import { deleteExepensesReportThunk } from "@stores/thunks/expensesReports";
 import styles from "./UserProfile.module.scss";
 import { roles } from "../../molecules/UserForm";
+import UserReports from "../../molecules/UserReports";
 
 export default function UserProfile({
   user,
@@ -18,7 +19,6 @@ export default function UserProfile({
   expensesReports,
   setFormType,
   currentUser,
-  setSelectedReport,
 }: {
   user: Users;
   currentUser: Users;
@@ -28,7 +28,6 @@ export default function UserProfile({
       | "viewProfile"
       | "addReport"
       | "setUser"
-      | "viewReport"
       | "association"
     >
   >;
@@ -36,7 +35,6 @@ export default function UserProfile({
   setFormType: Dispatch<
     SetStateAction<{ type: "create" | "update"; userId?: number }>
   >;
-  setSelectedReport: Dispatch<SetStateAction<ExpensesReport>>;
 }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -96,47 +94,7 @@ export default function UserProfile({
                 .map((report, index) => {
                   return (
                     <li key={`report-${index}`}>
-                      <p>
-                        n°{index + 1} - {report.createdAt.split("T")[0]} -{" "}
-                        {report.reason}
-                      </p>
-                      <div>
-                        <button
-                          onClick={() => {
-                            setTab("viewReport");
-                            setSelectedReport(report);
-                          }}
-                        >
-                          Voir les détails
-                        </button>
-                        <button
-                          onClick={() => {
-                            console.log(report.id);
-                            dispatch(
-                              deleteExepensesReportThunk({
-                                expensesReportId: report.id,
-                                userId: user.id,
-                              }),
-                            );
-                          }}
-                        >
-                          Supprimer
-                        </button>
-                        {report.pathFile && (
-                            <button
-                              onClick={() => {
-                                if (
-                                  report.pathFile
-                                ) {
-                                  const fileUrl = `${API_URL}/${report.pathFile}`;
-                                  window.open(fileUrl, "_blank");
-                                }
-                              }}
-                            >
-                              Voir le pdf
-                            </button>
-                          )}
-                      </div>
+                      <UserReports user={user} report={report} index={index} />
                     </li>
                   );
                 }) || <li>Aucune note de frais</li>}

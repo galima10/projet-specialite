@@ -1,4 +1,4 @@
-import { useState, useEffect, SubmitEvent } from "react";
+import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import { fetchMileageRatesThunk } from "@stores/thunks/mileages";
 import type { Users } from "@stores/features/users";

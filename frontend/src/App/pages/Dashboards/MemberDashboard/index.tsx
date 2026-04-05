@@ -3,11 +3,8 @@ import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import {
   fetchExpensesReportsThunk,
-  deleteExepensesReportThunk,
 } from "@stores/thunks/expensesReports";
-const API_URL = import.meta.env.VITE_API_URL;
-import UserReport from "@modules/dashboards/components/molecules/UserReport";
-import { ExpensesReport } from "@stores/features/expensesReports";
+import UserReports from "@modules/dashboards/components/molecules/UserReports";
 import styles from "./MemberDashboard.module.scss";
 
 export default function MemberDashboard() {
@@ -15,9 +12,6 @@ export default function MemberDashboard() {
   const dispatch = useAppDispatch();
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
   const { currentUser } = useAppSelector((state) => state.user);
-  const [selectedReport, setSelectedReport] = useState<ExpensesReport | null>(
-    null,
-  );
   useEffect(() => {
     if (!expensesReports || expensesReports.length === 0) {
       dispatch(fetchExpensesReportsThunk());
@@ -41,57 +35,14 @@ export default function MemberDashboard() {
               .map((report, index) => {
                 return (
                   <li key={`report-${index}`} className={styles.report}>
-                    <p>
-                      n°{index + 1} - {report.createdAt.split("T")[0]} -{" "}
-                      {report.reason}
-                    </p>
-                    <div>
-                      <button
-                        onClick={() => {
-                          setTab("viewReport");
-                          setSelectedReport(report);
-                        }}
-                      >
-                        Voir les détails
-                      </button>
-                      <button
-                        onClick={() => {
-                          dispatch(
-                            deleteExepensesReportThunk({
-                              expensesReportId: report.id,
-                              userId: currentUser.id,
-                            }),
-                          );
-                        }}
-                      >
-                        Supprimer
-                      </button>
-                      {report.pathFile && (
-                          <button
-                            onClick={() => {
-                              if (
-                                report.pathFile
-                              ) {
-                                const fileUrl = `${API_URL}/${report.pathFile}`;
-                                window.open(fileUrl, "_blank");
-                              }
-                            }}
-                          >
-                            Voir le pdf
-                          </button>
-                        )}
-                    </div>
+                    <UserReports user={currentUser} report={report} index={index} />
                   </li>
                 );
               }) || <li>Aucune note de frais</li>}
           </ul>
         </div>
-      ) : tab === "addReport" ? (
-        <ExpensesReportsForm setTab={setTab} />
       ) : (
-        tab === "viewReport" && (
-          <UserReport report={selectedReport} setTab={setTab} />
-        )
+        <ExpensesReportsForm setTab={setTab} />
       )}
     </div>
   );

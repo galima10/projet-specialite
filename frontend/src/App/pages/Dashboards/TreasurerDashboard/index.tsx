@@ -6,13 +6,12 @@ import { useAppSelector, useAppDispatch } from "@modules/shared/hooks/redux";
 import UsersList from "@modules/dashboards/components/organisms/UsersList";
 import { fetchExpensesReportsThunk } from "@stores/thunks/expensesReports";
 import { fetchUsersThunk } from "@stores/thunks/users";
-import UserReport from "@modules/dashboards/components/molecules/UserReport";
 import { ExpensesReport } from "@stores/features/expensesReports";
 import AssociationContactManagement from "@modules/dashboards/components/organisms/AssociationContactManagement";
 
 export default function TreasurerDashboard() {
   const [tab, setTab] = useState<
-    "home" | "viewProfile" | "addReport" | "viewReport" | "association"
+    "home" | "viewProfile" | "addReport" | "association"
   >("home");
   const [selectedUser, setSelectedUser] = useState<Users>(null);
   const dispatch = useAppDispatch();
@@ -21,9 +20,6 @@ export default function TreasurerDashboard() {
     userId?: number;
   } | null>(null);
   const { users, currentUser } = useAppSelector((state) => state.user);
-  const [selectedReport, setSelectedReport] = useState<ExpensesReport | null>(
-    null,
-  );
   const { expensesReports } = useAppSelector((state) => state.expensesReport);
   useEffect(() => {
     if (!users || users.length === 0) {
@@ -53,12 +49,9 @@ export default function TreasurerDashboard() {
           expensesReports={expensesReports}
           setFormType={setFormType}
           currentUser={currentUser}
-          setSelectedReport={setSelectedReport}
         />
       ) : tab === "addReport" ? (
         <ExpensesReportsForm setTab={setTab} userSelected={selectedUser} />
-      ) : tab === "viewReport" ? (
-        <UserReport report={selectedReport} setTab={setTab} />
       ) : (
         <AssociationContactManagement setTab={setTab} />
       )}
