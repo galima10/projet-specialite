@@ -37,7 +37,6 @@ export function useExpensesFormStep1(
       formData.budget === "" ||
       formData.userName === ""
     ) {
-      console.log("Il manque des champs");
       return null;
     }
     setFieldErrors((prev) => {

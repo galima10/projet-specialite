@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { useExpensesReportsForm } from "@modules/dashboards/hooks/useExpensesReportsForm";
+import { useExpensesReportsForm } from "@modules/dashboards/hooks/expensesForm/useExpensesReportsForm";
 import type { Users } from "@stores/features/users";
 import ExpensesFormStep1 from "../../molecules/expensesReportsForm/ExpensesFormStep1";
 import ExpensesFormStep2 from "../../molecules/expensesReportsForm/ExpensesFormStep2";

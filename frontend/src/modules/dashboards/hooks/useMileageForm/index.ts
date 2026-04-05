@@ -7,6 +7,11 @@ export function useMileageForm(
   formType: "km" | "waiver",
   setMileagesTab: Dispatch<SetStateAction<"list" | "setMileage">>,
 ) {
+  const [fieldErrors, setFieldErrors] = useState({
+    label: null,
+    amountPerKm: null,
+    type: null,
+  });
   const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
     label: "",
@@ -23,6 +28,31 @@ export function useMileageForm(
 
     const { name, value } = target;
 
+    if (name === "label" && value !== "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          label: null,
+        };
+      });
+    }
+    if (name === "amountPerKm" && Number(value) !== 0) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          amountPerKm: null,
+        };
+      });
+    }
+    if (name === "type" && value !== "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          type: null,
+        };
+      });
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -30,13 +60,35 @@ export function useMileageForm(
   }
 
   function sendData() {
-    console.log(formData);
+    if (formData.label === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          label: "Veuillez entrer un label",
+        };
+      });
+    }
+    if (formData.type === "") {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          type: "Veuillez entrer un type de barème",
+        };
+      });
+    }
+    if (formData.amountPerKm === 0) {
+      setFieldErrors((prev) => {
+        return {
+          ...prev,
+          amountPerKm: "Veuillez entrer un montant par km",
+        };
+      });
+    }
     if (
       formData.label === "" ||
       formData.amountPerKm === 0 ||
       formData.type === ""
     ) {
-      console.log("manque de champs");
       return null;
     }
 
@@ -60,5 +112,11 @@ export function useMileageForm(
   function handleSubmit(event: React.SubmitEvent) {
     event.preventDefault();
   }
-  return { handleInputChange, sendData, handleSubmit, setFormData };
+  return {
+    handleInputChange,
+    sendData,
+    handleSubmit,
+    setFormData,
+    fieldErrors,
+  };
 }

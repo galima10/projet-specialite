@@ -98,7 +98,6 @@ export function useExpensesFormStep2bis(
       (km === 0 && transport === 0 && other === 0) ||
       currentDocuments.length === 0
     ) {
-      console.log("Il manque des champs");
       return null;
     }
 

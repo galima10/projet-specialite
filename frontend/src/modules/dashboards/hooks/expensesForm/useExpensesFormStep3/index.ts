@@ -45,22 +45,15 @@ export function useExpensesFormStep3(
       formData.amountWaiver === null ||
       formData.expensesList.length === 0
     ) {
-      console.log("manque de champs");
       return null;
     }
 
     const hasKm = formData.expensesList.some((item) => item.km > 0);
     if (hasKm && formData.kmMileageRate === "") {
-      console.log(
-        "Il faut sélectionner un kmMileageRate pour les dépenses avec km",
-      );
       return null;
     }
 
     if (formData.amountWaiver > 0 && formData.waiverMileageRate === "") {
-      console.log(
-        "Il faut sélectionner un waiverMileageRate si amountWaiver > 0",
-      );
       return null;
     }
 
@@ -217,7 +210,6 @@ export function useExpensesFormStep3(
       (hasKm && !formData.kmMileageRate) ||
       (formData.amountWaiver > 0 && formData.waiverMileageRate === "")
     ) {
-      console.log("manque de champs");
       return null;
     }
 

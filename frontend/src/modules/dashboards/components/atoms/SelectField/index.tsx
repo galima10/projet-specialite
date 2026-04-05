@@ -15,6 +15,8 @@ interface SelectFieldProps {
   }[];
   value?: string;
   error?: string | null;
+  disabled?: boolean;
+  defaultValue?: string;
 }
 
 export default function SelectField({
@@ -25,11 +27,19 @@ export default function SelectField({
   options,
   value,
   error,
+  disabled,
+  defaultValue,
 }: SelectFieldProps) {
   return (
-    <div className={styles.input}>
+    <div className={`${styles.input} ${disabled && "disabled"}`}>
       <label htmlFor={id}>{label}</label>
-      <select value={value} name={name} id={id} onChange={handleInputChange}>
+      <select
+        defaultValue={defaultValue}
+        value={value}
+        name={name}
+        id={id}
+        onChange={handleInputChange}
+      >
         <option value="">--Choisissez une option--</option>
         {options.map((item) => {
           return (

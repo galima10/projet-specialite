@@ -2,7 +2,7 @@ import InputField from "../../atoms/InputField";
 import SelectField from "../../atoms/SelectField";
 import { rateType } from "@constants/mileageForm";
 import styles from "./MileageForm.module.scss";
-import { useMileageForm } from "@modules/dashboards/hooks/mileageForm";
+import { useMileageForm } from "@modules/dashboards/hooks/useMileageForm";
 import { Dispatch, SetStateAction } from "react";
 
 export default function MileageForm({
@@ -12,8 +12,13 @@ export default function MileageForm({
   setMileagesTab: Dispatch<SetStateAction<"list" | "setMileage">>;
   formType: "km" | "waiver";
 }) {
-  const { handleInputChange, handleSubmit, sendData, setFormData } =
-    useMileageForm(formType, setMileagesTab);
+  const {
+    handleInputChange,
+    handleSubmit,
+    sendData,
+    setFormData,
+    fieldErrors,
+  } = useMileageForm(formType, setMileagesTab);
   return (
     <form onSubmit={handleSubmit}>
       <InputField
@@ -23,6 +28,7 @@ export default function MileageForm({
         name="label"
         type="text"
         placeholder="Entrez un label..."
+        error={fieldErrors.label}
       />
       <InputField
         handleInputChange={(e) => {
@@ -45,6 +51,7 @@ export default function MileageForm({
         step="0.001"
         defaultValue={0}
         min={0}
+        error={fieldErrors.amountPerKm}
       />
       <SelectField
         handleInputChange={handleInputChange}
@@ -52,6 +59,7 @@ export default function MileageForm({
         id="type"
         name="type"
         options={rateType}
+        error={fieldErrors.type}
       />
       <div className={styles.nextPrevButton}>
         <button
