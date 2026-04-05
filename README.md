@@ -159,7 +159,6 @@ CORS_ALLOW_ORIGIN=http://ADREESS_IP:5173              # Permettre les requêtes 
 SESSION_COOKIE_DOMAIN=ADREESS_IP                       # Permettre l'envoi de cookies de session
 
 
-
 /frontend/.env.local
 
 VITE_API_URL=http://ADREESS_IP:8000               # Récupération de l'URL où le backend Symfony écoute
