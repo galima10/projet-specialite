@@ -7,13 +7,15 @@ use App\Entity\Users;
 use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class UsersService
 {
   public function __construct(
     private EntityManagerInterface $entityManager,
     private UsersRepository $usersRepository,
-    private UserPasswordHasherInterface $passwordHasher
+    private UserPasswordHasherInterface $passwordHasher,
+    private Security $security
   ) {}
 
   public function getUsers(Users $currentUser): array|string|null
@@ -58,6 +60,11 @@ class UsersService
     $user->setPassword($hashedPassword);
     $this->entityManager->persist($user);
     $this->entityManager->flush();
+
+    if ($currentUser->getId() === $user->getId()) {
+      $this->security->login($user);
+    }
+
     return [
       'id' => $user->getId(),
       'name' => $user->getName(),
@@ -93,8 +100,16 @@ class UsersService
     if ($currentUser->getRole()->value !== 'ROLE_ADMIN' && $currentUser->getId() !== (int)$id) return 'Forbidden';
     $user = $this->usersRepository->find($id);
     if (!$user) return null;
+
+    $isSelfDelete = $currentUser->getId() === $user->getId();
+
     $this->entityManager->remove($user);
     $this->entityManager->flush();
+
+    if ($isSelfDelete) {
+        $this->security->logout(false);
+    }
+
     return true;
   }
 

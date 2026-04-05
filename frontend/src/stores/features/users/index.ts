@@ -186,6 +186,9 @@ export const userSlice = createSlice({
           if (index !== -1) {
             state.users[index] = action.payload;
           }
+          if (action.payload.id === state.currentUser.id) {
+            state.currentUser = action.payload;
+          }
         },
       )
       .addCase(
@@ -211,6 +214,9 @@ export const userSlice = createSlice({
             state.users = state.users.filter(
               (item) => item.id !== action.payload,
             );
+          }
+          if (action.payload === state.currentUser.id) {
+            state.currentUser = null;
           }
         },
       )

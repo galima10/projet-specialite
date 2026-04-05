@@ -70,7 +70,6 @@ export default function AdminDashboard() {
           setTab={setTab}
           users={users}
           userId={formType.userId}
-          currentUser={currentUser}
         />
       ) : tab === "mileagesManagement" ? (
         <MileagesManagement setTab={setTab} />

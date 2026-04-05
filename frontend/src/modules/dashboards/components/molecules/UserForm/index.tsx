@@ -27,13 +27,11 @@ export default function UserForm({
   userId,
   setTab,
   users,
-  currentUser,
 }: {
   type: "update" | "create" | null;
   userId?: number;
   setTab: Dispatch<SetStateAction<"home" | "addReport">>;
-  users: Users[];
-  currentUser: Users;
+  users?: Users[];
 }) {
   const {
     handleSubmit,
@@ -44,7 +42,9 @@ export default function UserForm({
     sendData,
     fieldErrors,
     setFieldErrors,
+    currentUser,
   } = useUserForm(users, userId, setTab, type);
+  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -56,7 +56,7 @@ export default function UserForm({
         type="text"
         placeholder="Entrez un nom..."
         error={fieldErrors.name}
-        defaultValue={selectedUser && selectedUser.name}
+        defaultValue={selectedUser && selectedUser?.name}
       />
       <InputField
         handleInputChange={handleInputChange}
@@ -66,7 +66,7 @@ export default function UserForm({
         type="email"
         placeholder="Entrez un email..."
         error={fieldErrors.email}
-        defaultValue={selectedUser && selectedUser.email}
+        defaultValue={selectedUser && selectedUser?.email}
       />
       <InputField
         handleInputChange={handleInputChange}
@@ -84,11 +84,13 @@ export default function UserForm({
         name="role"
         options={roles}
         error={fieldErrors.role}
-        defaultValue={selectedUser && selectedUser.role}
+        defaultValue={selectedUser && selectedUser?.role}
         disabled={
-          adminsCount.length === 1 &&
-          currentUser.role === "ROLE_ADMIN" &&
-          currentUser.id === userId
+          adminsCount
+            ? adminsCount.length === 1 &&
+              currentUser.role === "ROLE_ADMIN" &&
+              currentUser.id === userId
+            : currentUser.role === "ROLE_ADMIN"
         }
       />
       <div className={styles.nextPrevButton}>

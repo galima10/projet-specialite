@@ -1,21 +1,28 @@
 import { Users } from "@stores/features/users";
-import { useAppDispatch } from "@modules/shared/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@modules/shared/hooks/redux";
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
-import { createUserThunk, updateUserThunk } from "@stores/thunks/users";
+import {
+  createUserThunk,
+  updateUserThunk,
+  fetchCountUsersThunk,
+} from "@stores/thunks/users";
 
 export function useUserForm(
-  users: Users[],
+  users: Users[] = null,
   userId: number,
   setTab: Dispatch<SetStateAction<"home" | "addReport">>,
   type: "create" | "update",
 ) {
+  const { currentUser } = useAppSelector((state) => state.user);
   const [fieldErrors, setFieldErrors] = useState({
     name: null,
     email: null,
     password: null,
     role: null,
   });
-  const adminsCount = users.filter((u) => u.role === "ROLE_ADMIN");
+  const adminsCount = users
+    ? users.filter((u) => u.role === "ROLE_ADMIN")
+    : null;
   const dispatch = useAppDispatch();
   const [formData, setFormData] = useState<Users & { password: string }>({
     name: "",
@@ -24,13 +31,18 @@ export function useUserForm(
     role: "",
   });
 
-  const selectedUser = userId ? users.find((u) => u.id === userId) : null;
+  const selectedUser =
+    type === "update"
+      ? users && userId
+        ? users.find((u) => u.id === userId)
+        : currentUser
+      : null;
   useEffect(() => {
-    if (userId) {
+    if (userId && type === "update") {
       setFormData({
-        name: selectedUser.name,
-        email: selectedUser.email,
-        role: selectedUser.role,
+        name: selectedUser ? selectedUser.name : currentUser?.name,
+        email: selectedUser ? selectedUser.email : currentUser?.email,
+        role: selectedUser ? selectedUser.role : currentUser?.role,
         password: "",
       });
     }
@@ -85,7 +97,7 @@ export function useUserForm(
     }));
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.SubmitEvent) {
     event.preventDefault();
   }
 
@@ -146,7 +158,7 @@ export function useUserForm(
     const newPassword = formData.password;
     if (type === "create") dispatch(createUserThunk({ newUser, newPassword }));
     else {
-      newUser.id = userId;
+      newUser.id = users ? userId : currentUser.id;
       dispatch(updateUserThunk({ newUser, newPassword }));
     }
     setFormData({
@@ -165,6 +177,7 @@ export function useUserForm(
     setFormData,
     sendData,
     fieldErrors,
-    setFieldErrors
+    setFieldErrors,
+    currentUser,
   };
 }

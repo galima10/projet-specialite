@@ -24,11 +24,7 @@ export default function UserProfile({
   currentUser: Users;
   setTab: Dispatch<
     SetStateAction<
-      | "home"
-      | "viewProfile"
-      | "addReport"
-      | "setUser"
-      | "association"
+      "home" | "viewProfile" | "addReport" | "setUser" | "association"
     >
   >;
   expensesReports: UserReport[];
@@ -37,7 +33,6 @@ export default function UserProfile({
   >;
 }) {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const userReports = expensesReports.find(
     (report) => report.userId === user.id,
   );
@@ -51,8 +46,7 @@ export default function UserProfile({
       <button className="secondary" onClick={() => setTab("home")}>
         Retour
       </button>
-      {((currentUser && currentUser.id === user.id) ||
-        currentUser.role === "ROLE_ADMIN") && (
+      {currentUser.id !== user.id && currentUser.role === "ROLE_ADMIN" && (
         <div className={styles.buttons}>
           <button
             className="tertiary"
