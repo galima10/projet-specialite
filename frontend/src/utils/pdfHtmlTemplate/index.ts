@@ -40,7 +40,7 @@ export function pdfHtmlTemplate(
       .map(
         (exp) => `
         <tr>
-          <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.date}</td>
+          <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.expenseDate}</td>
           <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${exp.object}</td>
           <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.km).toFixed(2)}</td>
           <td style="font-size: 0.85rem; border: 1px solid black; padding: .35rem">${Number(exp.transportCost).toFixed(2)} €</td>
